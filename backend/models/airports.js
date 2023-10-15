@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
+const instanceSequelize = require("../server");
 
-const Airports = Sequelize.define(('Airports'), {
+const Airports = instanceSequelize.define(('Airports'), {
     IATA_code: {
         type: DataTypes.STRING(3),
         primaryKey: true
