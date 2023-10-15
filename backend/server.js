@@ -1,20 +1,24 @@
 require('dotenv').config();
+const { Sequelize } = require('sequelize');
 const express = require("express");
-const mongoose = require('mongoose');
 
 const app = express();
 
 app.use(express.json());
 
-mongoose.connect(
-    process.env.MONGODB_URI,
-    { useFindAndModify: false,useUnifiedTopology: true, useNewUrlParser: true, useCreateIndex: true},
-    (err) => {
-        if (err) return console.log("Error: ", err);
-        console.log("MongoDB Connection -- Ready state is:", mongoose.connection.readyState);
-    }
-);
+//Connection to the database
+const sequelize = new Sequelize(process.env.DB, process.env.USER, process.env.PASSWORD, {
+    host: process.env.HOST,
+    port: process.env.PORT,
+    dialect: 'mysql'
+});
+sequelize.authenticate().then(() => {
+    console.log('Connection has been established successfully.');
+ }).catch((error) => {
+    console.error('Unable to connect to the database: ', error);
+ });
+
 
 const listener = app.listen(process.env.PORT || 3000, () => {
-    console.log('App is listening on port ' + listener.address().port)
+    console.log('App is listening on port ' + listener.address().port);
 });
