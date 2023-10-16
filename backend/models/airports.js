@@ -1,5 +1,5 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const instanceSequelize = require("../server");
+const { DataTypes } = require("sequelize");
+const instanceSequelize = require("../database");
 
 const Airports = instanceSequelize.define(('Airports'), {
     IATA_code: {
