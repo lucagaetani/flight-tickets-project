@@ -7,4 +7,12 @@ const getAirports = (req, res, next) => {
     return airports;
 };
 
+const validateAirports = (req, res) => {
+
+}
+
+const insertAirports = (req, res, next) => {
+    
+}
+
 module.exports = {getAirports};

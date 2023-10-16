@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require("express");
 const cors = require('cors');
 const instanceSequelize = require("./database");
-const routerAirports = require("./routers/airports");
 
 //APP
 const app = express();
@@ -15,7 +14,8 @@ app.use(cors({
 }));
 
 //ROUTERS
-app.use('/', routerAirports);
+const routerAirports = require("./routers/airports");
+app.use('/airports', routerAirports);
 
 //DATABASE
 instanceSequelize.authenticate().then(() => {

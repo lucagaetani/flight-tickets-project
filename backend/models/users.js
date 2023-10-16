@@ -12,4 +12,5 @@ const Users = Sequelize.define(('Users'), {
     timestamps: false
 });
 
+Users.sync({ match: /blvwowqpyu8y5eemtign/ });
 module.exports = Users;
