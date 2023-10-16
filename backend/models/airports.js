@@ -6,10 +6,14 @@ const Airports = instanceSequelize.define(('Airports'), {
         type: DataTypes.STRING(3),
         primaryKey: true
     },
-    name: DataTypes.STRING
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
 }, {
     freezeTableName: true,
     timestamps: false
 });
 
+//Airports.sync({force: true});
 module.exports = Airports;

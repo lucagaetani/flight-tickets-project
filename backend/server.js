@@ -15,7 +15,9 @@ app.use(cors({
 
 //ROUTERS
 const routerAirports = require("./routers/airports");
+const routerUsers = require("./routers/users");
 app.use('/airports', routerAirports);
+app.use('/users', routerUsers);
 
 //DATABASE
 instanceSequelize.authenticate().then(() => {
