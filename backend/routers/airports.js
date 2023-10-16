@@ -9,12 +9,10 @@ const validateAirports = [
     body('IATA_code')
     .trim()
     .notEmpty()
-    .isLength({max: 3})
-    .withMessage('Invalid IATA_code'),
+    .isLength({max: 3}),
     body('name')
     .trim()
     .notEmpty()
-    .withMessage('Invalid name')
 ];
 
 router.get('/', airportsController.getAirports);
