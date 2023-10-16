@@ -4,9 +4,11 @@ const { validationResult } = require('express-validator');
 
 const getAirports = async (req, res, next) => {
     try {
-        const Airports = await Airports.findAll();
-        res.status(200).json({ msg: "Successfully retrieved all airports"});
-        res.json(Airports);
+        const airports = await Airports.findAll();
+
+        res.status(200).json({ message: "Successfully retrieved all airports"});
+        res.json(airports);
+
     } catch(error) {
         next(createError(500, 'Error during the retrival of airports'));
     }
@@ -35,8 +37,12 @@ const insertAirports = async (req, res, next) => {
         name: name,
       });
   
-      res.message = 'Airport inserted successfully';
-      res.data = newAirports;
+      res.send ({
+        status: 200,
+        message: 'Airport inserted successfully',
+        data: newAirports
+      });
+      
     } catch (error) {
       console.error(error);
       next(createError(500, 'Can not insert airport into database'));
