@@ -18,8 +18,8 @@ const validateAirports = [
     .notEmpty()
 ];
 
-router.get('/', airportsController.getAirports);
+router.get('/getAll', airportsController.getAirports);
 
-router.post('/', validateAirports, airportsController.insertAirports);
+router.post('/insertOne', validateAirports, airportsController.insertAirports);
   
 module.exports = router;
