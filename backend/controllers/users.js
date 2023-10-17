@@ -20,8 +20,9 @@ const registerUser = async (req, res, next) => {
             password: hash,
             name: name,
             surname: surname
-        }
-        await Users.create({user})
+        };
+        
+        await Users.create(user)
         res.status(200).json({
             message: "User successfully created",
             data: user

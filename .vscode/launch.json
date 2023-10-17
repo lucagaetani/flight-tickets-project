@@ -4,6 +4,8 @@
         {
             "type": "node",
             "request": "launch",
+            "program": "${workspaceFolder}/backend/server.js",
+            "cwd": "${workspaceFolder}/backend",
             "name": "Node: Nodemon",
             "runtimeExecutable": "npm",
             "runtimeArgs": ["start"],
