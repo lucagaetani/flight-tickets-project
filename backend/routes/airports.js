@@ -5,7 +5,7 @@ const airportsController = require('../controllers/airports');
 
 const router = express.Router();
 
-const validateAirports = [
+const validateAirport = [
     body('IATA_code')
     .trim()
     .notEmpty()
@@ -20,6 +20,6 @@ const validateAirports = [
 
 router.get('/getAll', airportsController.getAirports);
 
-router.post('/insertOne', validateAirports, airportsController.insertAirports);
+router.post('/insertOne', validateAirport, airportsController.insertAirports);
   
 module.exports = router;

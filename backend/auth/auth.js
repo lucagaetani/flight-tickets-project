@@ -1,4 +1,5 @@
 const Users = require('../models/users');
+const bcrypt = require("bcryptjs");
 
 const login = async (req, res, next) => {
 
@@ -18,10 +19,18 @@ const login = async (req, res, next) => {
                 message: "Login not successful. User not found"
             })
         } else {
-            res.status(200).json({
-                message: "Login successful",
-                data: user
-            })
+            //Compare the hashed password with the password i pass through register page
+            const result = await bcrypt.compare(password, user.password);
+            if (result) {
+                res.status(200).json({
+                    message: "Login successful",
+                    data: user,
+                });
+            } else {
+                res.status(400).json({ 
+                    message: "Login not successful"
+                });
+            }
         }
         } catch (error) {
             res.status(400).json({

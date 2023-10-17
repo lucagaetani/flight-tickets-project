@@ -1,33 +1,38 @@
 const Users = require('../models/users');
-
-const validateUsers = (req, res) => {
-
-}
+const { validationResult } = require('express-validator');
+const bcrypt = require("bcryptjs");
 
 const registerUser = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(422).json({
+        message: "Validation error: invalid JSON"
+      });
+    }
+
     const { email, password, name, surname } = req.body;
 
-    //AGGIUNGI VALIDAZIONE
-
-    const user = {
-        email: email,
-        password: password,
-        name: name,
-        surname: surname
-    };
-
-    try {
-      await Users.create({user})
-      res.status(200).json({
-          message: "User successfully created",
-          data: user
-        })
-    } catch (error) {
-      res.status(401).json({
-        message: "User not created. Some errors occurred",
-        error: error.message
-      })
-    }
+    //Encrypt password with 10 salt rounds
+    bcrypt.hash(password, 10, async (hash) => {
+        try {
+            const user = {
+                email: email,
+                password: hash,
+                name: name,
+                surname: surname
+            }
+            await Users.create({user})
+            res.status(200).json({
+                message: "User successfully created",
+                data: user
+            })
+        } catch (error) {
+            res.status(401).json({
+                message: "User not created. Some errors occurred",
+                error: error.message
+              })
+        }
+    });
 }
 
 const deleteUser = async (req, res, next) => {
