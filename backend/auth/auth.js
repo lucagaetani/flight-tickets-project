@@ -1,6 +1,5 @@
 const Users = require('../models/users');
 
-
 const login = async (req, res, next) => {
 
     const { email, password } = req.body
