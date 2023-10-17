@@ -26,9 +26,11 @@ const validateUser = [
     body('surname')
     .trim()
     .notEmpty()
-]
+];
 
 router.get('/getAll', usersController.getUsers);
+
+router.get('/getOne', usersController.getUser);
 
 router.post('/registerUser', validateUser, usersController.registerUser);
 

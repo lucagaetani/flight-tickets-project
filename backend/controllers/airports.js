@@ -37,7 +37,7 @@ const getAirport = async (req, res, next) => {
 const insertAirports = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(422).json({
+      return res.status(422).json({
         message: "Validation error: invalid JSON"
       });
     }
@@ -63,8 +63,7 @@ const insertAirports = async (req, res, next) => {
         country: country
       });
   
-      res.send ({
-        status: 200,
+      res.status(200).send({
         message: 'Airport inserted successfully',
         data: newAirports
       });
