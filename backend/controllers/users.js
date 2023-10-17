@@ -5,7 +5,10 @@ const getUsers = async (req, res) => {
         const Users = await Users.findAll();
         res.json(Users);
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ 
+            message: 'Failed retrieval of all users',
+            error: error.message
+        });
     }
 };
 
@@ -24,4 +27,4 @@ const insertUsers = (req, res, next) => {
 
 }
 
-module.exports = {getUsers};
+exports.getUsers = getUsers;

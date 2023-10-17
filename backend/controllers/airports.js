@@ -1,5 +1,4 @@
 const Airports = require('../models/airports');
-const createError = require('http-errors');
 const { validationResult } = require('express-validator');
 
 const getAirports = async (req, res, next) => {
@@ -10,14 +9,19 @@ const getAirports = async (req, res, next) => {
         res.json(airports);
 
     } catch(error) {
-        next(createError(500, 'Error during the retrival of airports'));
+        res.status(500).json({
+          message: "Error during the retrival of airports",
+          error: error.message
+        });
     }
 };
 
 const insertAirports = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return next(createError(422, 'Validation error. You brought a non valid JSON. Please retry.'));
+      res.status(422).json({
+        message: "Validation error: invalid JSON"
+      });
     }
   
     const { IATA_code, name, city, country } = req.body;
@@ -29,7 +33,9 @@ const insertAirports = async (req, res, next) => {
       });
   
       if (existingAirports) {
-        return next(createError(400, 'Airport with this code already exists in database.'));
+        res.status(400).json({
+          message: "Airport with this code already exists in database"
+        });
       }
   
       const newAirports = await Airports.create({
@@ -47,7 +53,10 @@ const insertAirports = async (req, res, next) => {
       
     } catch (error) {
       console.error(error);
-      next(createError(500, 'Can not insert airport'));
+      res.status(500).json({
+        message: "Can not insert airport, insert operation failed",
+        error: error.message
+      })
     }
   };
 
