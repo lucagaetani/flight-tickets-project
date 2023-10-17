@@ -5,8 +5,7 @@ const getAirports = async (req, res, next) => {
     try {
         const airports = await Airports.findAll();
 
-        res.status(200).json({ message: "Successfully retrieved all airports"});
-        res.json(airports);
+        res.status(200).json({ message: "Successfully retrieved all airports", data: airports});
 
     } catch(error) {
         res.status(500).json({
@@ -14,6 +13,25 @@ const getAirports = async (req, res, next) => {
           error: error.message
         });
     }
+};
+
+const getAirport = async (req, res, next) => {
+  const { IATA_code } = req.body;
+
+  try {
+      const airports = await Airports.findByPk(IATA_code);
+
+      res.status(200).json({ 
+        message: "Successfully retrieved all airports", 
+        data: airports
+      });
+
+  } catch(error) {
+      res.status(500).json({
+        message: "Error during the retrival of airports",
+        error: error.message
+      });
+  }
 };
 
 const insertAirports = async (req, res, next) => {
@@ -58,7 +76,8 @@ const insertAirports = async (req, res, next) => {
         error: error.message
       })
     }
-  };
+};
 
+exports.getAirport = getAirport;
 exports.insertAirports = insertAirports;
 exports.getAirports = getAirports;

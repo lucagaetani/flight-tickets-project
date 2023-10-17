@@ -1,32 +1,6 @@
 const Users = require('../models/users');
 
 
-const register = async (req, res, next) => {
-    const { email, password, name, surname } = req.body
-
-    //AGGIUNGI VALIDAZIONE
-
-    const user = {
-        email: email,
-        password: password,
-        name: name,
-        surname: surname
-    };
-
-    try {
-      await Users.create({user})
-      res.status(200).json({
-          message: "User successfully created",
-          data: user
-        })
-    } catch (error) {
-      res.status(401).json({
-        message: "User not created. Some errors occurred",
-        error: error.message
-      })
-    }
-}
-
 const login = async (req, res, next) => {
 
     const { email, password } = req.body
@@ -58,5 +32,4 @@ const login = async (req, res, next) => {
     }
 }
 
-exports.register = register;
 exports.login = login;
