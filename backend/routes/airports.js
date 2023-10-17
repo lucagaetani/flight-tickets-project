@@ -12,6 +12,9 @@ const validateAirports = [
     .isLength({max: 3}),
     body('name')
     .trim()
+    .notEmpty(),
+    body('country')
+    .trim()
     .notEmpty()
 ];
 

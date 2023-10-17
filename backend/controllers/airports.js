@@ -17,10 +17,10 @@ const getAirports = async (req, res, next) => {
 const insertAirports = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return next(createError(422, 'Validation error', { errors: errors.array() }));
+      return next(createError(422, 'Validation error. You brought a non valid JSON. Please retry.'));
     }
   
-    const { IATA_code, name } = req.body;
+    const { IATA_code, name, city, country } = req.body;
   
     try {
       const existingAirports = await Airports.findOne({
@@ -29,12 +29,14 @@ const insertAirports = async (req, res, next) => {
       });
   
       if (existingAirports) {
-        return next(createError(400, 'Airport with this code already exists'));
+        return next(createError(400, 'Airport with this code already exists in database.'));
       }
   
       const newAirports = await Airports.create({
         IATA_code: IATA_code,
         name: name,
+        city: city,
+        country: country
       });
   
       res.send ({
@@ -45,7 +47,7 @@ const insertAirports = async (req, res, next) => {
       
     } catch (error) {
       console.error(error);
-      next(createError(500, 'Can not insert airport into database'));
+      next(createError(500, 'Can not insert airport'));
     }
   };
 
