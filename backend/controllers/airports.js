@@ -45,10 +45,7 @@ const insertAirports = async (req, res, next) => {
     const { IATA_code, name, city, country } = req.body;
   
     try {
-      const existingAirports = await Airports.findOne({
-        attributes : ["IATA_code"],
-        where: { IATA_code: IATA_code }
-      });
+      const existingAirports = await Airports.findByPk(IATA_code);
   
       if (existingAirports) {
         res.status(400).json({

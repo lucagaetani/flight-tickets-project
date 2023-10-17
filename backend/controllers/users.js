@@ -12,16 +12,24 @@ const registerUser = async (req, res, next) => {
 
     const { email, password, name, surname } = req.body;
 
-    //Encrypt password with 10 salt rounds
-    const hash = await bcrypt.hash(password, 10);
     try {
+        const existingUser = await Users.findByPk(email);
+        if (existingUser){
+            return res.status(400).json({
+                message: "User with this email already exists in database"
+              });
+        }
+
+        //Encrypt password with 10 salt rounds
+        const hash = await bcrypt.hash(password, 10);
+
         const user = {
             email: email,
             password: hash,
             name: name,
             surname: surname
         };
-        
+
         await Users.create(user)
         res.status(200).json({
             message: "User successfully created",
