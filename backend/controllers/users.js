@@ -1,6 +1,7 @@
 const Users = require('../models/users');
 const { validationResult } = require('express-validator');
 const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken')
 
 const registerUser = async (req, res, next) => {
     const errors = validationResult(req);
@@ -29,8 +30,26 @@ const registerUser = async (req, res, next) => {
             name: name,
             surname: surname
         };
+        await Users.create(user);
 
-        await Users.create(user)
+        const maxAge = 15*60;
+        const token = jwt.sign(
+            {
+                email: user.email,
+                name: user.name,
+                surname: user.surname
+            },
+            //process.env.jwtToken,
+            {
+                expiresIn: maxAge
+            }
+        );
+
+        res.cookie("jwt", token, {
+            httpOnly: true,
+            maxAge: maxAge
+        });
+
         res.status(200).json({
             message: "User successfully created",
             data: user

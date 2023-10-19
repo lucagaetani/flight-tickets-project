@@ -22,8 +22,27 @@ const login = async (req, res, next) => {
             //Compare the hashed password with the password i pass through register page
             const result = await bcrypt.compare(password, user.password);
             if (result) {
+
+                const maxAge = 3*60*60;
+                const token = jwt.sign(
+                    {
+                        email: user.email,
+                        name: user.name,
+                        surname: user.surname
+                    },
+                    //process.env.jwtToken,
+                    {
+                        expiresIn: maxAge
+                    }
+                );
+
+                res.cookie("jwt", token, {
+                    httpOnly: true,
+                    maxAge: maxAge
+                });
+
                 res.status(200).json({
-                    message: "Login successful"
+                    message: "User successfully logged in"
                 });
             } else {
                 res.status(400).json({ 
