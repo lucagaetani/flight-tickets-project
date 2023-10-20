@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require("express");
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const verifyUserToken = require('./middleware/auth.js');
 const instanceSequelize = require("./database");
 
 //APP
@@ -13,13 +15,17 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 
+//TOKEN VERIFICATION
+app.get("/auth", verifyUserToken);
+
+//COOKIE VERIFICATION
+app.use(cookieParser());
+
 //ROUTERS
 const routerAirports = require("./routes/airports");
 const routerUsers = require("./routes/users");
-const routerAuth = require("./routes/auth");
 app.use('/airports', routerAirports);
 app.use('/users', routerUsers);
-app.use('/auth', routerAuth);
 
 //DATABASE
 instanceSequelize.authenticate().then(() => {
