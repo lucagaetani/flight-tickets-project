@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 
 const Footer = () => {
   return (
-    <Box sx={{width: "100%", textAlign: "center", backgroundColor: "blue"}}>
+    <Box sx={{padding: "20px", textAlign: "center", backgroundColor: "#EAEDF2"}}>
       <Typography variant="body2">
         Made by Luca Gaetani
       </Typography>

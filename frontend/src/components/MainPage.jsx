@@ -1,22 +1,33 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { FormControl, FormLabel } from '@mui/material';
 
 const MainPage = () => {
   return (
-    <Box sx={
-        {
-            mt: 5,
-            textAlign: "center",
-            width: "100%",
-            height: "100%",
-            backgroundColor: grey
-        }
-    }>
-      <Typography variant="body2">
-        Made by Luca Gaetani
-      </Typography>
-    </Box>
+    <Container maxWidth="md">
+      <Box sx={{mt: 5, mb: 5}}>
+        <Grid container spacing={3}>
+          <Grid item xs={6}>
+            <TextField id="outlined-basic" label="Airport From" variant="outlined" size="small" />
+          </Grid>
+          <Grid item xs={6}>
+            <DatePicker label="Departing date" size="small"/>
+          </Grid>
+          <Grid item xs={6}>
+            <TextField id="outlined-basic" label="Airport From" variant="outlined" size="small" />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField id="outlined-basic" label="Airport From" variant="outlined" size="small" />
+          </Grid>
+        </Grid>
+      </Box>
+    </Container>
   );
 };
 
