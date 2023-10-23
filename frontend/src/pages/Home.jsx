@@ -7,10 +7,6 @@ const Home = () => {
   return (
     <div>
       <Navbar />
-      <div className="big-write">Where do you want to go today?</div>
-      <div className="booking-container">
-        {/* Add your booking ticket flight component here */}
-      </div>
       <Footer />
     </div>
   );
