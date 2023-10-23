@@ -28,18 +28,15 @@ const BookingForm = () => {
   const [disableDateReturning, setDisableDateReturning] = useState(false);
 
   const getAllAirports = async () => {
-    const response = await fetch("http://127.0.0.1:9229/");
+    const response = await fetch("http://127.0.0.1:3000/airports/getAirports");
+    let airports = await response.json();
+    airports = JSON.parse(airports.data);
+    let arrayAirports = [];
+    for (let a in airports) {
+      arrayAirports.push(a);
+    }
+    return arrayAirports
   }
-
-  const top100Films = [
-    { label: 'The Shawshank Redemption', year: 1994 },
-    { label: 'The Godfather', year: 1972 },
-    { label: 'The Godfather: Part II', year: 1974 },
-    { label: 'The Dark Knight', year: 2008 },
-    { label: '12 Angry Men', year: 1957 },
-    { label: "Schindler's List", year: 1993 },
-    { label: 'Pulp Fiction', year: 1994 }
-  ]
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -82,8 +79,7 @@ const BookingForm = () => {
               <FormLabel sx={{mb: 1}}>From</FormLabel>
               <Autocomplete
                 disablePortal
-                id="combo-box-demo"
-                options={top100Films}
+                options={getAllAirports()}
                 sx={{ width: 300 }}
                 renderInput={(params) => <TextField 
                 {...params} 
