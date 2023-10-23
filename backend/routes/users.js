@@ -2,6 +2,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const usersController = require('../controllers/users');
+const auth = require('../middleware/auth.js');
 
 const router = express.Router();
 
@@ -28,12 +29,14 @@ const validateUser = [
     .notEmpty()
 ];
 
-router.get('/getAll', usersController.getUsers);
+router.get('/login', auth.verifyUserToken, usersController.login);
 
-router.get('/getOne', usersController.getUser);
+router.get('/getAll', auth.verifyUserToken, usersController.getUsers);
 
-router.post('/registerUser', validateUser, usersController.registerUser);
+router.get('/getOne', auth.verifyUserToken, usersController.getUser);
 
-router.delete('/deleteUser', usersController.deleteUser);
+router.post('/registerUser', auth.verifyUserToken, validateUser, usersController.registerUser);
+
+router.delete('/deleteUser', auth.verifyUserToken, usersController.deleteUser);
 
 module.exports = router;
