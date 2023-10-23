@@ -29,7 +29,7 @@ const NumberInput = React.forwardRef(function CustomNumberInput(props, ref) {
 });
 
 export default function QuantityInput() {
-  return <NumberInput aria-label="Quantity Input" min={0} max={10} defaultValue={0}/>;
+  return <NumberInput aria-label="Quantity Input" min={0} max={9} defaultValue={0}/>;
 }
 
 const blue = {
@@ -76,7 +76,6 @@ const StyledInput = styled('input')(
   background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
   border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
   border-radius: 4px;
-  margin: 0 4px;
   padding: 10px 12px;
   outline: 0;
   min-width: 0;
