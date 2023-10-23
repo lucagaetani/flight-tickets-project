@@ -16,7 +16,7 @@ const MainPage = () => {
             <TextField id="outlined-basic" label="Airport From" variant="outlined" size="small" />
           </Grid>
           <Grid item xs={6}>
-            <TextField id="date" label="Departing date" size="small"/>
+            <TextField type="date" id="date-pickers" label="Departing date" size="small"/>
           </Grid>
           <Grid item xs={6}>
             <TextField id="outlined-basic" label="Airport From" variant="outlined" size="small" />
