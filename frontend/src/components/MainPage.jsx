@@ -5,7 +5,6 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { FormControl, FormLabel } from '@mui/material';
 
 const MainPage = () => {
@@ -17,7 +16,7 @@ const MainPage = () => {
             <TextField id="outlined-basic" label="Airport From" variant="outlined" size="small" />
           </Grid>
           <Grid item xs={6}>
-            <DatePicker label="Departing date" size="small"/>
+            <TextField id="date" label="Departing date" size="small"/>
           </Grid>
           <Grid item xs={6}>
             <TextField id="outlined-basic" label="Airport From" variant="outlined" size="small" />
