@@ -18,7 +18,7 @@ const validateAirport = [
     .notEmpty()
 ];
 
-router.get('/getAll', airportsController.getAirports);
+router.get('/getAirports', airportsController.getAirports);
 
 router.post('/insertOne', validateAirport, airportsController.insertAirports);
   

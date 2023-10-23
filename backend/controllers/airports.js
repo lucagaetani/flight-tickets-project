@@ -2,27 +2,17 @@ const Airports = require('../models/airports');
 const { validationResult } = require('express-validator');
 
 const getAirports = async (req, res, next) => {
-    try {
-        const airports = await Airports.findAll();
-
-        res.status(200).json({ message: "Successfully retrieved all airports", data: airports});
-
-    } catch(error) {
-        res.status(500).json({
-          message: "Error during the retrival of airports",
-          error: error.message
-        });
-    }
-};
-
-const getAirport = async (req, res, next) => {
-  const { IATA_code } = req.body;
+  const { name } = req.body;
 
   try {
-      const airports = await Airports.findByPk(IATA_code);
+      const airports = await Airports.findAll({
+        name: {
+          [Sequelize.Op.in]: name
+        }
+      });
 
       res.status(200).json({ 
-        message: "Successfully retrieved all airports", 
+        message: `Successfully retrieved ${airports.length} airports`, 
         data: airports
       });
 
@@ -42,7 +32,7 @@ const insertAirports = async (req, res, next) => {
       });
     }
   
-    const { IATA_code, name, city, country } = req.body;
+    const { IATA_code, name, country } = req.body;
   
     try {
       const existingAirports = await Airports.findByPk(IATA_code);
@@ -56,7 +46,6 @@ const insertAirports = async (req, res, next) => {
       const newAirports = await Airports.create({
         IATA_code: IATA_code,
         name: name,
-        city: city,
         country: country
       });
   
@@ -74,6 +63,5 @@ const insertAirports = async (req, res, next) => {
     }
 };
 
-exports.getAirport = getAirport;
-exports.insertAirports = insertAirports;
 exports.getAirports = getAirports;
+exports.insertAirports = insertAirports;
