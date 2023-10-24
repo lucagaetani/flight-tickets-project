@@ -239,7 +239,7 @@ const BookingForm = () => {
           </Grid>
           <Grid item xs={12} sx={{display: "grid", justifyContent: "center"}}>
             <Button type="submit" variant="contained" color="primary">
-              Submit
+              Search
             </Button>
           </Grid>
         </Grid>

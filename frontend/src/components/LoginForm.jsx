@@ -58,37 +58,32 @@ const BookingForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Container maxWidth="md" sx={{mt: 3, mb: 3}}>
+      <Container maxWidth="xs" sx={{mt: 3, mb: 3}}>
         <Grid container spacing={3}>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <TextField
               label="Email"
+              type="text"
               variant="outlined"
-              name="departingDate"
+              name="email"
               fullWidth
-              value={formData.departingDate}
+              value={formData.email}
               onChange={handleChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              error={!!errors.departingDate}
-              helperText={errors.departingDate}
+              error={!!errors.email}
+              helperText={errors.email}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <TextField
               label="Password"
               type="password"
               variant="outlined"
               name="password"
               fullWidth
-              value={formData.departingDate}
+              value={formData.password}
               onChange={handleChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              error={!!errors.departingDate}
-              helperText={errors.departingDate}
+              error={!!errors.password}
+              helperText={errors.password}
             />
           </Grid>
           <Grid item xs={12} sx={{display: "grid", justifyContent: "center"}}>
