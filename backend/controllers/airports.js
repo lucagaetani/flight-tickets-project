@@ -1,15 +1,10 @@
 const Airports = require('../models/airports');
+const sequelize = require("sequelize");
 const { validationResult } = require('express-validator');
 
 const getAirports = async (req, res, next) => {
-  const { name } = req.body;
-
   try {
-      const airports = await Airports.findAll({
-        name: {
-          [Sequelize.Op.in]: name
-        }
-      });
+      const airports = await Airports.findAll({ order: [[(sequelize.col('name'), sequelize.col('country')), 'ASC']]});
 
       res.status(200).json({ 
         message: `Successfully retrieved ${airports.length} airports`, 
