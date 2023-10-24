@@ -1,5 +1,7 @@
 import React from 'react'
-import Container from "@mui/material/Container";
+import {
+    Container
+} from "@mui/material";
 
 const MainPageWrite = () => {
     return (

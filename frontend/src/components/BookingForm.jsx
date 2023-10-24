@@ -1,4 +1,5 @@
 import React, {useEffect, useState } from "react";
+import { useNavigate  } from 'react-router-dom';
 import {
   TextField,
   Button,
@@ -8,12 +9,13 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  Autocomplete,
   Container,
   Grid
 } from '@mui/material';
 
 const BookingForm = () => {
+  const navigateTo = useNavigate();
+
   const [formData, setFormData] = useState({
     airportFrom: '',
     airportTo: '',
@@ -72,7 +74,7 @@ const BookingForm = () => {
     if (!formData.oneWay && !formData.returningDate) {
       newErrors.returningDate = 'Returning Date is required';
     }
-    if(formData.adults === 0) {
+    if(formData.adults === '0') {
       newErrors.adults = 'It has to be at least 1 adult passenger';
     }
 
@@ -80,6 +82,7 @@ const BookingForm = () => {
       setErrors(newErrors);
     } else {
       console.log('Form data submitted:', formData);
+      navigateTo('/booking', { state: { formData } });
     }
   };
 
@@ -98,6 +101,16 @@ const BookingForm = () => {
                 onChange={handleChange}
                 error={!!errors.airportFrom}
                 label="Airport From"
+                MenuProps={{
+                  anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: "center"
+                  },
+                  transformOrigin: {
+                    vertical: "top",
+                    horizontal: "center"
+                  }
+                }}
               >
                 {airports.map((airport) => (
                   <MenuItem key={airport.IATA_code} value={airport.IATA_code}>

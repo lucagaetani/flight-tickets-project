@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-const UserPage = () => {
+const BookingList = () => {
   return (
     <div>
       <Navbar />
@@ -11,4 +11,4 @@ const UserPage = () => {
   );
 };
 
-export default UserPage;
+export default BookingList;
