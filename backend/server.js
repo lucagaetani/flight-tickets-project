@@ -34,6 +34,10 @@ instanceSequelize.authenticate().then(() => {
     console.error('Unable to connect to the database: ', error);
 });
 
+app.get("/", function (req, res) {
+    res.send(req.headers, req.originalUrl, req.method, req.body);
+});
+
 //LISTENER
 const listener = app.listen(process.env.PORT || 3000, () => {
     console.log('App is listening on port ' + listener.address().port);
