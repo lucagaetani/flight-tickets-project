@@ -1,14 +1,8 @@
-import React, {useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import { useNavigate  } from 'react-router-dom';
 import {
   TextField,
   Button,
-  Checkbox,
-  FormControlLabel,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
   Container,
   Grid
 } from '@mui/material';
@@ -51,7 +45,8 @@ const BookingForm = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      console.log('Form data submitted:', formData);
+      fetch("http://localhost:3000/users/login")
+      .then(response => response.json())
       navigateTo('/');
     }
   };
