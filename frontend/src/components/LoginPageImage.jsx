@@ -18,7 +18,7 @@ const LoginPageImage = () => {
                     mr: "auto",
                     position: "relative"
                 }}
-                alt="Departing"
+                alt="User"
                 src="./src/assets/user.png"
             />
     );

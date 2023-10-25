@@ -29,14 +29,14 @@ const validateUser = [
     .notEmpty()
 ];
 
-router.get('/login', auth.verifyUserToken, usersController.login);
+router.post('/login', usersController.login);
 
-router.get('/getAll', auth.verifyUserToken, usersController.getUsers);
+router.get('/getAll', usersController.getUsers);
 
-router.get('/getOne', auth.verifyUserToken, usersController.getUser);
+router.get('/getOne', usersController.getUser);
 
-router.post('/registerUser', auth.verifyUserToken, validateUser, usersController.registerUser);
+router.post('/registerUser', validateUser, usersController.registerUser);
 
-router.delete('/deleteUser', auth.verifyUserToken, usersController.deleteUser);
+router.delete('/deleteUser', usersController.deleteUser);
 
 module.exports = router;

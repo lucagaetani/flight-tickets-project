@@ -7,6 +7,7 @@ const registerUser = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({
+        success: false,
         message: "Validation error: invalid JSON"
       });
     }
@@ -17,6 +18,7 @@ const registerUser = async (req, res, next) => {
         const existingUser = await Users.findByPk(email);
         if (existingUser){
             return res.status(400).json({
+                success: false,
                 message: "User with this email already exists in database"
               });
         }
@@ -32,14 +34,14 @@ const registerUser = async (req, res, next) => {
         };
         await Users.create(user);
 
-        const maxAge = 15*60;
+        const maxAge = 3*60*60*1000;
         const token = jwt.sign(
             {
                 email: user.email,
                 name: user.name,
                 surname: user.surname
             },
-            //process.env.jwtToken,
+            process.env.JWT_SECRET,
             {
                 expiresIn: maxAge
             }
@@ -51,14 +53,15 @@ const registerUser = async (req, res, next) => {
         });
 
         res.status(200).json({
-            message: "User successfully created",
-            data: user
+            success: true,
+            message: "User successfully created"
         })
     } catch (error) {
         res.status(401).json({
+            success: false,
             message: "User not created. Some errors occurred",
             error: error.message
-            })
+        })
     }
 }
 
@@ -68,12 +71,14 @@ const deleteUser = async (req, res, next) => {
     try {
         const userToDelete = await Users.findByPk(id);
         await Users.delete({userToDelete});
-        res.status(201).json({ 
+        res.status(201).json({
+            success: true,
             message: "User successfully deleted", 
             data: userToDelete 
         });
     } catch(error) {
-        res.status(400).json({ 
+        res.status(400).json({
+            success: false,
             message: "An error occurred", 
             error: error.message 
         });
@@ -84,11 +89,13 @@ const getUsers = async (res, req, next) => {
     try{
         const users = await Users.findAll();
         res.status(200).json({
+            success: true,
            message: "Successfully retrived all users",
            data: users 
         });
     } catch (error) {
         res.status(500).json({ 
+            success: false,
             message: 'Failed retrieval of all users',
             error: error.message
         });
@@ -101,11 +108,13 @@ const getUser = async (req, res, next) => {
     try{
         const user = await Users.findByPk(email);
         res.status(200).json({
+            success: true,
             message: "Successfully retrieved user",
             data: user
         });
     } catch (error) {
         res.status(500).json({
+            success: false,
             message: "Failed retrieval of users",
             error: error.message
         });
@@ -118,7 +127,8 @@ const login = async (req, res, next) => {
     
     // Check if username and password is provided
     if (!email || !password) {
-        res.status(400).json({
+        return res.status(400).json({
+            success: false,
             message: "Username or password not found"
         });
     }
@@ -126,22 +136,22 @@ const login = async (req, res, next) => {
     try {
         const user = await Users.findByPk(email);
         if (!user) {
-            res.status(401).json({
+            return res.status(401).json({
+                success: false,
                 message: "Login not successful. User not found"
             })
         } else {
-            //Compare the hashed password with the password i pass through register page
             const result = await bcrypt.compare(password, user.password);
             if (result) {
 
-                const maxAge = 3*60*60;
+                const maxAge = 3*60*60*1000;
                 const token = jwt.sign(
                     {
                         email: user.email,
                         name: user.name,
                         surname: user.surname
                     },
-                    //process.env.jwtToken,
+                    process.env.JWT_SECRET,
                     {
                         expiresIn: maxAge
                     }
@@ -153,16 +163,19 @@ const login = async (req, res, next) => {
                 });
 
                 res.status(200).json({
+                    success: true,
                     message: "User successfully logged in"
                 });
             } else {
-                res.status(400).json({ 
+                res.status(400).json({
+                    success: false,
                     message: "Login not successful"
                 });
             }
         }
         } catch (error) {
             res.status(400).json({
+                success: false,
                 message: "An error occurred",
                 error: error.message
             });

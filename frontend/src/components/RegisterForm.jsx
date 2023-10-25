@@ -4,17 +4,18 @@ import {
   TextField,
   Button,
   Container,
-  Grid,
-  Typography,
-  Link
+  Grid
 } from '@mui/material';
+import validator from 'validator';
 
 const BookingForm = () => {
   const navigateTo = useNavigate();
 
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    name: '',
+    surname: ''
   });
 
   const [errors, setErrors] = useState({});
@@ -40,8 +41,22 @@ const BookingForm = () => {
     if (!formData.email) {
       newErrors.email = 'Email is required';
     }
+    if (!validator.isEmail(formData.email)){
+      newErrors.email = 'Please insert a valid email';
+    }
     if (!formData.password) {
         newErrors.password = 'Password is required';
+    }
+    if (
+      !validator.isStrongPassword(
+      formData.password, 
+      { 
+        minLength: 8, minLowercase: 1, 
+        minUppercase: 1, minNumbers: 2, minSymbols: 2 
+      })
+    )
+    {
+      newErrors.password = 'Password requires at least 8 characters, 1 lowercase, 1 uppercase, 2 numbers and 2 symbols';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -52,16 +67,16 @@ const BookingForm = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       };
-      fetch("http://localhost:3000/users/login", requestOptions, {credentials: "same-origin"})
+      fetch("http://localhost:3000/users/registerUser", requestOptions)
       .then(response => response.json())
       .then(res => {
-        console.log(JSON.stringify(res));
         if (res.success === true) {
           {alert(`${res.message}. You will be redirect to the homepage in 2 seconds...`)};
           navigateTo('/');
         }
         else {
           {alert(`Error received: ${res.message}. You will be redirect to the homepage in 2 seconds...`)};
+          navigateTo('/');
         }
       })
     }
@@ -97,25 +112,36 @@ const BookingForm = () => {
               helperText={errors.password}
             />
           </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Name"
+              type="text"
+              variant="outlined"
+              name="name"
+              fullWidth
+              value={formData.name}
+              onChange={handleChange}
+              error={!!errors.name}
+              helperText={errors.name}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Surname"
+              type="text"
+              variant="outlined"
+              name="surname"
+              fullWidth
+              value={formData.surname}
+              onChange={handleChange}
+              error={!!errors.surname}
+              helperText={errors.surname}
+            />
+          </Grid>
           <Grid item xs={12} sx={{display: "grid", justifyContent: "center"}}>
             <Button type="submit" variant="contained" color="primary">
               Submit
             </Button>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="body2" textAlign="center" >
-            {"...or if you want, you can "}
-              <Link
-                  component="button"
-                  variant="body2"
-                  onClick={() => {
-                    navigateTo("/register");
-                  }}
-                  align="inherit"
-                >
-                register
-              </Link>
-            </Typography>
           </Grid>
         </Grid>
       </Container>

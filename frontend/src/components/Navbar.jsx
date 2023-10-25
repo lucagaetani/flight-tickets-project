@@ -12,9 +12,10 @@ const Navbar = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    console.log(document.cookie);
 
     if (token) {
-      fetch('http://localhost:3000/user/profile', {
+      fetch('http://localhost:3000/user/login', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
