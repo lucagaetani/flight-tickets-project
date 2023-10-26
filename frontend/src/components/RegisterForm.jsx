@@ -65,17 +65,18 @@ const BookingForm = () => {
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
         body: JSON.stringify(formData)
       };
       fetch("http://localhost:3000/users/registerUser", requestOptions)
       .then(response => response.json())
       .then(res => {
         if (res.success === true) {
-          {alert(`${res.message}. You will be redirect to the homepage in 2 seconds...`)};
+          {alert(`${res.message}. You will be redirect to the homepage`)};
           navigateTo('/');
         }
         else {
-          {alert(`Error received: ${res.message}. You will be redirect to the homepage in 2 seconds...`)};
+          {alert(`Error received: ${res.message}. You will be redirect to the homepage.`)};
           navigateTo('/');
         }
       })

@@ -1,8 +1,5 @@
 const verifyUserToken =  (req, res, next) => {
-    if (!req.headers.authorization) {
-      return res.status(401).send("Unauthorized request");
-    }
-    const token = req.headers["authorization"].split(" ")[1];
+    const token = req.cookies.jwt;
     if (!token) {
       return res.status(401).send("Access denied. No token provided.");
     }

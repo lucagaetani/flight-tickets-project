@@ -37,6 +37,8 @@ router.get('/getOne', usersController.getUser);
 
 router.post('/registerUser', validateUser, usersController.registerUser);
 
+router.post('/logout', auth.verifyUserToken, usersController.logout);
+
 router.delete('/deleteUser', usersController.deleteUser);
 
 module.exports = router;

@@ -1,5 +1,7 @@
 import {useEffect, useState } from "react";
 import { useNavigate  } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addUserData } from '../redux/actions';
 import {
   TextField,
   Button,
@@ -49,7 +51,10 @@ const BookingForm = () => {
     } else {
       const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        credentials: "include",
+        headers: {
+          'Content-Type': 'application/json' 
+        },
         body: JSON.stringify(formData)
       };
       fetch("http://localhost:3000/users/login", requestOptions, {credentials: "same-origin"})
@@ -57,11 +62,12 @@ const BookingForm = () => {
       .then(res => {
         console.log(JSON.stringify(res));
         if (res.success === true) {
-          {alert(`${res.message}. You will be redirect to the homepage in 2 seconds...`)};
+          {alert(`${res.message}. You will be redirect to the homepage`)};
+          useDispatch(addUserData(res.data));
           navigateTo('/');
         }
         else {
-          {alert(`Error received: ${res.message}. You will be redirect to the homepage in 2 seconds...`)};
+          {alert(`Error received: ${res.message}. You will be redirect to the homepage`)};
         }
       })
     }

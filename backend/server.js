@@ -11,15 +11,16 @@ app.use(express.json());
 
 //CORS
 app.use(cors({
-    origin: "*",
-    optionsSuccessStatus: 200
+    origin: "http://localhost:5173",
+    optionsSuccessStatus: 200,
+    credentials: true
 }));
-
-//TOKEN VERIFICATION
-app.get("/auth", auth.verifyUserToken);
 
 //COOKIE VERIFICATION
 app.use(cookieParser());
+
+//TOKEN VERIFICATION
+app.get("/auth", auth.verifyUserToken);
 
 //ROUTERS
 const routerAirports = require("./routes/airports");

@@ -49,7 +49,9 @@ const registerUser = async (req, res, next) => {
 
         res.cookie("jwt", token, {
             httpOnly: true,
-            maxAge: maxAge
+            maxAge: maxAge,
+            path:"/",
+            sameSite: 'strict'
         });
 
         res.status(200).json({
@@ -157,14 +159,22 @@ const login = async (req, res, next) => {
                     }
                 );
 
+                const viewData = {
+                    email: user.email,
+                    name: user.name
+                };
+
                 res.cookie("jwt", token, {
                     httpOnly: true,
-                    maxAge: maxAge
+                    maxAge: maxAge,
+                    path:"/",
+                    sameSite: 'strict'
                 });
 
                 res.status(200).json({
                     success: true,
-                    message: "User successfully logged in"
+                    message: "User successfully logged in",
+                    data: viewData
                 });
             } else {
                 res.status(400).json({
@@ -182,7 +192,12 @@ const login = async (req, res, next) => {
     }
 }
 
+const logout = async () => {
+    res.clearCookie("jwt");
+}
+
 exports.login = login;
+exports.logout = logout;
 exports.registerUser = registerUser;
 exports.getUsers = getUsers;
 exports.getUser = getUser;
