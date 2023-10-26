@@ -13,17 +13,16 @@ import {
 
 const BookingForm = () => {
   const navigateTo = useNavigate();
-
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-
   const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-
-  }, []);
+  const handleDispatch = (data) => {
+    dispatch(addUserData(data));
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,7 +62,7 @@ const BookingForm = () => {
         console.log(JSON.stringify(res));
         if (res.success === true) {
           {alert(`${res.message}. You will be redirect to the homepage`)};
-          useDispatch(addUserData(res.data));
+          handleDispatch(res.data);
           navigateTo('/');
         }
         else {

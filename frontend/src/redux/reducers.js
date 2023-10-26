@@ -4,7 +4,7 @@ const initialState = {
   
 const rootReducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'UPDATE':
+        case 'ADD':
             return {
                 ...state,
                 userData: action.payload

@@ -1,7 +1,7 @@
 const Users = require('../models/users');
 const { validationResult } = require('express-validator');
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 const registerUser = async (req, res, next) => {
     const errors = validationResult(req);
@@ -160,8 +160,8 @@ const login = async (req, res, next) => {
                 );
 
                 const viewData = {
-                    email: user.email,
-                    name: user.name
+                    name: user.name,
+                    surname: user.surname,
                 };
 
                 res.cookie("jwt", token, {
@@ -192,8 +192,20 @@ const login = async (req, res, next) => {
     }
 }
 
-const logout = async () => {
-    res.clearCookie("jwt");
+const logout = async (req, res, next) => {
+    try{
+        res.clearCookie("jwt");
+        res.status(200).json({
+            success: true,
+            message: "User successfully logged out",
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: "An error occurred during logout",
+            error: error.message
+        });
+    }
 }
 
 exports.login = login;
