@@ -20,7 +20,7 @@ app.use(cors({
 app.use(cookieParser());
 
 //TOKEN VERIFICATION
-app.get("/auth", auth.verifyUserToken);
+app.get("/auth", auth.verifyCookie);
 
 //ROUTERS
 const routerAirports = require("./routes/airports");

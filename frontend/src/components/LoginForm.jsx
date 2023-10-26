@@ -11,7 +11,7 @@ import {
   Link
 } from '@mui/material';
 
-const BookingForm = () => {
+const LoginForm = () => {
   const navigateTo = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
@@ -19,6 +19,22 @@ const BookingForm = () => {
   });
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
+  
+  useEffect(() => {
+    fetch("http://localhost:3000/auth", {
+      method: 'GET',
+      credentials: 'include',
+    })
+    .then(response => response.json())
+    .then(res => {
+      if (res.success === true) {
+        navigateTo('/')
+      }
+    })
+    .catch(error => {
+      {alert(`Error: ${error}. Can't do fetch of auth. Page rendered`)};
+    })
+  }, []);
 
   const handleDispatch = (data) => {
     dispatch(addUserData(data));
@@ -59,7 +75,6 @@ const BookingForm = () => {
       fetch("http://localhost:3000/users/login", requestOptions, {credentials: "same-origin"})
       .then(response => response.json())
       .then(res => {
-        console.log(JSON.stringify(res));
         if (res.success === true) {
           {alert(`${res.message}. You will be redirect to the homepage`)};
           handleDispatch(res.data);
@@ -68,6 +83,9 @@ const BookingForm = () => {
         else {
           {alert(`Error received: ${res.message}. You will be redirect to the homepage`)};
         }
+      })
+      .catch(error => {
+        {alert(`Error: ${error}. Can't do fetch`)};
       })
     }
   };
@@ -128,4 +146,4 @@ const BookingForm = () => {
   );
 };
 
-export default BookingForm;
+export default LoginForm;

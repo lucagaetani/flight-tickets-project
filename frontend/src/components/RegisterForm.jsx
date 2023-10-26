@@ -21,7 +21,19 @@ const BookingForm = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-
+    fetch("http://localhost:3000/auth", {
+      method: 'GET',
+      credentials: 'include',
+    })
+    .then(response => response.json())
+    .then(res => {
+      if (res.success === true) {
+        navigateTo('/')
+      }
+    })
+    .catch(error => {
+      {alert(`Error: ${error}. Can't do fetch of auth. Page rendered`)};
+    })
   }, []);
 
   const handleChange = (e) => {
