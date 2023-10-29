@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
+const Flights = require("./flights");
 
 const Airports = instanceSequelize.define(('Airports'), {
     IATA_code: {
@@ -19,5 +20,13 @@ const Airports = instanceSequelize.define(('Airports'), {
     timestamps: false
 });
 
-//Airports.sync({force: true});
+Airports.hasMany(Flights, {
+    foreignKey: 'fk_IATA_from'
+});
+
+Airports.hasMany(Flights, {
+    foreignKey: 'fk_IATA_to'
+});
+
+Airports.sync({force: true});
 module.exports = Airports;

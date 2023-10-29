@@ -35,14 +35,9 @@ const Flights = instanceSequelize.define(('Flights'), {
 
 Flights.sync({force: true});
 
-Flights.belongsTo(Airports, {
-        foreignKey: 'fk_IATA_from'
-});
-
-Flights.belongsTo(Airports, {
-        foreignKey: 'fk_IATA_to'
-});
-
 Flights.belongsTo(Flights, {
     foreignKey: 'fk_stopover'
-})
+});
+
+Flights.sync({force: true});
+module.exports = Flights;

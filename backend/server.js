@@ -4,6 +4,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const auth = require('./middleware/auth.js');
 const instanceSequelize = require("./database");
+///node require("crypto").randomBytes(35).toString("hex")
+
 
 //APP
 const app = express();
