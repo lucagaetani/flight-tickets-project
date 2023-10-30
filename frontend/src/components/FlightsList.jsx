@@ -47,7 +47,7 @@ const FlightsList = () => {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    fetch('https://example.com/api/data')
+    fetch('http://localhost:3000/flights/getFlights')
     .then((response) => response.json())
     .then((data) => setRows(data))
     .catch((error) => console.error('Error fetching data:', error));

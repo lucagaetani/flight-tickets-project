@@ -1,6 +1,5 @@
 const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
-const Flights = require("./flights");
 
 const Airports = instanceSequelize.define(('Airports'), {
     IATA_code: {
@@ -20,13 +19,33 @@ const Airports = instanceSequelize.define(('Airports'), {
     timestamps: false
 });
 
-Airports.hasMany(Flights, {
-    foreignKey: 'fk_IATA_from'
-});
+async function insertAirports() {
+    await Airports.create({
+            IATA_code: "VCE",
+            name: "Venice Marco Polo",
+            country: "Italy"
+    });
 
-Airports.hasMany(Flights, {
-    foreignKey: 'fk_IATA_to'
-});
+    await Airports.create({
+            IATA_code: "ORY",
+            name: "Paris Orly",
+            country: "France"
+    });
 
-Airports.sync({force: true});
+    await Airports.create({
+            IATA_code: "LHR",
+            name: "London Heathrow",
+            country: "United Kingdom"
+    });
+
+    await Airports.create({
+            IATA_code: "BNA",
+            name: "Nashville International",
+            country: "United States of America"
+    });
+}
+
+//Airports.sync({force: true});
+//insertAirports();
+
 module.exports = Airports;

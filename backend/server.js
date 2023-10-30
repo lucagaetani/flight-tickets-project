@@ -27,8 +27,10 @@ app.get("/auth", auth.verifyCookie);
 //ROUTERS
 const routerAirports = require("./routes/airports");
 const routerUsers = require("./routes/users");
+const routerFlights = require("./routes/flights");
 app.use('/airports', routerAirports);
 app.use('/users', routerUsers);
+app.use('/flights', routerFlights);
 
 //DATABASE
 instanceSequelize.authenticate().then(() => {
