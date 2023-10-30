@@ -45,7 +45,11 @@ async function insertAirports() {
     });
 }
 
-//Airports.sync({force: true});
-//insertAirports();
+/*
+(async () => {
+    await Airports.sync({ force: true });
+    insertAirports();
+})();
+*/
 
 module.exports = Airports;

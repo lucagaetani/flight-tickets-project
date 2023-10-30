@@ -34,8 +34,11 @@ async function insertAirlines() {
             name: "Lufthansa",
     });
 };
-
-Airlines.sync({force: true});
-insertAirlines();
+/*
+(async () => {
+    await Airlines.sync({ force: true });
+    insertAirlines();
+})();
+*/
 
 module.exports = Airlines;

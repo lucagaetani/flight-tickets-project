@@ -5,9 +5,8 @@ const Airlines = require("./airlines");
 
 const Flights = instanceSequelize.define(('Flights'), {
     flight_number: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+        type: DataTypes.STRING,
+        primaryKey: true
     },
     fk_IATA_from: {
         type: DataTypes.STRING(3),
@@ -34,7 +33,7 @@ const Flights = instanceSequelize.define(('Flights'), {
         allowNull: false
     },
     fk_stopover: {
-        type: DataTypes.INTEGER
+        type: DataTypes.STRING
     }
 }, {
     freezeTableName: true,
@@ -83,7 +82,11 @@ async function insertFlights() {
 
 }
 
-//Flights.sync({force: true});
-insertFlights();
+/*
+(async () => {
+    await Flights.sync({ force: true });
+    insertFlights();
+})();
+*/
 
 module.exports = Flights;
