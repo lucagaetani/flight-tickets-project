@@ -1,4 +1,5 @@
-import React from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
     Container
 } from "@mui/material";
@@ -45,12 +46,27 @@ const columns = [
 
 const FlightsList = () => {
   const [rows, setRows] = useState([]);
+  const { state } = useLocation();
 
   useEffect(() => {
-    fetch('http://localhost:3000/flights/getFlights')
-    .then((response) => response.json())
-    .then((data) => setRows(data))
-    .catch((error) => console.error('Error fetching data:', error));
+    (async () => {
+        const requestOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        };
+        try{
+            const url = `http://localhost:3000/flights/getFlights?state=${encodeURIComponent(state)}`;
+            const response = await fetch(url, requestOptions);
+            const data = await response.json();
+            if (data.success === true){
+                setRows(data);
+            } else {
+                {alert(`Error: ${data.message}${data.error ? ". "+ data.error : ""}`);}
+            }
+        } catch(error){
+            {alert(`Error fetching data: ${error}`);}
+        }
+    })()
   }, []);
   
   return (

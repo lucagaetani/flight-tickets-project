@@ -2,10 +2,10 @@ const Flights = require('../models/airports');
 const Airports = require('../models/airports');
 const sequelize = require("sequelize");
 const { validationResult } = require('express-validator');
+const { Op } = require("@sequelize/core");
 
 const getFlightsForBooking = async (req, res, next) => {
-    const { airportFrom, airportTo, departure, arrival } = req.body;
-
+    const { airportFrom, airportTo, departure, arrival } = req.query.state;
     try{
         const flights = await Flights.findAll({
             where: {

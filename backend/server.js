@@ -39,11 +39,10 @@ instanceSequelize.authenticate().then(() => {
     console.error('Unable to connect to the database: ', error);
 });
 
-//INITIALIZE TABLES
+//INITIALIZE TABLES/DATA
 require('./models/airlines');
 require('./models/airports');
 require('./models/flights');
-
 
 app.get("/", function (req, res) {
     res.send(req.headers, req.originalUrl, req.method, req.body);

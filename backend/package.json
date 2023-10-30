@@ -10,6 +10,7 @@
   "author": "Luca Gaetani",
   "license": "ISC",
   "dependencies": {
+    "@sequelize/core": "^7.0.0-alpha.29",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",

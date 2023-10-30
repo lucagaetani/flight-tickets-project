@@ -41,7 +41,7 @@ const BookingForm = () => {
         }
         setAirports(data.data);
       } catch (error) {
-        console.error('Error:', error);
+        {alert(`Error fetching data: ${error}`);}
       }
     };
 
