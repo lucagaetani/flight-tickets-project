@@ -1,30 +1,33 @@
-const Flights = require('../models/airports');
+const Flights = require('../models/flights');
 const Airports = require('../models/airports');
 const sequelize = require("sequelize");
 const { validationResult } = require('express-validator');
 const { Op } = require("@sequelize/core");
 
 const getFlightsForBooking = async (req, res, next) => {
-    const { airportFrom, airportTo, departure, arrival } = req.query.state;
     try{
+        const decodedState = decodeURIComponent(req.query.state);
+        const { airportFrom, airportTo, departingDate } = JSON.parse(decodedState).formData;
+        const departure = new Date(departingDate);
+        
         const flights = await Flights.findAll({
             where: {
                 fk_IATA_from: airportFrom,
                 fk_IATA_to: airportTo, 
-                date: {
-                    [Op.between]: [departure, arrival]
+                departure: {
+                    [Op.gt]: departure
                 }
             },
             include: [
                 {
                     model: Airports,
                     as: 'departureAirport',
-                    attributes: ['IATA_code', 'name', 'country']
+                    attributes: ['name']
                 },
                 {
                     model: Airports,
                     as: 'arrivalAirport',
-                    attributes: ['IATA_code', 'name', 'country']
+                    attributes: ['name']
                 },
             ]
         });

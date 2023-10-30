@@ -26,11 +26,13 @@ const Navbar = () => {
       .then(res => {
         console.log(JSON.stringify(res));
         if (res.success === true) {
-          {alert("You correctly logout from the site and will be redirected to the homepage")};
+          {alert("You correctly logout from the site and will be redirected to the homepage");}
           {window.location.reload(false);}
+          navigateTo('/');
         }
         else {
-          {alert(`Error received: ${res.message}. You will be redirect to the homepage`)};
+          {alert(`Error received: ${res.message}. You will be redirect to the homepage`);}
+          navigateTo('/');
         }
     })
   };

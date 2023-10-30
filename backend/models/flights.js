@@ -41,11 +41,13 @@ const Flights = instanceSequelize.define(('Flights'), {
 });
 
 Flights.belongsTo(Airports, {
-    foreignKey: 'fk_IATA_from'
+    foreignKey: 'fk_IATA_from',
+    as: "departureAirport"
 });
 
 Flights.belongsTo(Airports, {
-    foreignKey: 'fk_IATA_to'
+    foreignKey: 'fk_IATA_to',
+    as: "arrivalAirport"
 });
 
 Flights.belongsTo(Airlines, {
@@ -62,8 +64,8 @@ async function insertFlights() {
             flight_number: "U2 4833",
             fk_IATA_from: "VCE",
             fk_IATA_to: "ORY",
-            departure: "2023-12-25 12:00:00",
-            arrival: "2023-12-25 14:30:00",
+            departure: "2023-12-25 12:00:00.000 +00:00",
+            arrival: "2023-12-25 14:30:00.000 +00:00",
             price: "76.0",
             fk_airline: 1,
             fk_stopover: null
@@ -73,8 +75,8 @@ async function insertFlights() {
         flight_number: "BA 222",
         fk_IATA_from: "BNA",
         fk_IATA_to: "LHR",
-        departure: "2023-11-30 19:45:00",
-        arrival: "2023-11-31 08:45:00",
+        departure: "2023-11-30 19:45:00.000 +00:00",
+        arrival: "2023-11-31 08:45:00.000 +00:00",
         price: "120.0",
         fk_airline: 2,
         fk_stopover: null
