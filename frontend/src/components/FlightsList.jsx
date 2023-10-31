@@ -61,7 +61,19 @@ const FlightsList = () => {
                 const data = await response.json();
                 console.log(data);
                 if (data.success === true){
-                        setRows(data.data);
+                    let arrayToInsert = [];
+                    data.data.forEach((row) => {
+                        let newRow = {
+                            flight_number: row.flight_number,
+                            fk_IATA_from: row.departureAirport.name,
+                            fk_IATA_to: row.arrivalAirport.name,
+                            departure: new Date(row.departure).getDate() + "/" + new Date(row.departure).getMonth() + "/" + new Date(row.departure).getFullYear(),
+                            arrival: new Date(row.arrival).getDate() + "/" + new Date(row.arrival).getMonth() + "/" + new Date(row.arrival).getFullYear(),
+                            price: row.price + " €"
+                        };
+                        arrayToInsert.push(newRow)
+                    });
+                    setRows(arrayToInsert);
                 } else {
                     {alert(`Error: ${data.message}${data.error ? ". "+ data.error : ""}`);}
                 }
@@ -83,19 +95,19 @@ const FlightsList = () => {
   }
   
   return (
-    <Box minHeight={150}>
+    <Box minHeight={300} sx={{mt: 3}}>
         <DataGrid
             rows={rows}
             columns={columns}
             pageSize={5}
-            autoHeight
             getRowId={getRowId}
+            autoHeight
             checkboxSelection
             disableSelectionOnClick
             selectionModel={selectedRowIds}
             onSelectionModelChange={handleSelectionChange}
         />
-        <Button onClick={handleClick} variant="contained" color="primary">
+        <Button onClick={handleClick} sx={{mt: 2}} variant="contained" color="primary">
             Back
         </Button>
     </Box>
