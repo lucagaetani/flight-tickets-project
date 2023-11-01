@@ -1,5 +1,6 @@
 const Flights = require('../models/flights');
 const Airports = require('../models/airports');
+const Airlines = require('../models/airlines');
 const sequelize = require("sequelize");
 const { validationResult } = require('express-validator');
 const { Op } = require("@sequelize/core");
@@ -27,6 +28,11 @@ const getFlightsForBooking = async (req, res, next) => {
                 {
                     model: Airports,
                     as: 'arrivalAirport',
+                    attributes: ['name']
+                },
+                {
+                    model: Airlines,
+                    as: 'airline',
                     attributes: ['name']
                 },
             ]

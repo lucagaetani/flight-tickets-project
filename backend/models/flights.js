@@ -51,7 +51,8 @@ Flights.belongsTo(Airports, {
 });
 
 Flights.belongsTo(Airlines, {
-    foreignKey: 'fk_airline'
+    foreignKey: 'fk_airline',
+    as: "airline"
 });
 
 Flights.belongsTo(Flights, {
@@ -60,28 +61,47 @@ Flights.belongsTo(Flights, {
 
 
 async function insertFlights() {
-    await Flights.create({
+    await Flights.bulkCreate([{
             flight_number: "U2 4833",
             fk_IATA_from: "VCE",
             fk_IATA_to: "ORY",
-            departure: "2023-12-25 12:00:00.000 +00:00",
-            arrival: "2023-12-25 14:30:00.000 +00:00",
+            departure: "2024-02-20 12:00:00.000 +00:00",
+            arrival: "2024-02-20 14:30:00.000 +00:00",
             price: "76.0",
             fk_airline: 1,
             fk_stopover: null
-    });
-
-    await Flights.create({
-        flight_number: "BA 222",
-        fk_IATA_from: "BNA",
-        fk_IATA_to: "LHR",
-        departure: "2023-11-30 19:45:00.000 +00:00",
-        arrival: "2023-11-31 08:45:00.000 +00:00",
-        price: "120.0",
-        fk_airline: 2,
-        fk_stopover: null
-    });
-
+        },
+        {
+            flight_number: "U2 4826",
+            fk_IATA_from: "VCE",
+            fk_IATA_to: "ORY",
+            departure: "2024-02-20 15:00:00.000 +00:00",
+            arrival: "2024-02-20 17:30:00.000 +00:00",
+            price: "76.0",
+            fk_airline: 1,
+            fk_stopover: null
+        },
+        {
+            flight_number: "U2 4009",
+            fk_IATA_from: "VCE",
+            fk_IATA_to: "ORY",
+            departure: "2024-02-21 12:00:00.000 +00:00",
+            arrival: "2024-02-21 14:30:00.000 +00:00",
+            price: "76.0",
+            fk_airline: 1,
+            fk_stopover: null
+        },
+        {
+            flight_number: "BA 222",
+            fk_IATA_from: "BNA",
+            fk_IATA_to: "LHR",
+            departure: "2023-11-30 19:45:00.000 +00:00",
+            arrival: "2023-11-31 08:45:00.000 +00:00",
+            price: "120.0",
+            fk_airline: 2,
+            fk_stopover: null
+        }
+    ]);
 }
 
 /*

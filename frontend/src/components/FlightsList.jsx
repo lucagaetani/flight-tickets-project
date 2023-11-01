@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
     Box,
-    Button
+    Button,
+    Grid
 } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
+import ButtonDisabled from "./ButtonDisabled";
 
 const columns = [
     {
@@ -13,14 +15,19 @@ const columns = [
         width: 150
     },
     {
+        field: 'airline',
+        headerName: 'Airline',
+        width: 150
+    },
+    {
         field: 'fk_IATA_from',
         headerName: 'Airport From',
-        width: 150,
+        width: 300,
     },
     {
         field: 'fk_IATA_to',
         headerName: 'Airport To',
-        width: 150,
+        width: 300,
     },
     {
         field: 'departure',
@@ -65,10 +72,11 @@ const FlightsList = () => {
                     data.data.forEach((row) => {
                         let newRow = {
                             flight_number: row.flight_number,
+                            airline: row.airline.name,
                             fk_IATA_from: row.departureAirport.name,
                             fk_IATA_to: row.arrivalAirport.name,
-                            departure: new Date(row.departure).getDate() + "/" + new Date(row.departure).getMonth() + "/" + new Date(row.departure).getFullYear(),
-                            arrival: new Date(row.arrival).getDate() + "/" + new Date(row.arrival).getMonth() + "/" + new Date(row.arrival).getFullYear(),
+                            departure: new Date(row.departure).toLocaleString(),
+                            arrival: new Date(row.arrival).toLocaleString(),
                             price: row.price + " €"
                         };
                         arrayToInsert.push(newRow)
@@ -80,7 +88,7 @@ const FlightsList = () => {
             } catch(error){
                 {alert(`Error fetching data: ${error}`);}
             }
-        })()
+        })();
     }
   }, []);
 
@@ -95,7 +103,7 @@ const FlightsList = () => {
   }
   
   return (
-    <Box minHeight={300} sx={{mt: 3}}>
+    <Box minHeight={300} sx={{ mt: 3 }}>
         <DataGrid
             rows={rows}
             columns={columns}
@@ -107,9 +115,14 @@ const FlightsList = () => {
             selectionModel={selectedRowIds}
             onSelectionModelChange={handleSelectionChange}
         />
-        <Button onClick={handleClick} sx={{mt: 2}} variant="contained" color="primary">
-            Back
-        </Button>
+        <Grid container spacing={3} sx={{ mt: 3 }}>
+            <Grid item xs={6} sx={{ display: "flex", justifyContent: "center" }}>
+                <Button onClick={handleClick} sx={{mt: 2}} variant="contained" color="primary">
+                    Back
+                </Button>
+            </Grid>
+            <ButtonDisabled />
+        </Grid>
     </Box>
   );
 };

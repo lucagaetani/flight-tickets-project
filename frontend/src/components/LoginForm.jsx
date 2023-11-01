@@ -21,10 +21,11 @@ const LoginForm = () => {
   const dispatch = useDispatch();
   
   useEffect(() => {
-    fetch("http://localhost:3000/auth", {
+    const requestOptions = {
       method: 'GET',
       credentials: 'include',
-    })
+    }
+    fetch("http://localhost:3000/auth", requestOptions)
     .then(response => response.json())
     .then(res => {
       if (res.success === true) {
