@@ -51,7 +51,6 @@ const FlightsList = () => {
   const [rows, setRows] = useState([]);
   const { state } = useLocation();
   const navigateTo = useNavigate();
-  console.log(state);
 
   useEffect(() => {
     if (state === null) {
@@ -66,7 +65,6 @@ const FlightsList = () => {
                 const url = `http://localhost:3000/flights/getFlights?state=${encodeURIComponent(JSON.stringify(state))}`;
                 const response = await fetch(url, requestOptions);
                 const data = await response.json();
-                console.log(data);
                 if (data.success === true){
                     let arrayToInsert = [];
                     data.data.forEach((row) => {
@@ -90,12 +88,12 @@ const FlightsList = () => {
             }
         })();
     }
-  }, []);
+  }, [state]);
 
   const getRowId = (row) => row.flight_number;
 
   const handleSelectionChange = (newSelection) => {
-    setSelectedRowIds(newSelection.selectionModel);
+    setSelectedRowIds(newSelection);
   };
 
   const handleClick = () => {
@@ -110,18 +108,16 @@ const FlightsList = () => {
             pageSize={5}
             getRowId={getRowId}
             autoHeight
-            checkboxSelection
-            disableSelectionOnClick
             selectionModel={selectedRowIds}
-            onSelectionModelChange={handleSelectionChange}
+            onRowSelectionModelChange={handleSelectionChange}
         />
-        <Grid container spacing={3} sx={{ mt: 3 }}>
-            <Grid item xs={6} sx={{ display: "flex", justifyContent: "center" }}>
-                <Button onClick={handleClick} sx={{mt: 2}} variant="contained" color="primary">
+        <Grid container spacing={3} sx={{ mt: 3 }} display={"flex"} justifyContent={"center"}>
+            <Grid item xs={2}>
+                <Button fullWidth onClick={handleClick} sx={{mt: 2}} variant="contained" color="primary">
                     Back
                 </Button>
             </Grid>
-            <ButtonDisabled />
+            <ButtonDisabled isDisabled={selectedRowIds.length === 0} />
         </Grid>
     </Box>
   );

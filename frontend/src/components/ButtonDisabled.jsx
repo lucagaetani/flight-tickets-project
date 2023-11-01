@@ -6,7 +6,7 @@ import {
     Tooltip
 } from "@mui/material";
 
-const ButtonDisabled = () => {
+const ButtonDisabled = (props) => {
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const navigateTo = useNavigate();
 
@@ -19,9 +19,7 @@ const ButtonDisabled = () => {
                 }
                 const response = await fetch("http://localhost:3000/auth", requestOptions);
                 const res = await response.json();
-                if (res.success) {
-                    setButtonDisabled(false);
-                }
+                setButtonDisabled(!res.success);
             } catch(error) {
                 {alert(`Error: ${error}. Can't do fetch of auth.`);}
             }
@@ -32,25 +30,22 @@ const ButtonDisabled = () => {
         navigateTo("/")
     };
 
-    if (buttonDisabled) {
-        return (
-            <Tooltip title="You have to be logged to continue">
-                <Grid item xs={6} sx={{ display: "flex", justifyContent: "center" }}>
-                    <Button disabled sx={{mt: 2}} variant="contained" color="primary">
-                        Continue
-                    </Button>
-                </Grid>
-            </Tooltip>
-        )
-    } else {
-        return (
-            <Grid item xs={6} sx={{ display: "flex", justifyContent: "center" }}>
-                <Button onClick={handleClick} sx={{mt: 2}} variant="contained" color="primary">
+    return (
+        <Tooltip title={buttonDisabled ? "You have to be logged to continue" : props.isDisabled ? "You have to select one row to continue" : null}>
+            <Grid item xs={2}>
+                <Button
+                    fullWidth
+                    disabled={props.isDisabled || buttonDisabled}
+                    sx={{ mt: 2 }}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleClick}
+                >
                     Continue
                 </Button>
             </Grid>
-        )
-    }
+        </Tooltip>
+    );
 }
 
 export default ButtonDisabled;
