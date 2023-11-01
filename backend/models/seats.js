@@ -1,4 +1,3 @@
-
 const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
 const Flights = require("./flights");
