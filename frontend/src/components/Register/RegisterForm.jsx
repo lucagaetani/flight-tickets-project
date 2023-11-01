@@ -32,7 +32,7 @@ const BookingForm = () => {
       }
     })
     .catch(error => {
-      {alert(`Error: ${error}. Can't do fetch of auth. Page rendered`)};
+      {alert(`Error: ${error}. Can't do fetch of auth. Page rendered`);}
     })
   }, []);
 
@@ -84,11 +84,11 @@ const BookingForm = () => {
       .then(response => response.json())
       .then(res => {
         if (res.success === true) {
-          {alert(`${res.message}. You will be redirect to the homepage`)};
+          {alert(`${res.message}. You will be redirect to the homepage`);}
           navigateTo('/');
         }
         else {
-          {alert(`Error received: ${res.message}. You will be redirect to the homepage.`)};
+          {alert(`Error received: ${res.message}. You will be redirect to the homepage.`);}
           navigateTo('/');
         }
       })

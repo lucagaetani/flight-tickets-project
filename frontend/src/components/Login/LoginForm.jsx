@@ -1,7 +1,7 @@
 import {useEffect, useState } from "react";
 import { useNavigate  } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { addUserData } from '../redux/actions';
+import { addUserData } from '../../redux/actions';
 import {
   TextField,
   Button,
@@ -33,7 +33,7 @@ const LoginForm = () => {
       }
     })
     .catch(error => {
-      {alert(`Error: ${error}. Can't do fetch of auth. Page rendered`)};
+      {alert(`Error: ${error}. Can't do fetch of auth. Page rendered`);}
     })
   }, []);
 
@@ -77,16 +77,16 @@ const LoginForm = () => {
       .then(response => response.json())
       .then(res => {
         if (res.success === true) {
-          {alert(`${res.message}. You will be redirect to the homepage`)};
+          {alert(`${res.message}. You will be redirect to the homepage`);}
           handleDispatch(res.data);
           navigateTo('/');
         }
         else {
-          {alert(`Error received: ${res.message}. You will be redirect to the homepage`)};
+          {alert(`Error received: ${res.message}. You will be redirect to the homepage`);}
         }
       })
       .catch(error => {
-        {alert(`Error: ${error}. Can't do fetch`)};
+        {alert(`Error: ${error}. Can't do fetch`);}
       })
     }
   };

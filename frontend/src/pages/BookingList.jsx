@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import FlightsList from "../components/FlightsList"
+import FlightsList from "../components/BookingList/FlightsList"
 
 const BookingList = () => {
   return (

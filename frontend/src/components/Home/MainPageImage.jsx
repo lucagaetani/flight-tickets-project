@@ -1,25 +1,24 @@
-import React from 'react'
 import {
     Box
 } from "@mui/material";
 
-const RegisterPageImage = () => {
+const MainPageImage = () => {
     return (
         <Box
             component="img"
             sx={{
                 mt: 5,
                 mb: 3,
-                height: "5%",
-                width: "5%",
+                height: "20%",
+                width: "20%",
                 display: "flex",
                 ml: "auto",
                 mr: "auto"
             }}
-            alt="Register"
-            src="./src/assets/register.png"
+            alt="Departing"
+            src="./src/assets/departing.png"
         />
     );
 };
 
-export default RegisterPageImage;
+export default MainPageImage;
