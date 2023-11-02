@@ -1,4 +1,4 @@
-//Routers for Airports
+//Routers for Flights
 const express = require('express');
 const { body } = require('express-validator');
 const flightsController = require('../controllers/flights');

@@ -1,46 +1,27 @@
 const WebSocket = require('ws');
+const seatsController = require('../controllers/seats');
 
-const wss = new WebSocket.Server({ noServer: true });
-
-wss.on('connection', (ws) => {
-  ws.on('message', async (message) => {
-    try {
-      const data = JSON.parse(message);
-
-      // Validate and process the message
-      if (data.action === 'bookSeat') {
-        await bookSeat(data.seatNumber, data.flightNumber, ws);
-      }
-    } catch (error) {
-      console.error('Invalid message format:', error.message);
-      ws.send(JSON.stringify({ error: 'Invalid message format' }));
-    }
-  });
-
-  ws.on('close', () => {
-    // Implement any necessary cleanup or logging
-  });
+const wss = new WebSocket.Server({
+  noServer: true
 });
 
-async function bookSeat(seatNumber, flightNumber, ws) {
-  const t = await sequelize.transaction();
+wss.on('connection', (ws) => {
+  console.log('WebSocket connection established');
 
+  ws.on('message', async (message) => {
   try {
-    const seat = await Seat.findByPk({ seatNumber, flightNumber }, { transaction: t });
+    const data = JSON.parse(message);
 
-    if (!seat || seat.isBooked) {
-      ws.send(JSON.stringify({ action: 'seatAlreadyBooked', seatNumber, flightNumber }));
-    } else {
-      // Update the seat as booked within the transaction
-      await seat.update({ isBooked: true }, { transaction: t });
-      await t.commit();
-      ws.send(JSON.stringify({ action: 'seatBooked', seatNumber, flightNumber }));
+    if (data.type === 'bookSeats') {
+        const result = await seatsController.bookSeats(data.payload);
+        ws.send(JSON.stringify({ type: 'bookSeatsResult', payload: result }));
     }
+    // Add more logic for other message types if needed
   } catch (error) {
-    await t.rollback(); // Rollback the transaction on error
-    console.error('Error booking seat:', error.message);
-    ws.send(JSON.stringify({ error: 'Error booking seat' }));
+    console.error(`WebSocket message handling error: ${error.message}`);
+    // Handle errors as needed
   }
-}
+  });
+});
 
 module.exports = wss;
