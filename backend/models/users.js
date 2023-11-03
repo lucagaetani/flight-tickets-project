@@ -1,27 +1,31 @@
 const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
 
-const Users = instanceSequelize.define(('Users'), {
+const Users = instanceSequelize.define(
+  "Users",
+  {
     email: {
-        type: DataTypes.STRING,
-        primaryKey: true
+      type: DataTypes.STRING,
+      primaryKey: true,
     },
     password: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     name: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     surname: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
-}, {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
     freezeTableName: true,
-    timestamps: false
-});
+    timestamps: false,
+  }
+);
 
 //Users.sync({force: true});
 module.exports = Users;

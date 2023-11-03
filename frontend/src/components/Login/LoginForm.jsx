@@ -1,45 +1,47 @@
-import {useEffect, useState } from "react";
-import { useNavigate  } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { addUserData } from '../../redux/actions';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUserData } from "../../redux/actions";
 import {
   TextField,
   Button,
   Container,
   Grid,
   Typography,
-  Link
-} from '@mui/material';
+  Link,
+} from "@mui/material";
 
 const LoginForm = () => {
   const navigateTo = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     const requestOptions = {
-      method: 'GET',
-      credentials: 'include',
-    }
+      method: "GET",
+      credentials: "include",
+    };
     fetch("http://localhost:3000/auth", requestOptions)
-    .then(response => response.json())
-    .then(res => {
-      if (res.success === true) {
-        navigateTo('/')
-      }
-    })
-    .catch(error => {
-      {alert(`Error: ${error}. Can't do fetch of auth. Page rendered`);}
-    })
+      .then((response) => response.json())
+      .then((res) => {
+        if (res.success === true) {
+          navigateTo("/");
+        }
+      })
+      .catch((error) => {
+        {
+          alert(`Error: ${error}. Can't do fetch of auth. Page rendered`);
+        }
+      });
   }, []);
 
   const handleDispatch = (data) => {
     dispatch(addUserData(data));
-  }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,44 +58,53 @@ const LoginForm = () => {
 
     const newErrors = {};
     if (!formData.email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     }
     if (!formData.password) {
-        newErrors.password = 'Password is required';
+      newErrors.password = "Password is required";
     }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
       const requestOptions = {
-        method: 'POST',
+        method: "POST",
         credentials: "include",
         headers: {
-          'Content-Type': 'application/json' 
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
       };
-      fetch("http://localhost:3000/users/login", requestOptions, {credentials: "same-origin"})
-      .then(response => response.json())
-      .then(res => {
-        if (res.success === true) {
-          {alert(`${res.message}. You will be redirect to the homepage`);}
-          handleDispatch(res.data);
-          navigateTo('/');
-        }
-        else {
-          {alert(`Error received: ${res.message}. You will be redirect to the homepage`);}
-        }
+      fetch("http://localhost:3000/users/login", requestOptions, {
+        credentials: "same-origin",
       })
-      .catch(error => {
-        {alert(`Error: ${error}. Can't do fetch`);}
-      })
+        .then((response) => response.json())
+        .then((res) => {
+          if (res.success === true) {
+            {
+              alert(`${res.message}. You will be redirect to the homepage`);
+            }
+            handleDispatch(res.data);
+            navigateTo("/");
+          } else {
+            {
+              alert(
+                `Error received: ${res.message}. You will be redirect to the homepage`
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          {
+            alert(`Error: ${error}. Can't do fetch`);
+          }
+        });
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <Container maxWidth="xs" sx={{mt: 3, mb: 3}}>
+      <Container maxWidth="xs" sx={{ mt: 3, mb: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <TextField
@@ -121,22 +132,22 @@ const LoginForm = () => {
               helperText={errors.password}
             />
           </Grid>
-          <Grid item xs={12} sx={{display: "grid", justifyContent: "center"}}>
+          <Grid item xs={12} sx={{ display: "grid", justifyContent: "center" }}>
             <Button type="submit" variant="contained" color="primary">
               Submit
             </Button>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body2" textAlign="center" >
-            {"...or if you want, you can "}
+            <Typography variant="body2" textAlign="center">
+              {"...or if you want, you can "}
               <Link
-                  component="button"
-                  variant="body2"
-                  onClick={() => {
-                    navigateTo("/register");
-                  }}
-                  align="inherit"
-                >
+                component="button"
+                variant="body2"
+                onClick={() => {
+                  navigateTo("/register");
+                }}
+                align="inherit"
+              >
                 register
               </Link>
             </Typography>

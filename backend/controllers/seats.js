@@ -1,27 +1,27 @@
-const Seats = require('../models/seats');
+const Seats = require("../models/seats");
 
-const getSeatsForFlight = async (req,res,next) => {
-    try {
-        const decodedState = decodeURIComponent(req.query.state);
-        const { flightNumber } = JSON.parse(decodedState).formData;
+const getSeatsForFlight = async (req, res, next) => {
+  try {
+    const decodedState = decodeURIComponent(req.query.state);
+    const { flightNumber } = JSON.parse(decodedState).formData;
 
-        const seats = await Seats.findAll({
-            where: { flightNumber }
-        });
+    const seats = await Seats.findAll({
+      where: { flightNumber },
+    });
 
-        res.status(200).json({
-            success: true,
-            message: "Successfully retrieved seats",
-            data: seats
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Failed retrieval of seats",
-            error: error.message
-        });
-    }
-}
+    res.status(200).json({
+      success: true,
+      message: "Successfully retrieved seats",
+      data: seats,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed retrieval of seats",
+      error: error.message,
+    });
+  }
+};
 
 const bookSeats = async (payload) => {
   const transaction = await sequelize.transaction();
@@ -38,7 +38,10 @@ const bookSeats = async (payload) => {
 
         if (!seat) {
           await transaction.rollback();
-          return { success: false, message: `Seat ${seatNumber} not available for flight ${flightNumber}` };
+          return {
+            success: false,
+            message: `Seat ${seatNumber} not available for flight ${flightNumber}`,
+          };
         }
 
         await seat.update({ isBooked: true }, { transaction });
@@ -46,13 +49,13 @@ const bookSeats = async (payload) => {
     }
 
     await transaction.commit();
-    return { success: true, message: 'Seats booked successfully' };
+    return { success: true, message: "Seats booked successfully" };
   } catch (error) {
     await transaction.rollback();
     console.error(`Error booking seats: ${error.message}`);
-    return { success: false, message: 'Error booking seats' };
+    return { success: false, message: "Error booking seats" };
   }
-}
+};
 
 exports.getSeatsForFlight = getSeatsForFlight;
 exports.bookSeats = bookSeats;

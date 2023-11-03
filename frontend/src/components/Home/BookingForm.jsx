@@ -1,5 +1,5 @@
-import {useEffect, useState } from "react";
-import { useNavigate  } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   TextField,
   Button,
@@ -10,17 +10,17 @@ import {
   MenuItem,
   InputLabel,
   Container,
-  Grid
-} from '@mui/material';
+  Grid,
+} from "@mui/material";
 
 const BookingForm = () => {
   const navigateTo = useNavigate();
 
   const [formData, setFormData] = useState({
-    airportFrom: '',
-    airportTo: '',
-    departingDate: '',
-    returningDate: '',
+    airportFrom: "",
+    airportTo: "",
+    departingDate: "",
+    returningDate: "",
     oneWay: false,
     adults: 1,
     children: 0,
@@ -32,16 +32,18 @@ const BookingForm = () => {
 
   useEffect(() => {
     const fetchAirports = async () => {
-      const airports = 'http://localhost:3000/airports/getAirports';
+      const airports = "http://localhost:3000/airports/getAirports";
       try {
         const response = await fetch(airports);
         const data = await response.json();
-        if(data.error){
+        if (data.error) {
           throw data.message;
         }
         setAirports(data.data);
       } catch (error) {
-        {alert(`Error fetching data: ${error}`);}
+        {
+          alert(`Error fetching data: ${error}`);
+        }
       }
     };
 
@@ -52,7 +54,7 @@ const BookingForm = () => {
     const { name, value, type, checked } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
 
     setErrors((prevErrors) => ({ ...prevErrors, [name]: undefined }));
@@ -63,32 +65,32 @@ const BookingForm = () => {
 
     const newErrors = {};
     if (!formData.airportFrom) {
-      newErrors.airportFrom = 'Airport From is required';
+      newErrors.airportFrom = "Airport From is required";
     }
     if (!formData.airportTo) {
-      newErrors.airportTo = 'Airport To is required';
+      newErrors.airportTo = "Airport To is required";
     }
     if (!formData.departingDate) {
-      newErrors.departingDate = 'Departing Date is required';
+      newErrors.departingDate = "Departing Date is required";
     }
     if (!formData.oneWay && !formData.returningDate) {
-      newErrors.returningDate = 'Returning Date is required';
+      newErrors.returningDate = "Returning Date is required";
     }
-    if(formData.adults === '0') {
-      newErrors.adults = 'It has to be at least 1 adult passenger';
+    if (formData.adults === "0") {
+      newErrors.adults = "It has to be at least 1 adult passenger";
     }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      console.log('Form data submitted:', formData);
-      navigateTo('/booking', { state: { formData } });
+      console.log("Form data submitted:", formData);
+      navigateTo("/booking", { state: { formData } });
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <Container maxWidth="md" sx={{mt: 3, mb: 3}}>
+      <Container maxWidth="md" sx={{ mt: 3, mb: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={4}>
             <FormControl fullWidth>
@@ -104,12 +106,12 @@ const BookingForm = () => {
                 MenuProps={{
                   anchorOrigin: {
                     vertical: "bottom",
-                    horizontal: "center"
+                    horizontal: "center",
                   },
                   transformOrigin: {
                     vertical: "top",
-                    horizontal: "center"
-                  }
+                    horizontal: "center",
+                  },
                 }}
               >
                 {airports.map((airport) => (
@@ -135,37 +137,37 @@ const BookingForm = () => {
               helperText={errors.departingDate}
             />
           </Grid>
-          <Grid item xs={4} sx={{display: "grid", justifyContent: "center"}}>
+          <Grid item xs={4} sx={{ display: "grid", justifyContent: "center" }}>
             <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formData.oneWay}
-                    onChange={handleChange}
-                    name="oneWay"
-                  />
-                }
-                label="One Way"
-              />
+              control={
+                <Checkbox
+                  checked={formData.oneWay}
+                  onChange={handleChange}
+                  name="oneWay"
+                />
+              }
+              label="One Way"
+            />
           </Grid>
           <Grid item xs={4}>
             <FormControl fullWidth>
-                <InputLabel id="airportToLabel">Airport To</InputLabel>
-                <Select
-                  labelId="airportToLabel"
-                  id="airportTo"
-                  name="airportTo"
-                  value={formData.airportTo}
-                  onChange={handleChange}
-                  error={!!errors.airportTo}
-                  label="Airport To"
-                >
-                  {airports.map((airport) => (
-                    <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
-                      {airport.name} ({airport.country})
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <InputLabel id="airportToLabel">Airport To</InputLabel>
+              <Select
+                labelId="airportToLabel"
+                id="airportTo"
+                name="airportTo"
+                value={formData.airportTo}
+                onChange={handleChange}
+                error={!!errors.airportTo}
+                label="Airport To"
+              >
+                {airports.map((airport) => (
+                  <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
+                    {airport.name} ({airport.country})
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={4}>
             {!formData.oneWay && (
@@ -184,8 +186,7 @@ const BookingForm = () => {
               />
             )}
           </Grid>
-          <Grid item xs={4}>
-          </Grid>
+          <Grid item xs={4}></Grid>
           <Grid item xs={4}>
             <TextField
               label="Adults"
@@ -193,9 +194,10 @@ const BookingForm = () => {
               name="adults"
               fullWidth
               InputProps={{
-                inputProps: { 
-                    max: 9, min: 0
-                }
+                inputProps: {
+                  max: 9,
+                  min: 0,
+                },
               }}
               value={formData.adults}
               onChange={handleChange}
@@ -210,9 +212,10 @@ const BookingForm = () => {
               name="children"
               fullWidth
               InputProps={{
-                inputProps: { 
-                    max: 9, min: 0
-                }
+                inputProps: {
+                  max: 9,
+                  min: 0,
+                },
               }}
               value={formData.children}
               onChange={handleChange}
@@ -221,15 +224,16 @@ const BookingForm = () => {
             />
           </Grid>
           <Grid item xs={4}>
-              <TextField
+            <TextField
               label="Infants"
               type="number"
               name="infants"
               fullWidth
               InputProps={{
-                inputProps: { 
-                    max: 9, min: 0
-                }
+                inputProps: {
+                  max: 9,
+                  min: 0,
+                },
               }}
               value={formData.infants}
               onChange={handleChange}
@@ -237,7 +241,7 @@ const BookingForm = () => {
               helperText={errors.infants}
             />
           </Grid>
-          <Grid item xs={12} sx={{display: "grid", justifyContent: "center"}}>
+          <Grid item xs={12} sx={{ display: "grid", justifyContent: "center" }}>
             <Button type="submit" variant="contained" color="primary">
               Search
             </Button>

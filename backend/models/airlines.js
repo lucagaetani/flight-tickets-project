@@ -1,39 +1,43 @@
 const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
 
-const Airlines = instanceSequelize.define(('Airlines'), {
+const Airlines = instanceSequelize.define(
+  "Airlines",
+  {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
     name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        primaryKey: true
-    }
-}, {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+    },
+  },
+  {
     freezeTableName: true,
-    timestamps: false
-});
+    timestamps: false,
+  }
+);
 
 async function insertAirlines() {
-    await Airlines.create({
-            name: "easyJet"
-    });
+  await Airlines.create({
+    name: "easyJet",
+  });
 
-    await Airlines.create({
-            name: "British Airlines"
-    });
+  await Airlines.create({
+    name: "British Airlines",
+  });
 
-    await Airlines.create({
-            name: "Air France"
-    });
+  await Airlines.create({
+    name: "Air France",
+  });
 
-    await Airlines.create({
-            name: "Lufthansa",
-    });
-};
+  await Airlines.create({
+    name: "Lufthansa",
+  });
+}
 /*
 (async () => {
     await Airlines.sync({ force: true });

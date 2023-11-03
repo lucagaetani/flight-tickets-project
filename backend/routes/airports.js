@@ -1,25 +1,18 @@
 //Routers for Airports
-const express = require('express');
-const { body } = require('express-validator');
-const airportsController = require('../controllers/airports');
+const express = require("express");
+const { body } = require("express-validator");
+const airportsController = require("../controllers/airports");
 
 const router = express.Router();
 
 const validateAirport = [
-    body('IATA_code')
-    .trim()
-    .notEmpty()
-    .isLength({max: 3}),
-    body('name')
-    .trim()
-    .notEmpty(),
-    body('country')
-    .trim()
-    .notEmpty()
+  body("IATA_code").trim().notEmpty().isLength({ max: 3 }),
+  body("name").trim().notEmpty(),
+  body("country").trim().notEmpty(),
 ];
 
-router.get('/getAirports', airportsController.getAirports);
+router.get("/getAirports", airportsController.getAirports);
 
-router.post('/insertOne', validateAirport, airportsController.insertAirports);
-  
+router.post("/insertOne", validateAirport, airportsController.insertAirports);
+
 module.exports = router;
