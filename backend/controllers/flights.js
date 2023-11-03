@@ -12,20 +12,30 @@ const getFlightsForBooking = async (req, res, next) => {
       JSON.parse(decodedState).formData;
     const departure = new Date(departingDate);
     let arrayDepartureReturning = [];
+    let whereClauseDeparture;
+    let arrival;
 
-    const whereClauseDeparture = {
-      fk_IATA_from: airportFrom,
-      fk_IATA_to: airportTo,
-      departure: {
-        [Op.gt]: departure,
-      },
-    };
 
     if (returningDate) {
-      whereClauseDeparture.departure += {
-        [Op.lt]: arrival,
+      arrival = new Date(returningDate);
+      whereClauseDeparture = {
+        fk_IATA_from: airportFrom,
+        fk_IATA_to: airportTo,
+        departure: {
+          [Op.gt]: departure,
+          [Op.lt]: arrival
+        },
+      };
+    } else {
+      whereClauseDeparture = {
+        fk_IATA_from: airportFrom,
+        fk_IATA_to: airportTo,
+        departure: {
+          [Op.gt]: departure,
+        },
       };
     }
+
 
     arrayDepartureReturning.push(
       await Flights.findAll({
@@ -51,7 +61,6 @@ const getFlightsForBooking = async (req, res, next) => {
     );
 
     if (returningDate) {
-      const arrival = new Date(returningDate);
       arrayDepartureReturning.push(
         await Flights.findAll({
           where: {

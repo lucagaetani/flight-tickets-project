@@ -37,14 +37,16 @@ const ButtonDisabled = (props) => {
         buttonDisabled
           ? "You have to be logged to continue"
           : props.isDisabled
-          ? "You have to select one row to continue"
+          ? "You have to select one departure row to continue"
+          : props.isDisabledReturning
+          ? "You have to select one arrival row to continue"
           : null
       }
     >
       <Grid item xs={2}>
         <Button
           fullWidth
-          disabled={props.isDisabled || buttonDisabled}
+          disabled={props.isDisabled || buttonDisabled || props.isDisabledReturning}
           sx={{ mt: 2 }}
           variant="contained"
           color="primary"

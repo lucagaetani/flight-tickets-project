@@ -90,7 +90,7 @@ const BookingForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Container maxWidth="md" sx={{ mt: 3, mb: 3 }}>
+      <Container maxWidth="lg" sx={{ mt: 3, mb: 3, border: "1px solid #C4C4C4", borderRadius: "1rem", padding: "20px" }}>
         <Grid container spacing={3}>
           <Grid item xs={4}>
             <FormControl fullWidth>

@@ -4,6 +4,7 @@ import BookingForm from "../components/Home/BookingForm";
 import MainPageWrite from "../components/Home/MainPageWrite";
 import "../css/Home.css";
 import MainPageImage from "../components/Home/MainPageImage";
+import OtherGraphics from "../components/Home/OtherGraphics";
 
 const Home = () => {
   return (
@@ -12,6 +13,7 @@ const Home = () => {
       <MainPageImage />
       <MainPageWrite />
       <BookingForm />
+      <OtherGraphics />
       <Footer />
     </div>
   );

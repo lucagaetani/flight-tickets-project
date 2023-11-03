@@ -4,6 +4,6 @@ const persistState = store => next => action => {
     localStorage.setItem('reduxState', JSON.stringify(store.getState()));
   
     return result;
-  };
+};
   
-  export default persistState;
+export default persistState;

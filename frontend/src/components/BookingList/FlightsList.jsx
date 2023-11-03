@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Container, Button, Grid, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import ButtonDisabled from "./ButtonDisabled";
 
@@ -47,6 +47,7 @@ const FlightsList = () => {
   const [selectedRowIdsReturning, setSelectedRowIdsReturning] = useState([]);
   const [rowsDeparture, setRowsDeparture] = useState([]);
   const [rowsReturning, setRowsReturning] = useState([]);
+  const [yesReturning, setYesReturning] = useState(true);
   const { state } = useLocation();
   const navigateTo = useNavigate();
 
@@ -54,6 +55,7 @@ const FlightsList = () => {
     if (state === null) {
       navigateTo("/");
     } else {
+      setYesReturning(!state.formData.oneWay);
       (async () => {
         const requestOptions = {
           method: "GET",
@@ -68,6 +70,7 @@ const FlightsList = () => {
           if (data.success === true) {
             let arrayToInsert = [];
             console.log(data);
+            //Departure
             data.data[0].forEach((row) => {
               let newRow = {
                 flight_number: row.flight_number,
@@ -81,6 +84,8 @@ const FlightsList = () => {
               arrayToInsert.push(newRow);
             });
             setRowsDeparture(arrayToInsert);
+            console.log(rowsDeparture);
+            //Returning
             if (data.data[1]) {
               arrayToInsert = [];
               data.data[1].forEach((row) => {
@@ -128,9 +133,9 @@ const FlightsList = () => {
   };
 
   return (
-    <Box minHeight={300} sx={{ mt: 3, width: "100%" }}>
+    <Container minWidth="xs" minHeight={300} sx={{ mt: 3, width: "100%" }}>
       <Typography sx={{ mt: 3 }} variant="h5">
-        Choose a departure flight
+        {`Choose a departure flight - ${state.formData.airportFrom} to ${state.formData.airportTo}`}
       </Typography>
 
       <DataGrid
@@ -147,13 +152,14 @@ const FlightsList = () => {
         onRowSelectionModelChange={handleSelectionChangeDeparture}
       />
 
-      {!state.oneWay && (
+
+      {yesReturning && (
         <Typography sx={{ mt: 3 }} variant="h5">
-          Choose a returning flight
+          {`Choose a returning flight - ${state.formData.airportTo} to ${state.formData.airportFrom}`}
         </Typography>
       )}
 
-      {!state.oneWay && (
+      {yesReturning && (
         <DataGrid
           rows={rowsReturning}
           columns={columns}
@@ -183,9 +189,13 @@ const FlightsList = () => {
             Back
           </Button>
         </Grid>
-        <ButtonDisabled isDisabled={selectedRowIdsDeparture.length === 0} />
+        {yesReturning ? (
+          <ButtonDisabled isDisabled={selectedRowIdsDeparture.length === 0} isDisabledReturning={selectedRowIdsReturning.length === 0} />
+        ) : (
+          <ButtonDisabled isDisabled={selectedRowIdsDeparture.length === 0} />
+        )}
       </Grid>
-    </Box>
+    </Container>
   );
 };
 

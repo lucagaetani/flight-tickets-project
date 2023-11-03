@@ -56,11 +56,15 @@ const Navbar = () => {
     navigateTo("/login");
   };
 
+  const goToHome = () => {
+    navigateTo("/");
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1, cursor: "pointer" }} onClick={goToHome}>
             Booking Flight Tickets
           </Typography>
           {console.log(userData)}
