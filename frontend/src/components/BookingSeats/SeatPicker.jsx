@@ -1,66 +1,48 @@
-import { useState, useEffect } from "react";
-import Seat from "./Seat";
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from "react-router-dom";
+import { Grid, Button, Container } from '@mui/material';
 
-const SeatPicker = ({ onSelect }) => {
+const SeatPicker = () => {
   const [seats, setSeats] = useState([]);
+  const { state } = useLocation();
+  const navigateTo = useNavigate();
+
 
   useEffect(() => {
-    const fetchSeats = async () => {
-      try {
+    (async () => {
+      try{
         const requestOptions = {
           method: "GET",
           headers: { "Content-Type": "application/json" },
-        };
-        const response = await fetch(
-          "http://localhost:3000/seats/getSeats",
-          requestOptions
-        );
+          credentials: "include"
+        }
+        let seats;
+        if (state.seatsDeparture){
+          seats = state.flightState.selectedReturningFlight[0];
+        } else {
+          seats = state.flightState.selectedDepartureFlight[0];
+        }
+        const url = `http://localhost:3000/seats/getSeats?state=${encodeURIComponent(
+            JSON.stringify(seats)
+        )}`;
+        const response = await fetch(url, requestOptions);
         const data = await response.json();
-        setSeats(data);
-      } catch (error) {
-        console.error("Error fetching seat data:", error);
+        if (data.success) {
+          setSeatsDeparture
+        } else {
+          console.log(data.error);
+        }
+      } catch(error){
+        console.log(error);
       }
-    };
-
-    fetchSeats();
+    })();
   }, []);
 
-  const [selectedSeats, setSelectedSeats] = useState([]);
-
-  const handleSeatClick = (seat) => {
-    // Toggle seat selection
-    setSelectedSeats((prevSelectedSeats) => {
-      if (prevSelectedSeats.includes(seat)) {
-        return prevSelectedSeats.filter(
-          (selectedSeat) => selectedSeat !== seat
-        );
-      } else {
-        return [...prevSelectedSeats, seat];
-      }
-    });
-
-    // Notify parent component of seat selection
-    onSelect(seat);
-  };
-
+  //todo seats.map --> genera i posti
   return (
-    <div>
-      <h2>Seat Picker</h2>
-      <div>
-        {seats.map((row, rowIndex) => (
-          <div key={rowIndex} style={{ display: "flex" }}>
-            {row.map((seat, seatIndex) => (
-              <Seat
-                key={seatIndex}
-                seat={seat}
-                selected={selectedSeats.includes(seat)}
-                onClick={() => handleSeatClick(seat)}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
+    <Container>
+      
+    </Container>
   );
 };
 

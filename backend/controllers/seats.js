@@ -3,13 +3,15 @@ const Seats = require("../models/seats");
 const getSeatsForFlight = async (req, res, next) => {
   try {
     const decodedState = decodeURIComponent(req.query.state);
-    const { flightNumber } = JSON.parse(decodedState).formData;
+    const seatsJSON = JSON.parse(decodedState);
 
     const seats = await Seats.findAll({
-      where: { flightNumber },
+      where: {
+        flight_number: seatsJSON
+      },
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Successfully retrieved seats",
       data: seats,

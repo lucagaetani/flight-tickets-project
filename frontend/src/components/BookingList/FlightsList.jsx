@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Button, Grid, Typography } from "@mui/material";
+import LinearProgressWithLabel from "../MUIComponents/LinearProgressWithLabel";
 import { DataGrid } from "@mui/x-data-grid";
 import ButtonDisabled from "./ButtonDisabled";
 
@@ -133,7 +134,8 @@ const FlightsList = () => {
   };
 
   return (
-    <Container minWidth="xs" minHeight={300} sx={{ mt: 3, width: "100%" }}>
+    <Container minwidth="xs" minheight={300} sx={{ mt: 3, width: "100%" }}>
+      <LinearProgressWithLabel value={25} />
       <Typography sx={{ mt: 3 }} variant="h5">
         {`Choose a departure flight - ${state.formData.airportFrom} to ${state.formData.airportTo}`}
       </Typography>
@@ -189,10 +191,10 @@ const FlightsList = () => {
             Back
           </Button>
         </Grid>
-        {yesReturning ? (
-          <ButtonDisabled isDisabled={selectedRowIdsDeparture.length === 0} isDisabledReturning={selectedRowIdsReturning.length === 0} />
+        {yesReturning ? (          
+          <ButtonDisabled isDisabled={selectedRowIdsDeparture.length === 0} selectedDepartureFlight={selectedRowIdsDeparture} selectedReturningFlight={selectedRowIdsReturning} isDisabledReturning={selectedRowIdsReturning.length === 0} />
         ) : (
-          <ButtonDisabled isDisabled={selectedRowIdsDeparture.length === 0} />
+          <ButtonDisabled isDisabled={selectedRowIdsDeparture.length === 0} selectedDepartureFlight={selectedRowIdsDeparture} />
         )}
       </Grid>
     </Container>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Grid, Tooltip } from "@mui/material";
+import PropTypes from 'prop-types';
 
 const ButtonDisabled = (props) => {
   const [buttonDisabled, setButtonDisabled] = useState(true);
@@ -28,7 +29,22 @@ const ButtonDisabled = (props) => {
   }, []);
 
   const handleClick = () => {
-    navigateTo("/");
+    const flightState = {
+      selectedDepartureFlight: props.selectedDepartureFlight
+    }
+
+    if (props.selectedReturningFlight) {
+      flightState.selectedReturningFlight = props.selectedReturningFlight
+    }
+
+    navigateTo("/seats", { state: { flightState } });
+  };
+
+  ButtonDisabled.propTypes = {
+    selectedDepartureFlight: PropTypes.array,
+    selectedReturningFlight: PropTypes.array,
+    isDisabled: PropTypes.bool.isRequired,
+    isDisabledReturning: PropTypes.bool
   };
 
   return (

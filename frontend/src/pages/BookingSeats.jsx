@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import SeatPicker from "../components/BookingSeats/BookingSeats";
+import SeatPicker from "../components/BookingSeats/SeatPicker";
 
 const BookingList = () => {
   return (
