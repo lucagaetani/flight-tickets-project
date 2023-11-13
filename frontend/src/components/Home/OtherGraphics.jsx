@@ -8,7 +8,7 @@ const OtherGraphics = () => {
         <Container 
             maxWidth="lg"
             sx={{
-                fontFamily: "sans-serif",
+                fontFamily: "inherit",
                 border: "1px solid #3066BE",
                 borderRadius: "1rem",
                 backgroundColor: "#3066BE",
@@ -18,9 +18,12 @@ const OtherGraphics = () => {
         >
         <Grid container>
           <Grid item xs={3} sx={{pt: 5, pb: 5, margin: "auto"}}>
-            {"Easier travel."}
-            <br />
-            {"Zero problems."}
+            <Typography variant='h5' fontWeight={"bold"}>
+              Easier travel.
+            </Typography>
+            <Typography variant='h5' fontWeight={"bold"}>
+            Zero problems.
+            </Typography>
           </Grid>
           <Grid item xs={4} sx={{border: "1px solid #B4C5E4", borderRadius: "1rem", margin:2, pt: 5, pb: 5, display: "flex", backgroundColor: "#B4C5E4"}}>
             <Box sx={{width: "35%",  display: "inherit", justifyContent: "center", margin: "auto"}}>
@@ -28,7 +31,7 @@ const OtherGraphics = () => {
             </Box>
             <Box sx={{width: "65%"}}>
               <Typography variant='h5' fontWeight={"bold"}>
-                prices always down
+                lowest prices
               </Typography>
               <Typography>
                 with our special algorithm

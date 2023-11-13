@@ -13,6 +13,7 @@ import {
 const SeatPicker = () => {
   const [seats, setSeats] = useState([]);
   const { state } = useLocation();
+  const [selectedSeats, setSelectedSeats] = useState([]);
   const navigateTo = useNavigate();
 
   useEffect(() => {
@@ -57,22 +58,39 @@ const SeatPicker = () => {
   return (
     <Container maxWidth="lg" sx={{ display: "flex" }}>
       <Box sx={{ width: "50%", height:"100%", border: "1px solid #C4C4C4",
-          borderRadius: "1rem", }}>
-        <Typography variant="h5">
+          borderRadius: "1rem", minHeight: "150px", mt: 2 }}>
+        <Typography variant="h5" sx={{p: 2, borderBottom: "1px solid #C4C4C4"}}>
           {`Choose a seat flight for `}
         </Typography>
         <Grid
           container
-          spacing={3}
-          sx={{ mt: 3 }}
+          spacing={2}
           display={"flex"}
           justifyContent={"center"}
         >
+          {selectedSeats.map((seat, index) => {
+            return (
+              <Grid item xs={11} sx={{mt: 2}} key={"SeatSelected: " + index}>
+                <Paper
+                  elevation={2}
+                  sx={{ display: "flex", p: 2 }}
+                >
+                  <Typography fontWeight={"bold"}>
+                    Seat selected:
+                  </Typography>
+                  <Typography sx={{ml: 1}}>
+                    {seat}
+                  </Typography>
+                </Paper>
+              </Grid>
+            )
+          }
+          )}
           <Grid item xs={2}>
             <Button
               fullWidth
               onClick={handleClick}
-              sx={{ mt: 2 }}
+              sx={{ mt: 2, mb: 2 }}
               variant="contained"
               color="primary"
             >
@@ -82,7 +100,7 @@ const SeatPicker = () => {
         </Grid>
       </Box>
       <Box sx={{ width: "50%" }}>
-        <Grid container sx={{ mt: 5 }}>
+        <Grid container sx={{ mt: 5, backgroundImage: "./src/assets/planeAirframe.png", backgroundRepeat: "no-repeat", height: '100%', width: "100%", p: 2}}>
           {seats.map((seat, index) => {
             return (
               <>
@@ -92,8 +110,8 @@ const SeatPicker = () => {
                       elevation={3}
                       style={{
                         padding: 30,
-                        backgroundColor: seat.isBooked ? "#FF5733" : "#DAF7A6",
-                        disabled: "false",
+                        backgroundColor: seat.isBooked ? "#FF5733" : selectedSeats.includes(seat.seat_number) ? "orange" : "#DAF7A6",
+                        disabled: seat.isBooked ? "true" : "false",
                         textAlign: "center",
                         margin: "6px",
                         cursor: "pointer",
@@ -105,10 +123,11 @@ const SeatPicker = () => {
                       onMouseLeave={(e) => {
                         e.target.style.backgroundColor = seat.isBooked
                           ? "#FF5733"
-                          : "#DAF7A6";
+                          : selectedSeats.includes(seat.seat_number) ? "orange" : "#DAF7A6";
                       }}
-                      onMouseClick={(e) => {
+                      onClick={(e) => {
                         e.target.style.backgroundColor = "orange";
+                        setSelectedSeats(oldArray => [...oldArray, seat.seat_number]);
                       }}
                     >
                       {seat.seat_number}
