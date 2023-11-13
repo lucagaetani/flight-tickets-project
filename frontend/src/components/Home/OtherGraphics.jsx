@@ -69,7 +69,7 @@ const OtherGraphics = () => {
             Explore this beautiful cities!
         </Typography>
         <Grid container sx={{ display: "flex", justifyContent: "center"}}>
-          <Grid item xs={3.5} sx={{border: "1px solid #C4C4C4", borderRadius: "1rem", margin:2}}>
+          <Grid item xs={3.5} sx={{border: "1px solid #C4C4C4", flexGrow:1, borderRadius: "1rem", margin:2}} sm={4} md={4}>
             <Box
               component="img"
               sx={{

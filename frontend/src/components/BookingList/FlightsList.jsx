@@ -52,26 +52,39 @@ const FlightsList = () => {
   const navigateTo = useNavigate();
 
   useEffect(() => {
-    if (state === null) {
-      navigateTo("/");
-    } else {
-      console.log(state);
-      setYesReturning(!state.formData.oneWay);
-      (async () => {
-        const requestOptions = {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        };
-        try {
-          const url = `http://localhost:3000/flights/getFlights?state=${encodeURIComponent(
-            JSON.stringify(state)
-          )}`;
-          const response = await fetch(url, requestOptions);
-          const data = await response.json();
-          if (data.success === true) {
-            let arrayToInsert = [];
-            //Departure
-            data.data[0].forEach((row) => {
+    console.log(state);
+    setYesReturning(!state.formData.oneWay);
+    (async () => {
+      const requestOptions = {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      };
+      try {
+        const url = `http://localhost:3000/flights/getFlights?state=${encodeURIComponent(
+          JSON.stringify(state)
+        )}`;
+        const response = await fetch(url, requestOptions);
+        const data = await response.json();
+        if (data.success === true) {
+          let arrayToInsert = [];
+          //Departure
+          data.data[0].forEach((row) => {
+            let newRow = {
+              flight_number: row.flight_number,
+              airline: row.airline.name,
+              fk_IATA_from: row.departureAirport.name,
+              fk_IATA_to: row.arrivalAirport.name,
+              departure: new Date(row.departure).toLocaleString(),
+              arrival: new Date(row.arrival).toLocaleString(),
+              price: row.price + " €",
+            };
+            arrayToInsert.push(newRow);
+          });
+          setRowsDeparture(arrayToInsert);
+          //Returning
+          if (data.data[1]) {
+            arrayToInsert = [];
+            data.data[1].forEach((row) => {
               let newRow = {
                 flight_number: row.flight_number,
                 airline: row.airline.name,
@@ -83,38 +96,21 @@ const FlightsList = () => {
               };
               arrayToInsert.push(newRow);
             });
-            setRowsDeparture(arrayToInsert);
-            //Returning
-            if (data.data[1]) {
-              arrayToInsert = [];
-              data.data[1].forEach((row) => {
-                let newRow = {
-                  flight_number: row.flight_number,
-                  airline: row.airline.name,
-                  fk_IATA_from: row.departureAirport.name,
-                  fk_IATA_to: row.arrivalAirport.name,
-                  departure: new Date(row.departure).toLocaleString(),
-                  arrival: new Date(row.arrival).toLocaleString(),
-                  price: row.price + " €",
-                };
-                arrayToInsert.push(newRow);
-              });
-              setRowsReturning(arrayToInsert);
-            }
-          } else {
-            {
-              alert(
-                `Error: ${data.message}${data.error ? ". " + data.error : ""}`
-              );
-            }
+            setRowsReturning(arrayToInsert);
           }
-        } catch (error) {
+        } else {
           {
-            alert(`Error fetching data: ${error}`);
+            alert(
+              `Error: ${data.message}${data.error ? ". " + data.error : ""}`
+            );
           }
         }
-      })();
-    }
+      } catch (error) {
+        {
+          alert(`Error fetching data: ${error}`);
+        }
+      }
+    })();
   }, [navigateTo, state]);
 
   const getRowId = (row) => row.flight_number;
