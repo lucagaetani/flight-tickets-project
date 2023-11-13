@@ -30,7 +30,8 @@ const ButtonDisabled = (props) => {
 
   const handleClick = () => {
     const flightState = {
-      selectedDepartureFlight: props.selectedDepartureFlight
+      selectedDepartureFlight: props.selectedDepartureFlight,
+      formData: props.formData
     }
 
     if (props.selectedReturningFlight) {
@@ -44,7 +45,8 @@ const ButtonDisabled = (props) => {
     selectedDepartureFlight: PropTypes.array,
     selectedReturningFlight: PropTypes.array,
     isDisabled: PropTypes.bool.isRequired,
-    isDisabledReturning: PropTypes.bool
+    isDisabledReturning: PropTypes.bool,
+    formData: PropTypes.object.isRequired
   };
 
   return (

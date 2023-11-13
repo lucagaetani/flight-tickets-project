@@ -6,6 +6,7 @@ const getSeatsForFlight = async (req, res, next) => {
     const seatsJSON = JSON.parse(decodedState);
 
     const seats = await Seats.findAll({
+      attributes: ["id","seat_number","price","is_booked"],
       where: {
         flight_number: seatsJSON
       },

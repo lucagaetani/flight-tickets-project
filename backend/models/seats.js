@@ -97,6 +97,66 @@ async function insertSeats() {
       flight_number: "U2 4833",
       price: 55.0,
     },
+    {
+      seat_number: "D1",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "D2",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "D3",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "D4",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "E1",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "E2",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "E3",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "E4",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "F1",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "F2",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "F3",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
+    {
+      seat_number: "F4",
+      flight_number: "U2 4833",
+      price: 55.0,
+    },
   ]);
 }
 

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Button, Grid, Typography } from "@mui/material";
-import LinearProgressWithLabel from "../MUIComponents/LinearProgressWithLabel";
 import { DataGrid } from "@mui/x-data-grid";
 import ButtonDisabled from "./ButtonDisabled";
 
@@ -56,6 +55,7 @@ const FlightsList = () => {
     if (state === null) {
       navigateTo("/");
     } else {
+      console.log(state);
       setYesReturning(!state.formData.oneWay);
       (async () => {
         const requestOptions = {
@@ -70,7 +70,6 @@ const FlightsList = () => {
           const data = await response.json();
           if (data.success === true) {
             let arrayToInsert = [];
-            console.log(data);
             //Departure
             data.data[0].forEach((row) => {
               let newRow = {
@@ -85,7 +84,6 @@ const FlightsList = () => {
               arrayToInsert.push(newRow);
             });
             setRowsDeparture(arrayToInsert);
-            console.log(rowsDeparture);
             //Returning
             if (data.data[1]) {
               arrayToInsert = [];
@@ -134,8 +132,7 @@ const FlightsList = () => {
   };
 
   return (
-    <Container minwidth="xs" minheight={300} sx={{ mt: 3, width: "100%" }}>
-      <LinearProgressWithLabel value={25} />
+    <Container minwidth="lg" minheight={300} sx={{ mt: 3, width: "100%" }}>
       <Typography sx={{ mt: 3 }} variant="h5">
         {`Choose a departure flight - ${state.formData.airportFrom} to ${state.formData.airportTo}`}
       </Typography>
@@ -153,7 +150,6 @@ const FlightsList = () => {
         selectionModel={selectedRowIdsDeparture}
         onRowSelectionModelChange={handleSelectionChangeDeparture}
       />
-
 
       {yesReturning && (
         <Typography sx={{ mt: 3 }} variant="h5">
@@ -191,10 +187,20 @@ const FlightsList = () => {
             Back
           </Button>
         </Grid>
-        {yesReturning ? (          
-          <ButtonDisabled isDisabled={selectedRowIdsDeparture.length === 0} selectedDepartureFlight={selectedRowIdsDeparture} selectedReturningFlight={selectedRowIdsReturning} isDisabledReturning={selectedRowIdsReturning.length === 0} />
+        {yesReturning ? (
+          <ButtonDisabled
+            isDisabled={selectedRowIdsDeparture.length === 0}
+            formData={state.formData}
+            selectedDepartureFlight={selectedRowIdsDeparture}
+            selectedReturningFlight={selectedRowIdsReturning}
+            isDisabledReturning={selectedRowIdsReturning.length === 0}
+          />
         ) : (
-          <ButtonDisabled isDisabled={selectedRowIdsDeparture.length === 0} selectedDepartureFlight={selectedRowIdsDeparture} />
+          <ButtonDisabled
+            isDisabled={selectedRowIdsDeparture.length === 0}
+            formData={state.formData}
+            selectedDepartureFlight={selectedRowIdsDeparture}
+          />
         )}
       </Grid>
     </Container>
