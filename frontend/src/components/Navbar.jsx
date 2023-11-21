@@ -1,8 +1,8 @@
 import { AppBar, Box, Toolbar, Typography, Button } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlaneDeparture } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlaneDeparture } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const navigateTo = useNavigate();
@@ -62,9 +62,11 @@ const Navbar = () => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, cursor: "pointer" }} onClick={goToHome}>
+          <Typography variant="h6" component="div" sx={{ cursor: "pointer" }} onClick={goToHome}>
             <FontAwesomeIcon icon={faPlaneDeparture} /> flyTo
           </Typography>
+          <Box sx={{ flexGrow: 1 }}>
+          </Box>
           {console.log(userData)}
           {userData ? (
             <>

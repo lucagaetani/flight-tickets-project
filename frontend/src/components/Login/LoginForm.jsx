@@ -104,8 +104,13 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Container maxWidth="xs" sx={{ mt: 3, mb: 3 }}>
+      <Container maxWidth="xs" sx={{ mt: 6, mb: 3, border: "1px solid #C4C4C4", borderRadius: "1rem" }}>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Typography variant="h3" sx={{mt: 2}} textAlign={"center"} fontWeight={"bold"}>
+              Login
+            </Typography>
+          </Grid>
           <Grid item xs={12}>
             <TextField
               label="Email"
@@ -137,12 +142,13 @@ const LoginForm = () => {
               Submit
             </Button>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ mb: 3 }}>
             <Typography variant="body2" textAlign="center">
               {"...or if you want, you can "}
               <Link
                 component="button"
                 variant="body2"
+                sx={{ verticalAlign: "top !important" }}
                 onClick={() => {
                   navigateTo("/register");
                 }}

@@ -6,7 +6,6 @@ const LoginPageWrite = () => {
       sx={{
         fontSize: "30px",
         fontWeight: "bold",
-        fontFamily: "sans-serif",
         textAlign: "center",
       }}
     >

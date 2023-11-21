@@ -16,7 +16,8 @@ const OtherGraphics = () => {
                 fontSize: "25px",
             }}
         >
-        <Grid container>
+        <Grid container
+        spacing={{ xs: 2, md: 1.5 }} columns={{ xs: 6, sm: 10, md: 12 }}>
           <Grid item xs={3} sx={{pt: 5, pb: 5, margin: "auto"}}>
             <Typography variant='h5' fontWeight={"bold"}>
               Easier travel.
@@ -68,8 +69,10 @@ const OtherGraphics = () => {
         <Typography variant="h5" fontWeight={"bold"}>
             Explore this beautiful cities!
         </Typography>
-        <Grid container sx={{ display: "flex", justifyContent: "center"}}>
-          <Grid item xs={3.5} sx={{border: "1px solid #C4C4C4", flexGrow:1, borderRadius: "1rem", margin:2}} sm={4} md={4}>
+        <Grid container 
+        spacing={{ xs: 0, md: 0 }} columns={{ xs: 6, sm: 6, md: 12 }}
+        sx={{ display: "flex", justifyContent: "center"}}>
+          <Grid item xs={3.5} sx={{border: "1px solid #C4C4C4", borderRadius: "1rem", margin:2}}>
             <Box
               component="img"
               sx={{

@@ -14,10 +14,51 @@ const SeatPicker = () => {
   const [seats, setSeats] = useState([]);
   const { state } = useLocation();
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [currentSelection, setCurrentSelection] = useState({
+    seatName: "",
+    seatNumber: ""
+  });
+  const { adults, children } = state.flightState.formData;
   const navigateTo = useNavigate();
 
   useEffect(() => {
-    console.log(state);
+    const firstAdultSeatIndex = 0;
+    const firstAdultSeatName = `adult-${firstAdultSeatIndex}`;
+
+    setCurrentSelection({
+      seatName: firstAdultSeatName,
+      seatNumber: "",
+    });
+  }, [adults]);
+
+  useEffect(() => {
+    if (currentSelection.seatName && currentSelection.seatNumber) {
+      setSelectedSeats((prevSelectedSeats) => {
+        if (prevSelectedSeats.some((obj) => obj.seatName === currentSelection.seatName)) {
+          return prevSelectedSeats.map((seat) =>
+            seat.seatName === currentSelection.seatName
+              ? { ...seat, seatNumber: currentSelection.seatNumber }
+              : seat
+          );
+        } else {
+          return [...prevSelectedSeats, currentSelection];
+        }
+      });
+    }
+  }, [currentSelection])
+
+  useEffect(() => {
+    console.log("Updated currentSelection:", currentSelection);
+  }, [currentSelection]);
+
+  useEffect(() => {
+    console.log("Updated selectedSeats:", selectedSeats);
+  }, [selectedSeats]);
+
+  useEffect(() => {
+    console.log("component rerendered");
+    //console.log(state);
+
     (async () => {
       try {
         const requestOptions = {
@@ -38,7 +79,7 @@ const SeatPicker = () => {
         const data = await response.json();
         if (data.success) {
           setSeats(data.data);
-          console.log(data.data);
+          //console.log(data.data);
         } else {
           console.log(data.error);
         }
@@ -46,73 +87,82 @@ const SeatPicker = () => {
         console.log(error);
       }
     })();
-  }, []);
+  }, [state, currentSelection, selectedSeats]);
 
   const handleClick = () => {
+    const formData = state.flightState.formData;
+    navigateTo("/booking", { state: { formData } });
+  };
+
+  const handleSeatClick = (seatNumber) => {
+    if (selectedSeats.find((obj) => { return obj.seatNumber === seatNumber && obj.seatName !== currentSelection.seatName })) {
+      {alert("Seat selected, choose another!")}
+    } else {
+      setCurrentSelection((prevState) => ({
+        ...prevState,
+        seatNumber: seatNumber
+      }),
+      );
+    }
+  };
+
+  const handleConfirm = () => {
     const formData = state.flightState.formData;
     console.log(formData);
     navigateTo("/booking", { state: { formData } });
   };
 
-  const handleSeatClick = (seatNumber) => {
-    if (!selectedSeats.includes(seatNumber)) {
-      setSelectedSeats((prevSelectedSeats) => [...prevSelectedSeats, seatNumber]);
-    } else {
-      setSelectedSeats((prevSelectedSeats) =>
-        prevSelectedSeats.filter((seat) => seat !== seatNumber)
-      );
-    }
-  };
-
   //todo seats.map --> genera i posti
   return (
-    <Container maxWidth="lg" sx={{}}>
+    <Container maxWidth="lg">
       <Box>
-        <Grid container sx={{ mt: 5, backgroundImage: "./src/assets/planeAirframe.png", backgroundRepeat: "no-repeat", height: '100%', width: "100%", p: 2}}>
+        <Grid container 
+        spacing={{ xs: 0, md: 3.5 }} columns={{ xs: 12, sm: 8, md: 12 }}
+        sx={{ mt: 5, backgroundImage: "./src/assets/planeAirframe.png", backgroundRepeat: "no-repeat", height: '100%', width: "100%", p: 2 }}>
           {seats.map((seat, index) => {
             return (
               <>
                 <Tooltip title={seat.price + "€"}>
                   <Grid item xs={2.5}>
-                  <Typography sx={{backgroundColor: 'inherit'}}>
-                    <Paper
-                      elevation={3}
-                      style={{
-                        padding: "0.5em",
-                        backgroundColor: seat.isBooked ? "#FF5733" : selectedSeats.includes(seat.seat_number) ? "orange" : "#DAF7A6",
-                        disabled: seat.isBooked ? "true" : "false",
-                        textAlign: "center",
-                        margin: "1em",
-                        cursor: "pointer",
-                        transition: "background-color 0.3s ease",
-                        flexFlow: "row wrap",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = "lightblue";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = seat.isBooked
-                          ? "#FF5733"
-                          : selectedSeats.includes(seat.seat_number) ? "orange" : "#DAF7A6";
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleSeatClick(seat.seat_number);
-                      }}
-                    >
-                      {seat.seat_number}
-                    </Paper>
+                    <Typography component={'span'} sx={{ backgroundColor: 'inherit' }}>
+                      <Paper
+                        elevation={3}
+                        style={{
+                          padding: "0.5em",
+                          backgroundColor: seat.isBooked ? "#FF5733" : selectedSeats.find((obj) => { return obj.seatNumber === seat.seat_number }) ? "orange" : "#DAF7A6",
+                          disabled: seat.isBooked ? "true" : "false",
+                          textAlign: "center",
+                          margin: "1em",
+                          cursor: "pointer",
+                          transition: "background-color 0.3s ease",
+                          flexFlow: "row wrap",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.backgroundColor = "lightblue";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = seat.isBooked
+                            ? "#FF5733"
+                            : selectedSeats.find((obj) => { return obj.seatNumber === seat.seat_number }) ? "orange" : "#DAF7A6";
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSeatClick(seat.seat_number);
+                        }}
+                      >
+                        {seat.seat_number}
+                      </Paper>
                     </Typography>
                   </Grid>
                 </Tooltip>
                 {seat.seat_number === "C4" && (
                   <Grid item xs={12} key={"empty" + index}>
-                    {}
+                    { }
                   </Grid>
                 )}
                 {index % 4 === 1 && (
                   <Grid item xs={2} key={"empty" + index}>
-                    {}
+                    { }
                   </Grid>
                 )}
               </>
@@ -120,55 +170,103 @@ const SeatPicker = () => {
           })}
         </Grid>
       </Box>
-      <Box sx={{ width: "100%", height:"100%", border: "1px solid #C4C4C4",
-      borderRadius: "1rem", minHeight: "150px", mt: 2, pt: "0px !important", pl: "0px !important" }}>
-        <Typography variant="h5" sx={{p: 2, borderBottom: "1px solid #C4C4C4"}}>
+      <Box sx={{
+        width: "100%", height: "100%", border: "1px solid #C4C4C4",
+        borderRadius: "1rem", minHeight: "150px", mt: 2, pt: "0px !important", pl: "0px !important"
+      }}>
+        <Typography variant="h5" sx={{ p: 2, borderBottom: "1px solid #C4C4C4" }}>
           {`Choose a seat flight for `}
         </Typography>
+
+        {adults ? Array.from({ length: adults }, (_, index) => (
+          <Paper key={`adult-${index}`}
+            sx={{ p: 2, 
+              ml: 2, 
+              mr: 2, 
+              mt: 2,
+              transition: "0.5s linear",
+              cursor: "pointer",
+              backgroundColor: currentSelection.seatName === `adult-${index}` ? "#D4D4D4" : "white"
+            }}
+            elevation={currentSelection.seatName === `adult-${index}` ? 3 : 1}
+            onClick={(e) => {
+              e.preventDefault();
+              e.backgroundColor = "#D4D4D4";
+              e.border = "2px solid #1976d2";
+              let selected;
+              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selected = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  ""}
+              setCurrentSelection({
+                seatName: `adult-${index}`,
+                seatNumber: selected ? selected : ''
+              })
+            }}
+          >
+            <Typography variant="h6">Adult {index + 1}</Typography>
+            <Typography sx={{ mt: 2 }}>
+              Selected Seat: {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  "none"}
+            </Typography>
+          </Paper>
+        )) : null}
+
+        {children ? Array.from({ length: children }, (_, index) => (
+          <Paper key={`children-${index}`}
+            sx={{ p: 2,
+              ml: 2, 
+              mr: 2, 
+              mt: 2,
+              transition: "0.5s linear",
+              cursor: "pointer",
+              backgroundColor: currentSelection.seatName === `children-${index}` ? "#D4D4D4" : "white"
+            }}
+            elevation={currentSelection.seatName === `children-${index}` ? 3 : 1}
+            onClick={(e) => {
+              e.preventDefault();
+              e.backgroundColor = "#D4D4D4";
+              e.border = "2px solid #1976d2";
+              let selected;
+              {selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }) ? selected = selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }).seatNumber :  ""}
+              setCurrentSelection({
+                seatName: `children-${index}`,
+                seatNumber: selected ? selected : ''
+              })
+            }}
+          >
+            <Typography variant="h6">Children {index + 1}</Typography>
+            <Typography sx={{ mt: 2 }}>
+              Selected Seat: {selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }) ? selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }).seatNumber :  "none"}
+            </Typography>
+          </Paper>
+        )) : null}
         <Grid
           container
-          spacing={2}
+          spacing={{ xs: 2, md: 3 }} columns={{ xs: 6, sm: 8, md: 12 }}
+          sx={{ mt: 3, mb: 3 }}
           display={"flex"}
           justifyContent={"center"}
-          sx={{maxHeight: "50em", overflowY: 'auto', p:2, mt:0}}
         >
-          {selectedSeats.map((seat, index) => {
-            return (
-              <Grid item xs={11} sx={{mt: 1}} key={"SeatSelected: " + index}>
-                <Paper
-                  elevation={2}
-                  sx={{ p: 2 }}
-                >
-                  <Typography>
-                    Seat selected:
-                  </Typography>
-                  <Typography sx={{mb: 2}} fontWeight={"bold"}>
-                    {seat}
-                  </Typography>
-                  <Typography>
-                    You have selected
-                  </Typography>
-                  <Typography fontWeight={"bold"} sx={{ml: 1}}>
-                    {(seat.startsWith("A") || seat.startsWith("B")) ? "BUSINESS" : "ECONOMY"}
-                  </Typography>
-                  <Typography sx={{ml: 1}}>
-                    class.
-                  </Typography>
-                </Paper>
-              </Grid>
-            )
-          }
-          )}
+          <Grid item xs={2}>
+            <Button
+              onClick={handleClick}
+              sx={{ mt: 3, mr: 1 }}
+              fullWidth
+              variant="contained"
+              color="primary"
+            >
+              Back
+            </Button>
+          </Grid>
+          <Grid item xs={2}>
+            <Button
+              onClick={handleConfirm}
+              sx={{ mt: 3, mr: 1, disabled: selectedSeats.length === (parseInt(adults)+parseInt(children)) }}
+              fullWidth
+              variant="contained"
+              color="primary"
+            >
+              Confirm
+            </Button>
+          </Grid>
         </Grid>
-        <Button
-          justifyContent="center"
-          onClick={handleClick}
-          sx={{ mt: 2, mb: 2 }}
-          variant="contained"
-          color="primary"
-        >
-          Back
-        </Button>
       </Box>
     </Container>
   );
