@@ -8,6 +8,7 @@ import {
   Typography,
   Paper,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 
 const SeatPicker = () => {
@@ -18,6 +19,7 @@ const SeatPicker = () => {
     seatName: "",
     seatNumber: ""
   });
+  const [loadingSeats, setLoadingSeats] = useState(true);
   const { adults, children } = state.flightState.formData;
   const navigateTo = useNavigate();
 
@@ -48,17 +50,7 @@ const SeatPicker = () => {
   }, [currentSelection])
 
   useEffect(() => {
-    console.log("Updated currentSelection:", currentSelection);
-  }, [currentSelection]);
-
-  useEffect(() => {
-    console.log("Updated selectedSeats:", selectedSeats);
-  }, [selectedSeats]);
-
-  useEffect(() => {
-    console.log("component rerendered");
-    //console.log(state);
-
+    console.log(state);
     (async () => {
       try {
         const requestOptions = {
@@ -79,15 +71,15 @@ const SeatPicker = () => {
         const data = await response.json();
         if (data.success) {
           setSeats(data.data);
-          //console.log(data.data);
         } else {
           console.log(data.error);
         }
+        setLoadingSeats(false);
       } catch (error) {
         console.log(error);
       }
     })();
-  }, [state, currentSelection, selectedSeats]);
+  }, [state]);
 
   const handleClick = () => {
     const formData = state.flightState.formData;
@@ -107,12 +99,29 @@ const SeatPicker = () => {
   };
 
   const handleConfirm = () => {
-    const formData = state.flightState.formData;
-    console.log(formData);
-    navigateTo("/booking", { state: { formData } });
+    if (state.flightState.selectedReturningFlight) {
+      //TODO
+      console.log("a");
+    } else {
+      const flightState = state.flightState;
+      flightState.selectedSeats = selectedSeats;
+      navigateTo("/info", { state: { flightState } });
+    }
   };
 
-  //todo seats.map --> genera i posti
+  if (loadingSeats) {
+    return (
+      <Box sx={{
+        display: "flex",
+        height: "80vh"
+      }}>
+        <CircularProgress sx={{
+          margin: "auto"
+        }} />
+      </Box>
+    )
+  }
+
   return (
     <Container maxWidth="lg">
       <Box>
