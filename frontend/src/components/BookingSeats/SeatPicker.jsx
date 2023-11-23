@@ -19,7 +19,7 @@ const SeatPicker = () => {
     seatName: "",
     seatNumber: ""
   });
-  const [loadingSeats, setLoadingSeats] = useState(true);
+  const [loading, setLoading] = useState(true);
   const { adults, children } = state.flightState.formData;
   const navigateTo = useNavigate();
 
@@ -50,6 +50,10 @@ const SeatPicker = () => {
   }, [currentSelection])
 
   useEffect(() => {
+    console.log(selectedSeats);
+  }, [selectedSeats])
+
+  useEffect(() => {
     console.log(state);
     (async () => {
       try {
@@ -74,7 +78,7 @@ const SeatPicker = () => {
         } else {
           console.log(data.error);
         }
-        setLoadingSeats(false);
+        setLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -104,12 +108,12 @@ const SeatPicker = () => {
       console.log("a");
     } else {
       const flightState = state.flightState;
-      flightState.selectedSeats = selectedSeats;
+      flightState.selectedSeatsDeparture = selectedSeats;
       navigateTo("/info", { state: { flightState } });
     }
   };
 
-  if (loadingSeats) {
+  if (loading) {
     return (
       <Box sx={{
         display: "flex",
@@ -132,7 +136,7 @@ const SeatPicker = () => {
             return (
               <>
                 <Tooltip title={seat.price + "€"}>
-                  <Grid item xs={2.5}>
+                  <Grid item xs={2.5} key={seat.seat_number}>
                     <Typography component={'span'} sx={{ backgroundColor: 'inherit' }}>
                       <Paper
                         elevation={3}
@@ -267,8 +271,10 @@ const SeatPicker = () => {
           <Grid item xs={2}>
             <Button
               onClick={handleConfirm}
-              sx={{ mt: 3, mr: 1, disabled: selectedSeats.length === (parseInt(adults)+parseInt(children)) }}
+              sx={{ mt: 3, mr: 1  }}
               fullWidth
+              //TODO is not working
+              disabled = {!selectedSeats.length === (parseInt(adults)+parseInt(children))}
               variant="contained"
               color="primary"
             >
