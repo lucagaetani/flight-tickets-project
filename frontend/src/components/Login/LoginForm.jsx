@@ -9,6 +9,8 @@ import {
   Grid,
   Typography,
   Link,
+  Box,
+  CircularProgress
 } from "@mui/material";
 
 const LoginForm = () => {
@@ -18,6 +20,7 @@ const LoginForm = () => {
     password: "",
   });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -25,18 +28,18 @@ const LoginForm = () => {
       method: "GET",
       credentials: "include",
     };
-    fetch("http://localhost:3000/auth", requestOptions)
-      .then((response) => response.json())
-      .then((res) => {
-        if (res.success === true) {
-          navigateTo("/");
-        }
-      })
-      .catch((error) => {
-        {
-          alert(`Error: ${error}. Can't do fetch of auth. Page rendered`);
-        }
-      });
+    (async () => {
+      try {
+        const response = await fetch("http://localhost:3000/auth", requestOptions);
+        const res = await response.json();
+          if (res.success === true) {
+            navigateTo("/");
+          }
+      } catch(error) {
+        alert(`Error: ${error}. Can't do fetch of auth. Page rendered`);
+      }
+    })();
+    setLoading(false);
   }, []);
 
   const handleDispatch = (data) => {
@@ -102,65 +105,81 @@ const LoginForm = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <Box sx={{
+        display: "flex",
+        height: "80vh"
+      }}>
+        <CircularProgress sx={{
+          margin: "auto"
+        }} />
+      </Box>
+    )
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
-      <Container maxWidth="xs" sx={{ mt: 6, mb: 3, border: "1px solid #C4C4C4", borderRadius: "1rem" }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <Typography variant="h3" sx={{mt: 2}} textAlign={"center"} fontWeight={"bold"}>
-              Login
-            </Typography>
+    <Box height="80vh" display="flex">
+      <form onSubmit={handleSubmit} style={{margin: "auto"}}>
+        <Container maxWidth="xs" sx={{ mt: 6, mb: 3, border: "1px solid #C4C4C4", borderRadius: "1rem" }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Typography variant="h3" sx={{mt: 2}} textAlign={"center"} fontWeight={"bold"}>
+                Login
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Email"
+                type="text"
+                variant="outlined"
+                name="email"
+                fullWidth
+                value={formData.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Password"
+                type="password"
+                variant="outlined"
+                name="password"
+                fullWidth
+                value={formData.password}
+                onChange={handleChange}
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+            </Grid>
+            <Grid item xs={12} sx={{ display: "grid", justifyContent: "center" }}>
+              <Button type="submit" variant="contained" color="primary">
+                Submit
+              </Button>
+            </Grid>
+            <Grid item xs={12} sx={{ mb: 3 }}>
+              <Typography variant="body2" textAlign="center">
+                {"...or if you want, you can "}
+                <Link
+                  component="button"
+                  variant="body2"
+                  sx={{ verticalAlign: "top !important" }}
+                  onClick={() => {
+                    navigateTo("/register");
+                  }}
+                  align="inherit"
+                >
+                  register
+                </Link>
+                {" here"}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Email"
-              type="text"
-              variant="outlined"
-              name="email"
-              fullWidth
-              value={formData.email}
-              onChange={handleChange}
-              error={!!errors.email}
-              helperText={errors.email}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Password"
-              type="password"
-              variant="outlined"
-              name="password"
-              fullWidth
-              value={formData.password}
-              onChange={handleChange}
-              error={!!errors.password}
-              helperText={errors.password}
-            />
-          </Grid>
-          <Grid item xs={12} sx={{ display: "grid", justifyContent: "center" }}>
-            <Button type="submit" variant="contained" color="primary">
-              Submit
-            </Button>
-          </Grid>
-          <Grid item xs={12} sx={{ mb: 3 }}>
-            <Typography variant="body2" textAlign="center">
-              {"...or if you want, you can "}
-              <Link
-                component="button"
-                variant="body2"
-                sx={{ verticalAlign: "top !important" }}
-                onClick={() => {
-                  navigateTo("/register");
-                }}
-                align="inherit"
-              >
-                register
-              </Link>
-            </Typography>
-          </Grid>
-        </Grid>
-      </Container>
-    </form>
+        </Container>
+      </form>
+    </Box>
   );
 };
 

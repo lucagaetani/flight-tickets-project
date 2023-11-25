@@ -17,7 +17,8 @@ const SeatPicker = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [currentSelection, setCurrentSelection] = useState({
     seatName: "",
-    seatNumber: ""
+    seatNumber: "",
+    seatPrice: ""
   });
   const [loading, setLoading] = useState(true);
   const { adults, children } = state.flightState.formData;
@@ -30,6 +31,7 @@ const SeatPicker = () => {
     setCurrentSelection({
       seatName: firstAdultSeatName,
       seatNumber: "",
+      seatPrice: ""
     });
   }, [adults]);
 
@@ -78,11 +80,11 @@ const SeatPicker = () => {
         } else {
           console.log(data.error);
         }
-        setLoading(false);
       } catch (error) {
         console.log(error);
       }
     })();
+    setLoading(false);
   }, [state]);
 
   const handleClick = () => {
@@ -90,13 +92,14 @@ const SeatPicker = () => {
     navigateTo("/booking", { state: { formData } });
   };
 
-  const handleSeatClick = (seatNumber) => {
+  const handleSeatClick = (seatNumber, seatPrice) => {
     if (selectedSeats.find((obj) => { return obj.seatNumber === seatNumber && obj.seatName !== currentSelection.seatName })) {
       {alert("Seat selected, choose another!")}
     } else {
       setCurrentSelection((prevState) => ({
         ...prevState,
-        seatNumber: seatNumber
+        seatNumber: seatNumber,
+        seatPrice: seatPrice
       }),
       );
     }
@@ -160,7 +163,7 @@ const SeatPicker = () => {
                         }}
                         onClick={(e) => {
                           e.preventDefault();
-                          handleSeatClick(seat.seat_number);
+                          handleSeatClick(seat.seat_number, seat.price);
                         }}
                       >
                         {seat.seat_number}
@@ -206,11 +209,14 @@ const SeatPicker = () => {
               e.preventDefault();
               e.backgroundColor = "#D4D4D4";
               e.border = "2px solid #1976d2";
-              let selected;
-              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selected = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  ""}
+              let selectedSeat;
+              let selectedPrice;
+              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedSeat = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  ""}
+              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedPrice = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatPrice :  ""}
               setCurrentSelection({
                 seatName: `adult-${index}`,
-                seatNumber: selected ? selected : ''
+                seatNumber: selectedSeat ? selectedSeat : '',
+                seatPrice: selectedPrice ? selectedPrice : '',
               })
             }}
           >
@@ -236,11 +242,14 @@ const SeatPicker = () => {
               e.preventDefault();
               e.backgroundColor = "#D4D4D4";
               e.border = "2px solid #1976d2";
-              let selected;
-              {selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }) ? selected = selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }).seatNumber :  ""}
+              let selectedSeat;
+              let selectedPrice;
+              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedSeat = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  ""}
+              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedPrice = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatPrice :  ""}
               setCurrentSelection({
                 seatName: `children-${index}`,
-                seatNumber: selected ? selected : ''
+                seatNumber: selectedSeat ? selectedSeat : '',
+                seatPrice: selectedPrice ? selectedPrice : '',
               })
             }}
           >

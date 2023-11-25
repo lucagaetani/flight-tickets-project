@@ -11,11 +11,13 @@ import {
   InputLabel,
   Container,
   Grid,
+  Box,
+  CircularProgress
 } from "@mui/material";
 
 const BookingForm = () => {
   const navigateTo = useNavigate();
-
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     airportFrom: "",
     airportTo: "",
@@ -31,7 +33,7 @@ const BookingForm = () => {
   const [airports, setAirports] = useState([]);
 
   useEffect(() => {
-    const fetchAirports = async () => {
+    (async () => {
       const airports = "http://localhost:3000/airports/getAirports";
       try {
         const response = await fetch(airports);
@@ -45,9 +47,9 @@ const BookingForm = () => {
           alert(`Error fetching data: ${error}`);
         }
       }
-    };
+    })();
 
-    fetchAirports();
+    setLoading(false);
   }, []);
 
   const handleChange = (e) => {
@@ -87,6 +89,19 @@ const BookingForm = () => {
       navigateTo("/booking", { state: { formData } });
     }
   };
+
+  if (loading) {
+    return (
+      <Box sx={{
+        display: "flex",
+        height: "40vh"
+      }}>
+        <CircularProgress sx={{
+          margin: "auto"
+        }} />
+      </Box>
+    )
+  }
 
   return (
     <form onSubmit={handleSubmit}>
