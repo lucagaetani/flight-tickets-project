@@ -22,6 +22,7 @@ const LuggageUserInfo = () => {
   const [arrayPassengerInfos, setArrayPassengerInfos] = useState([]);
   const [currentPassenger, setCurrentPassenger] = useState(0);
   const [errors, setErrors] = useState({});
+  const navigateTo = useNavigate();
 
   useEffect(() => {
     //Riempio l'array per poi aggiornarlo con le informazioni
@@ -82,14 +83,19 @@ const LuggageUserInfo = () => {
       return;
     }
 
-    // Continue with confirmation logic
-    console.log("Confirmed!");
+    if (state.flightState.selectedReturningFlight) {
+      //TODO
+    } else {
+      const flightState = state.flightState;
+      delete flightState.selectedSeatsDeparture;
+      flightState.arrayPassengerInfos = arrayPassengerInfos;
+      navigateTo("/confirm", { state: { flightState } });
+    }
   };
 
-
-
   const handleBack = (() => {
-    console.log("clicked");
+    const flightState = state.flightState;
+    navigateTo("/seats", { state: { flightState } });
   });
 
   if (loading) {

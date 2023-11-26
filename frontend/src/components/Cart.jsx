@@ -5,6 +5,7 @@ import {
     Button,
     CircularProgress,
     Grid,
+    List,
     Typography
 } from "@mui/material";
 import PropTypes from 'prop-types';
@@ -127,10 +128,10 @@ const Cart = (props) => {
                                 Passenger info
                             </Typography>
                             <Typography>
-                                {props.formData.adults} x {props.formData.adults > 1 ? "adults" : "adult"}
+                                • {props.formData.adults} x {props.formData.adults > 1 ? "adults" : "adult"}
                             </Typography>
                             {(props.formData.children || props.formData.children > 0) && (<Typography>
-                                {props.formData.children} x {props.formData.children > 1 ? "children" : "child"}
+                                • {props.formData.children} x {props.formData.children > 1 ? "children" : "child"}
                             </Typography>)}
                         </Grid>
                     )}
@@ -147,7 +148,7 @@ const Cart = (props) => {
                             </Typography>
                             {props.selectedSeatsDeparture.map((seat, index) => (
                                 <Typography key={`seat-${index}`}>
-                                    € {seat.seatPrice} - Seat {seat.seatNumber}
+                                    • € {seat.seatPrice} - Seat {seat.seatNumber}
                                 </Typography>
                             ))}
                         </Grid>

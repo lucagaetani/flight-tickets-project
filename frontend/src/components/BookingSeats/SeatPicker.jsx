@@ -49,11 +49,11 @@ const SeatPicker = () => {
         }
       });
     }
-  }, [currentSelection])
+  }, [currentSelection]);
 
   useEffect(() => {
     console.log(selectedSeats);
-  }, [selectedSeats])
+  }, [selectedSeats]);
 
   useEffect(() => {
     console.log(state);
