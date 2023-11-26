@@ -26,7 +26,7 @@ const BookingForm = () => {
     oneWay: false,
     adults: 1,
     children: 0,
-    infants: 0,
+    infants: 0
   });
 
   const [errors, setErrors] = useState({});
