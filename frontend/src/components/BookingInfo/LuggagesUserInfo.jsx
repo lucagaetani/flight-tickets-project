@@ -107,7 +107,7 @@ const LuggageUserInfo = () => {
 
   return (
     <Box>
-      <Cart />
+      <Cart formData={state.flightState.formData} selectedDepartureFlight={state.flightState.selectedDepartureFlight} selectedSeatsDeparture={state.flightState.selectedSeatsDeparture} />
       <Container maxWidth="lg">
         <Box sx={{
           width: "100%", height: "100%", border: "1px solid #C4C4C4",
