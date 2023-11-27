@@ -8,10 +8,12 @@ const Seats = instanceSequelize.define(
     seat_number: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true
     },
     flight_number: {
       type: DataTypes.STRING,
       allowNull: false,
+      primaryKey: true
     },
     price: {
       type: DataTypes.FLOAT,

@@ -5,7 +5,6 @@ import {
     Button,
     CircularProgress,
     Grid,
-    List,
     Typography
 } from "@mui/material";
 import PropTypes from 'prop-types';
