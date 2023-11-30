@@ -160,6 +160,7 @@ const login = async (req, res, next) => {
         const viewData = {
           name: user.name,
           surname: user.surname,
+          email: user.email
         };
 
         res.cookie("jwt", token, {

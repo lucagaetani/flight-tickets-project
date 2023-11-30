@@ -6,13 +6,10 @@ import { faPlaneDeparture } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const navigateTo = useNavigate();
-  let userData =
-    useSelector((state) => state.userData) !== null
-      ? useSelector((state) => state.userData)
-      : JSON.parse(localStorage.getItem("reduxState"))
-      ? JSON.parse(localStorage.getItem("reduxState")).userData
-      : null;
-  console.log(userData);
+  let userData = useSelector((state) => state.userData);
+  if (!userData) {
+    userData = null;
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("reduxState");

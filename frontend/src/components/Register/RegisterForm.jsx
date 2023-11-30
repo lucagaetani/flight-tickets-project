@@ -7,9 +7,11 @@ import {
   Grid
 } from '@mui/material';
 import validator from 'validator';
+import { useDispatch } from "react-redux";
 
 const BookingForm = () => {
   const navigateTo = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -84,12 +86,14 @@ const BookingForm = () => {
       .then(response => response.json())
       .then(res => {
         if (res.success === true) {
-          {alert(`${res.message}. You will be redirect to the homepage`);}
+          dispatch({
+            type: "ADD",
+            payload: res.viewData
+          })
           navigateTo('/');
         }
         else {
-          {alert(`Error received: ${res.message}. You will be redirect to the homepage.`);}
-          navigateTo('/');
+          {alert(`Invalid login. Error: ${res.message}. Try again`);}
         }
       })
     }

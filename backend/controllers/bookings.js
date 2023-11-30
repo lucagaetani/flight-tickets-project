@@ -1,104 +1,17 @@
-const Flights = require("../models/flights");
-const Airports = require("../models/airports");
-const Airlines = require("../models/airlines");
 const Bookings = require("../models/bookings");
+const Users = require("../models/users");
+const Tickets = require("../models/tickets");
 const sequelize = require("sequelize");
 const { validationResult } = require("express-validator");
 const { Op } = require("@sequelize/core");
-const Users = require("../models/users");
+const { checkSeatForBooking } = require("./seats");
+const { checkFlightForBooking } = require("./flights");
+
+const getBookingsForUser = async (req, res, next) => {
+}
 
 const getBooking = async (req, res, next) => {
   try {
-    const decodedState = decodeURIComponent(req.query.state);
-    const { airportFrom, airportTo, departingDate, returningDate } =
-      JSON.parse(decodedState).formData;
-    const departure = new Date(departingDate);
-    let arrayDepartureReturning = [];
-    let whereClauseDeparture;
-    let arrival;
-
-
-    if (returningDate) {
-      arrival = new Date(returningDate);
-      whereClauseDeparture = {
-        fk_IATA_from: airportFrom,
-        fk_IATA_to: airportTo,
-        departure: {
-          [Op.gt]: departure,
-          [Op.lt]: arrival
-        },
-      };
-    } else {
-      whereClauseDeparture = {
-        fk_IATA_from: airportFrom,
-        fk_IATA_to: airportTo,
-        departure: {
-          [Op.gt]: departure,
-        },
-      };
-    }
-
-
-    arrayDepartureReturning.push(
-      await Flights.findAll({
-        where: whereClauseDeparture,
-        include: [
-          {
-            model: Airports,
-            as: "departureAirport",
-            attributes: ["name"],
-          },
-          {
-            model: Airports,
-            as: "arrivalAirport",
-            attributes: ["name"],
-          },
-          {
-            model: Airlines,
-            as: "airline",
-            attributes: ["name"],
-          },
-        ],
-      })
-    );
-
-    if (returningDate) {
-      arrayDepartureReturning.push(
-        await Flights.findAll({
-          where: {
-            fk_IATA_from: airportTo,
-            fk_IATA_to: airportFrom,
-            departure: {
-              [Op.gt]: departure,
-              [Op.lt]: arrival,
-            },
-          },
-          include: [
-            {
-              model: Airports,
-              as: "departureAirport",
-              attributes: ["name"],
-            },
-            {
-              model: Airports,
-              as: "arrivalAirport",
-              attributes: ["name"],
-            },
-            {
-              model: Airlines,
-              as: "airline",
-              attributes: ["name"],
-            },
-          ],
-        })
-      );
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Successfully retrieved flights",
-      data: arrayDepartureReturning,
-    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -110,6 +23,7 @@ const getBooking = async (req, res, next) => {
 
 const insertBookings = async (req, res, next) => {
   const transaction = await sequelize.transaction();
+  let res;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
@@ -118,41 +32,114 @@ const insertBookings = async (req, res, next) => {
     });
   }
 
-  const { email, flight_number, date1, date2 } = req.body;
-
-  const existingEmail = await Users.findByPk({email, transaction});
-  if (!existingEmail) {
-    await transaction.rollback();
-    return res.status(400).json({
-      success: false,
-      message: "Non-existing email. Create user with this email then retry",
-    });
-  }
-
-  const existingFlightNumber = await Flights.findByPk({flight_number, transaction});
-  if (!existingFlightNumber) {
-    await transaction.rollback();
-    return res.status(400).json({
-      success: false,
-      message: "Non-existing flight number. Create a flight with this flight number then retry",
-    });
-  }
-
   try {
-    const newBooking = await Bookings.create({
+    //Checking all fks and data sent
+    let res = await checkSeatForBooking(flightState.departureSeatsWithFlight);
+    if (!res) {
+      await transaction.rollback();
+      return res;
+    }
+
+    if (flightState.returningSeatsWithFlight) {
+      let res = await checkSeatForBooking(flightState.returningSeatsWithFlight);
+      if (!res) {
+        await transaction.rollback();
+        return res;
+      }
+    }
+    
+    const flightState = req.body.flightState;
+    res = await checkFlightForBooking(flightState.selectedDepartureFlight);
+    if (!res) {
+      await transaction.rollback();
+      return res;
+    } else {
+      const departureFlight = res;
+    }
+
+    if (flightState.selectedReturningFlight) {
+      res = checkFlightForBooking(flightState.selectedReturningFlight);
+      if (!res) {
+        await transaction.rollback();
+        return res;
+      } else {
+        const returningFlight = res;
+      }
+    }
+
+    const email = flightState.userEmail;
+    const existingEmail = await Users.findByPk({ email, transaction });
+    if (!existingEmail) {
+      await transaction.rollback();
+      return res.status(400).json({
+        success: false,
+        message: "Non-existing email",
+      });
+    }
+
+    //Insert departure booking with tickets
+    const departureBooking = await Bookings.create({
       fk_email: email,
-      fk_flight: flight_number,
-      date_departure: date1,
-      date_arrival: date2
+      fk_flight: departureFlight.flight_number,
+      date_departure: departureFlight.departure,
+      date_arrival: departureFlight.arrival
     }, transaction);
+
+    flightState.arrayDeparturePassengerInfos.map(async(ticket,index) => {
+      await Tickets.create({
+        name: ticket["name-"+index],
+        surname: ticket["surname-"+index],
+        email: ticket["email-"+index],
+        phone: ticket["phone-"+index],
+        airportLuggage: ticket["airportLuggage-"+index] ? ticket["airportLuggage-"+index] : 0,
+        holdLuggage: ticket["holdLuggage-"+index] ? ticket["holdLuggage-"+index] : 0,
+        fk_seat_number: ticket["seat_number-"+index],
+        fk_seat_price: ticket["seat_price-"+index],
+        fk_booking: departureBooking.id,
+      }, transaction);
+    });
+
+    if (flightState.selectedReturningFlight) {
+      //TODO
+      const returningBooking = await Bookings.create({
+        fk_email: email,
+        fk_flight: returningFlight.flight_number,
+        date_departure: returningFlight.departure,
+        date_arrival: returningFlight.arrival
+      }, transaction);
+
+      flightState.arrayDeparturePassengerInfos.map(async(ticket,index) => {
+        await Tickets.create({
+          name: ticket["name-"+index],
+          surname: ticket["surname-"+index],
+          email: ticket["email-"+index],
+          phone: ticket["phone-"+index],
+          airportLuggage: ticket["airportLuggage-"+index] ? ticket["airportLuggage-"+index] : 0,
+          holdLuggage: ticket["holdLuggage-"+index] ? ticket["holdLuggage-"+index] : 0,
+          fk_seat_number: ticket["seat_number-"+index],
+          fk_seat_price: ticket["seat_price-"+index],
+          fk_booking: departureBooking.id,
+        }, transaction);
+      });
+    }
 
     await transaction.commit();
 
-    res.status(200).send({
-      success: true,
-      message: "Booking inserted successfully",
-      data: newBooking,
-    });
+    if (flightState.selectedReturningFlight) {
+      res.status(200).send({
+        success: true,
+        message: "Departure booking inserted successfully",
+        departureBooking
+      });
+    } else {
+      res.status(200).send({
+        success: true,
+        message: "Departure and returning booking inserted successfully",
+        departureBooking,
+        returningBooking
+      });
+    }
+
   } catch (error) {
     await transaction.rollback();
     console.error(error);

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   CircularProgress,
   Box
@@ -7,6 +8,8 @@ import {
 
 const Loading = () => {
   const { state } = useLocation();
+  const navigateTo = useNavigate();
+  const userData = useSelector((state) => state.userData);
 
   useEffect(() => {
     console.log(state);
@@ -26,7 +29,8 @@ const Loading = () => {
           "children": "1",
           "infants": 0
       },
-      "arrayPassengerInfos": [
+      "selectedSeatsDeparture": ["A1","A2"],
+      "arrayDeparturePassengerInfo": [
           {
               "name-0": "aaaaa",
               "surname-0": "aaaa",
@@ -61,18 +65,34 @@ const Loading = () => {
     }
   */
     (async () => {
-      /*
       //Check if seats are empty to book it
-      const requestOptions = {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      };
-      const url = `http://localhost:3000/seats/getSeats?state=${encodeURIComponent(
-          JSON.stringify(seats)
-      )}`;
-      const response = await fetch();
-      */
+      try {
+        state.userEmail = userData.email; 
+        state.flightState.departureSeatsWithFlight = {
+          arraySeats: state.flightState.selectedSeatsDeparture,
+          flightNumber: state.flightState.selectedDepartureFlight
+        }
+        delete state.flightState.selectedSeatsDeparture;
+        if (state.flightState.selectedReturningFlight) {
+          //TODO
+        }
+        const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(state)
+        };
+        const url = `http://localhost:3000/booking/bookSeats`;
+        const response = await fetch(url, requestOptions);
+        const res = await response.json();
+        if (res.success) {
+          navigateTo("/success", { state: { res } });
+        } else {
+          navigateTo("/failure", { state: { res } });
+        }
+      } catch (error) {
+        console.log(error);
+      }
     })();
   }, [state])
 

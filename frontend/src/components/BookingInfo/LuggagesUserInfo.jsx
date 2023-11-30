@@ -84,11 +84,18 @@ const LuggageUserInfo = () => {
     }
 
     if (state.flightState.selectedReturningFlight) {
-      //TODO
+      if (state.flightState.arrayReturningPassengerInfo) {
+        const flightState = state.flightState;
+        navigateTo("/confirm", { state: { flightState } });
+      } else {
+        //Manage returning booking passenger info
+        const flightState = state.flightState;
+        flightState.arrayDeparturePassengerInfo = arrayPassengerInfos;
+        navigateTo("/info", { state: { flightState } });
+      }
     } else {
       const flightState = state.flightState;
-      delete flightState.selectedSeatsDeparture;
-      flightState.arrayPassengerInfos = arrayPassengerInfos;
+      flightState.arrayDeparturePassengerInfo = arrayPassengerInfos;
       navigateTo("/confirm", { state: { flightState } });
     }
   };

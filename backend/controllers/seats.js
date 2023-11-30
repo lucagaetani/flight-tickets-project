@@ -26,39 +26,43 @@ const getSeatsForFlight = async (req, res, next) => {
   }
 };
 
-const bookSeats = async (payload) => {
-  const transaction = await sequelize.transaction();
-
+const checkSeatForBooking = async (req, res, next) => {
+  const { arraySeats, flight_number } = req.body;
   try {
-    for (const booking of payload) {
-      const { flightNumber, seats } = booking;
-
-      for (const seatNumber of seats) {
-        const seat = await Seats.findOne({
-          where: { flightNumber, seatNumber, isBooked: false },
-          transaction,
-        });
-
-        if (!seat) {
-          await transaction.rollback();
-          return {
-            success: false,
-            message: `Seat ${seatNumber} not available for flight ${flightNumber}`,
-          };
+    arraySeats.forEach(async (seat_number) => {
+      const check = Seats.findOne({
+        where: {
+          seat_number,
+          flight_number
         }
-
-        await seat.update({ isBooked: true }, { transaction });
+      });
+      if (!check) {
+        res.status(400).json({
+          success: false,
+          seat_number,
+          message: `Seat ${seat_number} doesn't exist`,
+        });
+      } else if (check.isBooked) {
+        res.status(400).json({
+          success: false,
+          seat_number: check.seat_number,
+          message: `Seat ${check.seat_number} has just booked`,
+        });
       }
-    }
-
-    await transaction.commit();
-    return { success: true, message: "Seats booked successfully" };
-  } catch (error) {
-    await transaction.rollback();
-    console.error(`Error booking seats: ${error.message}`);
-    return { success: false, message: "Error booking seats" };
+    })
+    res.status(200).json({
+      success: true,
+      message: "Successfully checked all seats"
+    });
+  } catch(error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed checking of seats",
+      error: error.message,
+    });
   }
-};
+}
+
 
 exports.getSeatsForFlight = getSeatsForFlight;
-exports.bookSeats = bookSeats;
+exports.checkSeatForBooking = checkSeatForBooking;
