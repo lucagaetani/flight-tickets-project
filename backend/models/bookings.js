@@ -19,10 +19,14 @@ const Bookings = instanceSequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    date: {
+    date_departure: {
       type: DataTypes.DATE,
       allowNull: false
-    }
+    },
+    date_arrival: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
   },
   {
     freezeTableName: true,

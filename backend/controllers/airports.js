@@ -9,11 +9,13 @@ const getAirports = async (req, res, next) => {
     });
 
     res.status(200).json({
+      success: true,
       message: `Successfully retrieved ${airports.length} airports`,
       data: airports,
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: "Error during the retrival of airports",
       error: error.message,
     });
@@ -24,6 +26,7 @@ const insertAirports = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
+      success: false,
       message: "Validation error: invalid JSON",
     });
   }
@@ -35,6 +38,7 @@ const insertAirports = async (req, res, next) => {
 
     if (existingAirports) {
       res.status(400).json({
+        success: false,
         message: "Airport with this code already exists in database",
       });
     }
@@ -46,12 +50,14 @@ const insertAirports = async (req, res, next) => {
     });
 
     res.status(200).send({
+      success: true,
       message: "Airport inserted successfully",
       data: newAirports,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
+      success: false,
       message: "Can not insert airport, insert operation failed",
       error: error.message,
     });

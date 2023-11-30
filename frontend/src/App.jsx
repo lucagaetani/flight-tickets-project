@@ -7,6 +7,7 @@ import UserPage from "./pages/UserPage";
 import Register from "./pages/Register";
 import BookingSeats from "./pages/BookingSeats";
 import BookingInfo from "./pages/BookingInfo";
+import LoadingBooking from "./pages/LoadingBooking";
 import PrivateRoute from "./utils/PrivateRoute";
 import { ThemeProvider } from "@emotion/react";
 import { createTheme, responsiveFontSizes } from "@mui/material";
@@ -34,6 +35,9 @@ const App = () => {
           </Route>
           <Route path="/info" element={<PrivateRoute />}> 
             <Route path='/info' element={<BookingInfo/>}/>
+          </Route>
+          <Route path="/confirm" element={<PrivateRoute />}> 
+            <Route path="/confirm" element={<LoadingBooking />} />
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/user" element={<PrivateRoute />}> 
