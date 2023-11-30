@@ -84,15 +84,12 @@ const LoginForm = () => {
         .then((response) => response.json())
         .then((res) => {
           if (res.success === true) {
-            {
-              alert(`${res.message}. You will be redirect to the homepage`);
-            }
             handleDispatch(res.data);
             navigateTo("/");
           } else {
             {
               alert(
-                `Error received: ${res.message}. You will be redirect to the homepage`
+                `Error received: ${res.message}`
               );
             }
           }

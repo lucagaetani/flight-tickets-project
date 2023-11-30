@@ -12,7 +12,6 @@ const Navbar = () => {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("reduxState");
     const requestOptions = {
       method: "POST",
       credentials: "include",

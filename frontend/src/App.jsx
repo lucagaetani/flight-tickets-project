@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import BookingSeats from "./pages/BookingSeats";
 import BookingInfo from "./pages/BookingInfo";
 import LoadingBooking from "./pages/LoadingBooking";
+import BookingEnd from './pages/BookingEnd';
 import PrivateRoute from "./utils/PrivateRoute";
 import { ThemeProvider } from "@emotion/react";
 import { createTheme, responsiveFontSizes } from "@mui/material";
@@ -38,6 +39,9 @@ const App = () => {
           </Route>
           <Route path="/confirm" element={<PrivateRoute />}> 
             <Route path="/confirm" element={<LoadingBooking />} />
+          </Route>
+          <Route path="/end" element={<PrivateRoute />}> 
+            <Route path='/end' element={<BookingEnd/>}/>
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/user" element={<PrivateRoute />}> 
