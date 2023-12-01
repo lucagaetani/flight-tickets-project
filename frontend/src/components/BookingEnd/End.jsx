@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
 import {
-  CircularProgress,
-  Box,
   Container,
   Typography
 } from "@mui/material";
@@ -22,7 +19,7 @@ const Loading = () => {
 
   if (success) {
     return (
-      <Container maxWidth={lg}>
+      <Container maxWidth={"lg"}>
         <Typography variant="h2" fontWeight={"bold"}>
           Congratulations!
           <br />
@@ -34,7 +31,15 @@ const Loading = () => {
     )
   } else {
     return (
-
+      <Container maxWidth={"lg"}>
+        <Typography variant="h2" fontWeight={"bold"}>
+          Congratulations!
+          <br />
+          {state.res.returningBooking ? 
+          "Booking accepted for departure with id: and arrival with id: " : 
+          "Booking accepted for only departure flight with id: "}
+        </Typography>
+      </Container>
     )
   }
 }

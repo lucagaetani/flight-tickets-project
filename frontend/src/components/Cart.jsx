@@ -20,10 +20,12 @@ const Cart = (props) => {
 
     useEffect(() => {
         let totalPrice = 0;
-        props.selectedSeatsDeparture.forEach((seat) => {
-            totalPrice += seat.seatPrice;
-        });
-        setTotalCartPrice(totalPrice);
+        if (props.selectedSeatsDeparture) {
+            props.selectedSeatsDeparture.forEach((seat) => {
+                totalPrice += seat.seatPrice;
+            });
+            setTotalCartPrice(totalPrice);
+        }
         setLoading(false);
     }, [props.selectedSeatsDeparture]);
 
@@ -48,7 +50,9 @@ const Cart = (props) => {
         //Gestire ritorno
         formData: PropTypes.object,
         selectedDepartureFlight: PropTypes.array,
-        selectedSeatsDeparture: PropTypes.array
+        selectedReturningFlight: PropTypes.array,
+        selectedSeatsDeparture: PropTypes.array,
+        selectedSeatsReturning: PropTypes.array
     };
 
     return (
@@ -90,7 +94,7 @@ const Cart = (props) => {
                         }}
                     >
                         <Typography textAlign={"center"} fontWeight={"bold"}>
-                            Flight info
+                            Departure flight info
                         </Typography>
                         <Grid container justifyContent={"space-between"} columns={{ xs: 2}}>
                             <Grid item xs={1}>
@@ -115,25 +119,58 @@ const Cart = (props) => {
                             </Grid>
                         </Grid>
                     </Grid>
-                    {props.selectedDepartureFlight && (
+                    {props.selectedReturningFlight && (
                         <Grid item xs={1} md={4}
-                            sx={{
-                                border: "1px solid white",
-                                borderRadius: "1rem",
-                                p: 1
-                            }}
+                        sx={{
+                            border: "1px solid white",
+                            borderRadius: "1rem",
+                            p: 1,
+                        }}
                         >
                             <Typography textAlign={"center"} fontWeight={"bold"}>
-                                Passenger info
+                                Returning flight info
                             </Typography>
-                            <Typography>
-                                • {props.formData.adults} x {props.formData.adults > 1 ? "adults" : "adult"}
-                            </Typography>
-                            {(props.formData.children || props.formData.children > 0) && (<Typography>
-                                • {props.formData.children} x {props.formData.children > 1 ? "children" : "child"}
-                            </Typography>)}
+                            <Grid container justifyContent={"space-between"} columns={{ xs: 2}}>
+                                <Grid item xs={1}>
+                                    <Typography>
+                                        From: {props.formData.airportTo}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <Typography>
+                                        To: {props.formData.airportFrom}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <Typography>
+                                        Flight: {props.selectedReturningFlight[0]}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <Typography>
+                                        Price:
+                                    </Typography>
+                                </Grid>
+                            </Grid>
                         </Grid>
                     )}
+                    <Grid item xs={1} md={4}
+                        sx={{
+                            border: "1px solid white",
+                            borderRadius: "1rem",
+                            p: 1
+                        }}
+                    >
+                        <Typography textAlign={"center"} fontWeight={"bold"}>
+                            Passenger info
+                        </Typography>
+                        <Typography>
+                            • {props.formData.adults} x {props.formData.adults > 1 ? "adults" : "adult"}
+                        </Typography>
+                        {(props.formData.children || props.formData.children > 0) && (<Typography>
+                            • {props.formData.children} x {props.formData.children > 1 ? "children" : "child"}
+                        </Typography>)}
+                    </Grid>
                     {props.selectedSeatsDeparture && (
                         <Grid item xs={1} md={4}
                             sx={{
@@ -143,9 +180,27 @@ const Cart = (props) => {
                             }}
                         >
                             <Typography textAlign={"center"} fontWeight={"bold"}>
-                                Seats info
+                                Seats departure info
                             </Typography>
                             {props.selectedSeatsDeparture.map((seat, index) => (
+                                <Typography key={`seat-${index}`}>
+                                    • € {seat.seatPrice} - Seat {seat.seatNumber}
+                                </Typography>
+                            ))}
+                        </Grid>
+                    )}
+                    {props.selectedSeatsReturning && (
+                        <Grid item xs={1} md={4}
+                            sx={{
+                                border: "1px solid white",
+                                borderRadius: "1rem",
+                                p: 1
+                            }}
+                        >
+                            <Typography textAlign={"center"} fontWeight={"bold"}>
+                                Seats returning info
+                            </Typography>
+                            {props.selectedSeatsReturning.map((seat, index) => (
                                 <Typography key={`seat-${index}`}>
                                     • € {seat.seatPrice} - Seat {seat.seatNumber}
                                 </Typography>

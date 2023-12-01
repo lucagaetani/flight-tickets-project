@@ -10,6 +10,7 @@ import {
   Tooltip,
   CircularProgress,
 } from "@mui/material";
+import Cart from "../Cart";
 
 const SeatPicker = () => {
   const [seats, setSeats] = useState([]);
@@ -65,8 +66,10 @@ const SeatPicker = () => {
           credentials: "include",
         };
         let seats;
-        if (state.seatsDeparture) {
+        if (state.flightState.selectedReturningFlight && state.flightState.selectedSeatsDeparture) {
+          setSelectedSeats([]);
           seats = state.flightState.selectedReturningFlight[0];
+          console.log(seats);
         } else {
           seats = state.flightState.selectedDepartureFlight[0];
         }
@@ -89,6 +92,9 @@ const SeatPicker = () => {
 
   const handleClick = () => {
     const formData = state.flightState.formData;
+    if (state.flightState.selectedSeatsDeparture){
+      delete state.flightState.selectedSeatsDeparture;
+    }
     navigateTo("/booking", { state: { formData } });
   };
 
@@ -106,11 +112,17 @@ const SeatPicker = () => {
   };
 
   const handleConfirm = () => {
+    const flightState = state.flightState;
+    
     if (state.flightState.selectedReturningFlight) {
-      //TODO
-      console.log("a");
+      if (state.flightState.selectedSeatsDeparture) {
+        flightState.selectedSeatsReturning = selectedSeats;
+        navigateTo("/info", { state: { flightState } });
+      } else {
+        flightState.selectedSeatsDeparture = selectedSeats;
+        navigateTo("/seats", { state: { flightState } });
+      }
     } else {
-      const flightState = state.flightState;
       flightState.selectedSeatsDeparture = selectedSeats;
       navigateTo("/info", { state: { flightState } });
     }
@@ -130,169 +142,185 @@ const SeatPicker = () => {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box>
-        <Grid container 
-        spacing={{ xs: 0, md: 3.5 }} columns={{ xs: 12, sm: 8, md: 12 }}
-        sx={{ mt: 5, backgroundImage: "./src/assets/planeAirframe.png", backgroundRepeat: "no-repeat", height: '100%', width: "100%", p: 2 }}>
-          {seats.map((seat, index) => {
-            return (
-              <>
-                <Tooltip title={seat.price + "€"}>
-                  <Grid item xs={2.5} key={seat.seat_number}>
-                    <Typography component={'span'} sx={{ backgroundColor: 'inherit' }}>
-                      <Paper
-                        elevation={3}
-                        style={{
-                          padding: "0.5em",
-                          backgroundColor: seat.isBooked ? "#FF5733" : selectedSeats.find((obj) => { return obj.seatNumber === seat.seat_number }) ? "orange" : "#DAF7A6",
-                          disabled: seat.isBooked ? "true" : "false",
-                          textAlign: "center",
-                          margin: "1em",
-                          cursor: "pointer",
-                          transition: "background-color 0.3s ease",
-                          flexFlow: "row wrap",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.target.style.backgroundColor = "lightblue";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.backgroundColor = seat.isBooked
-                            ? "#FF5733"
-                            : selectedSeats.find((obj) => { return obj.seatNumber === seat.seat_number }) ? "orange" : "#DAF7A6";
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleSeatClick(seat.seat_number, seat.price);
-                        }}
-                      >
-                        {seat.seat_number}
-                      </Paper>
-                    </Typography>
-                  </Grid>
-                </Tooltip>
-                {seat.seat_number === "C4" && (
-                  <Grid item xs={12} key={"empty" + index}>
-                    { }
-                  </Grid>
-                )}
-                {index % 4 === 1 && (
-                  <Grid item xs={2} key={"empty" + index}>
-                    { }
-                  </Grid>
-                )}
-              </>
-            );
-          })}
-        </Grid>
-      </Box>
-      <Box sx={{
-        width: "100%", height: "100%", border: "1px solid #C4C4C4",
-        borderRadius: "1rem", minHeight: "150px", mt: 2, pt: "0px !important", pl: "0px !important"
-      }}>
-        <Typography variant="h5" sx={{ p: 2, borderBottom: "1px solid #C4C4C4" }}>
-          {`Choose a seat flight for `}
-        </Typography>
+    <Box>
+      {state.flightState.selectedReturningFlight ? (
+        <Cart
+          formData={state.flightState.formData}
+          selectedDepartureFlight={state.flightState.selectedDepartureFlight}
+          selectedReturningFlight={state.flightState.selectedReturningFlight}
+          selectedSeatsDeparture={state.flightState.selectedSeatsDeparture}
+        />
+      ) : (
+        <Cart
+          formData={state.flightState.formData}
+          selectedDepartureFlight={state.flightState.selectedDepartureFlight}
+        />
+      )}
 
-        {adults ? Array.from({ length: adults }, (_, index) => (
-          <Paper key={`adult-${index}`}
-            sx={{ p: 2, 
-              ml: 2, 
-              mr: 2, 
-              mt: 2,
-              transition: "0.5s linear",
-              cursor: "pointer",
-              backgroundColor: currentSelection.seatName === `adult-${index}` ? "#D4D4D4" : "white"
-            }}
-            elevation={currentSelection.seatName === `adult-${index}` ? 3 : 1}
-            onClick={(e) => {
-              e.preventDefault();
-              e.backgroundColor = "#D4D4D4";
-              e.border = "2px solid #1976d2";
-              let selectedSeat;
-              let selectedPrice;
-              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedSeat = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  ""}
-              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedPrice = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatPrice :  ""}
-              setCurrentSelection({
-                seatName: `adult-${index}`,
-                seatNumber: selectedSeat ? selectedSeat : '',
-                seatPrice: selectedPrice ? selectedPrice : '',
-              })
-            }}
-          >
-            <Typography variant="h6">Adult {index + 1}</Typography>
-            <Typography sx={{ mt: 2 }}>
-              Selected Seat: {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  "none"}
-            </Typography>
-          </Paper>
-        )) : null}
+      <Container maxWidth="lg">
+        <Box>
+          <Grid container 
+          spacing={{ xs: 0, md: 3.5 }} columns={{ xs: 12, sm: 8, md: 12 }}
+          sx={{ mt: 5, backgroundImage: "./src/assets/planeAirframe.png", backgroundRepeat: "no-repeat", height: '100%', width: "100%", p: 2 }}>
+            {seats.map((seat, index) => {
+              return (
+                <>
+                  <Tooltip title={seat.price + "€"}>
+                    <Grid item xs={2.5} key={seat.seat_number}>
+                      <Typography component={'span'} sx={{ backgroundColor: 'inherit' }}>
+                        <Paper
+                          elevation={3}
+                          style={{
+                            padding: "0.5em",
+                            backgroundColor: seat.isBooked ? "#FF5733" : selectedSeats.find((obj) => { return obj.seatNumber === seat.seat_number }) ? "orange" : "#DAF7A6",
+                            disabled: seat.isBooked ? "true" : "false",
+                            textAlign: "center",
+                            margin: "1em",
+                            cursor: "pointer",
+                            transition: "background-color 0.3s ease",
+                            flexFlow: "row wrap",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = "lightblue";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = seat.isBooked
+                              ? "#FF5733"
+                              : selectedSeats.find((obj) => { return obj.seatNumber === seat.seat_number }) ? "orange" : "#DAF7A6";
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSeatClick(seat.seat_number, seat.price);
+                          }}
+                        >
+                          {seat.seat_number}
+                        </Paper>
+                      </Typography>
+                    </Grid>
+                  </Tooltip>
+                  {seat.seat_number === "C4" && (
+                    <Grid item xs={12} key={"empty" + index}>
+                      { }
+                    </Grid>
+                  )}
+                  {index % 4 === 1 && (
+                    <Grid item xs={2} key={"empty" + index}>
+                      { }
+                    </Grid>
+                  )}
+                </>
+              );
+            })}
+          </Grid>
+        </Box>
+        <Box sx={{
+          width: "100%", height: "100%", border: "1px solid #C4C4C4",
+          borderRadius: "1rem", minHeight: "150px", mt: 2, pt: "0px !important", pl: "0px !important"
+        }}>
+          <Typography variant="h5" sx={{ p: 2, borderBottom: "1px solid #C4C4C4" }}>
+            {`Choose a seat flight for `}
+          </Typography>
 
-        {children ? Array.from({ length: children }, (_, index) => (
-          <Paper key={`children-${index}`}
-            sx={{ p: 2,
-              ml: 2, 
-              mr: 2, 
-              mt: 2,
-              transition: "0.5s linear",
-              cursor: "pointer",
-              backgroundColor: currentSelection.seatName === `children-${index}` ? "#D4D4D4" : "white"
-            }}
-            elevation={currentSelection.seatName === `children-${index}` ? 3 : 1}
-            onClick={(e) => {
-              e.preventDefault();
-              e.backgroundColor = "#D4D4D4";
-              e.border = "2px solid #1976d2";
-              let selectedSeat;
-              let selectedPrice;
-              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedSeat = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  ""}
-              {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedPrice = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatPrice :  ""}
-              setCurrentSelection({
-                seatName: `children-${index}`,
-                seatNumber: selectedSeat ? selectedSeat : '',
-                seatPrice: selectedPrice ? selectedPrice : '',
-              })
-            }}
+          {adults ? Array.from({ length: adults }, (_, index) => (
+            <Paper key={`adult-${index}`}
+              sx={{ p: 2, 
+                ml: 2, 
+                mr: 2, 
+                mt: 2,
+                transition: "0.5s linear",
+                cursor: "pointer",
+                backgroundColor: currentSelection.seatName === `adult-${index}` ? "#D4D4D4" : "white"
+              }}
+              elevation={currentSelection.seatName === `adult-${index}` ? 3 : 1}
+              onClick={(e) => {
+                e.preventDefault();
+                e.backgroundColor = "#D4D4D4";
+                e.border = "2px solid #1976d2";
+                let selectedSeat;
+                let selectedPrice;
+                {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedSeat = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  ""}
+                {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedPrice = selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatPrice :  ""}
+                setCurrentSelection({
+                  seatName: `adult-${index}`,
+                  seatNumber: selectedSeat ? selectedSeat : '',
+                  seatPrice: selectedPrice ? selectedPrice : '',
+                })
+              }}
+            >
+              <Typography variant="h6">Adult {index + 1}</Typography>
+              <Typography sx={{ mt: 2 }}>
+                Selected Seat: {selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }) ? selectedSeats.find((obj) => { return obj.seatName === `adult-${index}` }).seatNumber :  "none"}
+              </Typography>
+            </Paper>
+          )) : null}
+
+          {children ? Array.from({ length: children }, (_, index) => (
+            <Paper key={`children-${index}`}
+              sx={{ p: 2,
+                ml: 2, 
+                mr: 2, 
+                mt: 2,
+                transition: "0.5s linear",
+                cursor: "pointer",
+                backgroundColor: currentSelection.seatName === `children-${index}` ? "#D4D4D4" : "white"
+              }}
+              elevation={currentSelection.seatName === `children-${index}` ? 3 : 1}
+              onClick={(e) => {
+                e.preventDefault();
+                e.backgroundColor = "#D4D4D4";
+                e.border = "2px solid #1976d2";
+                let selectedSeat;
+                let selectedPrice;
+                {selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }) ? selectedSeat = selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }).seatNumber :  ""}
+                {selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }) ? selectedPrice = selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }).seatPrice :  ""}
+                setCurrentSelection({
+                  seatName: `children-${index}`,
+                  seatNumber: selectedSeat ? selectedSeat : '',
+                  seatPrice: selectedPrice ? selectedPrice : '',
+                })
+              }}
+            >
+              <Typography variant="h6">Children {index + 1}</Typography>
+              <Typography sx={{ mt: 2 }}>
+                Selected Seat: {selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }) ? selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }).seatNumber :  "none"}
+              </Typography>
+            </Paper>
+          )) : null}
+          <Grid
+            container
+            spacing={{ xs: 2, md: 3 }} columns={{ xs: 6, sm: 8, md: 12 }}
+            sx={{ mt: 3, mb: 3 }}
+            display={"flex"}
+            justifyContent={"center"}
           >
-            <Typography variant="h6">Children {index + 1}</Typography>
-            <Typography sx={{ mt: 2 }}>
-              Selected Seat: {selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }) ? selectedSeats.find((obj) => { return obj.seatName === `children-${index}` }).seatNumber :  "none"}
-            </Typography>
-          </Paper>
-        )) : null}
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }} columns={{ xs: 6, sm: 8, md: 12 }}
-          sx={{ mt: 3, mb: 3 }}
-          display={"flex"}
-          justifyContent={"center"}
-        >
-          <Grid item xs={2}>
-            <Button
-              onClick={handleClick}
-              sx={{ mt: 3, mr: 1 }}
-              fullWidth
-              variant="contained"
-              color="primary"
-            >
-              Back
-            </Button>
+            <Grid item xs={2}>
+              <Button
+                onClick={handleClick}
+                sx={{ mt: 3, mr: 1 }}
+                fullWidth
+                variant="contained"
+                color="primary"
+              >
+                Back
+              </Button>
+            </Grid>
+            <Grid item xs={2}>
+              <Button
+                onClick={handleConfirm}
+                sx={{ mt: 3, mr: 1  }}
+                fullWidth
+                //TODO is not working
+                disabled = {!selectedSeats.length === (parseInt(adults)+parseInt(children))}
+                variant="contained"
+                color="primary"
+              >
+                Confirm
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item xs={2}>
-            <Button
-              onClick={handleConfirm}
-              sx={{ mt: 3, mr: 1  }}
-              fullWidth
-              //TODO is not working
-              disabled = {!selectedSeats.length === (parseInt(adults)+parseInt(children))}
-              variant="contained"
-              color="primary"
-            >
-              Confirm
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 
