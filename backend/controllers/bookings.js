@@ -108,7 +108,7 @@ const insertBookings = async (req, res, next) => {
         date_arrival: returningFlight.arrival
       }, transaction);
 
-      flightState.arrayDeparturePassengerInfos.map(async(ticket,index) => {
+      flightState.arrayReturningPassengerInfos.map(async(ticket,index) => {
         await Tickets.create({
           name: ticket["name-"+index],
           surname: ticket["surname-"+index],

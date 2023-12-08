@@ -113,6 +113,7 @@ const LuggageUserInfo = () => {
         flightState.arrayReturningPassengerInfo = arrayPassengerInfos;
         navigateTo("/confirm", { state: { flightState } });
       } else {
+        flightState.arrayDeparturePassengerInfo = arrayPassengerInfos;
         navigateTo("/info", { state: { flightState } });
       }
     } else {
@@ -145,7 +146,7 @@ const LuggageUserInfo = () => {
 
   return (
     <Box>
-      {(state.flightState.selectedReturningFlight && state.flightState.selectedSeatsReturning) ? (
+      {(state.flightState.selectedSeatsReturning) ? (
         <Cart
           formData={state.flightState.formData}
           selectedDepartureFlight={state.flightState.selectedDepartureFlight}
@@ -181,8 +182,8 @@ const LuggageUserInfo = () => {
             {`Write user info and choose luggage for each passenger`}
           </Typography>
 
-          {state.flightState.selectedSeatsDeparture
-            ? state.flightState.selectedSeatsDeparture.map(
+          {state.flightState.arrayDeparturePassengerInfo && state.flightState.selectedSeatsReturning
+            ? state.flightState.selectedSeatsReturning.map(
                 (passenger, index) => (
                   <Paper
                     key={`passenger-${index}`}
@@ -218,6 +219,7 @@ const LuggageUserInfo = () => {
                               type="text"
                               name={`name-${index}`}
                               fullWidth
+                              defaultValue={null}
                               onBlur={handleChange}
                               error={!!errors[`name-${index}`]}
                               helperText={
@@ -233,6 +235,7 @@ const LuggageUserInfo = () => {
                               type="text"
                               name={`surname-${index}`}
                               fullWidth
+                              defaultValue={null}
                               onBlur={handleChange}
                               error={!!errors[`surname-${index}`]}
                               helperText={
@@ -248,6 +251,7 @@ const LuggageUserInfo = () => {
                               type="text"
                               name={`email-${index}`}
                               fullWidth
+                              defaultValue={null}
                               onBlur={handleChange}
                               error={!!errors[`email-${index}`]}
                               helperText={
@@ -263,6 +267,7 @@ const LuggageUserInfo = () => {
                               type="text"
                               name={`phone-${index}`}
                               fullWidth
+                              defaultValue={null}
                               onBlur={handleChange}
                               error={!!errors[`phone-${index}`]}
                               helperText={
@@ -354,7 +359,183 @@ const LuggageUserInfo = () => {
                   </Paper>
                 )
               )
-            : null}
+            : state.flightState.selectedSeatsDeparture.map(
+              (passenger, index) => (
+                <Paper
+                  key={`passenger-${index}`}
+                  sx={{
+                    p: 2,
+                    ml: 2,
+                    mr: 2,
+                    mt: 2,
+                    transition: "0.5s linear",
+                    cursor: "pointer",
+                    backgroundColor:
+                      currentPassenger === index ? "#D4D4D4" : "white",
+                  }}
+                  elevation={currentPassenger === index ? 3 : 1}
+                  onClick={() => setCurrentPassenger(index)}
+                >
+                  <Typography variant="h6" mb={2}>
+                    {passenger.seatName.substring(0, 5) === "adult"
+                      ? `Adult ${
+                          parseInt(passenger.seatName.substring(6, 7), 10) + 1
+                        }`
+                      : `Children ${
+                          parseInt(passenger.seatName.substring(9, 10), 10) +
+                          1
+                        }`}
+                  </Typography>
+                  <Grid container spacing={1} columns={{ xs: 1, md: 2 }}>
+                    <Grid item xs={1}>
+                      <Grid container spacing={2} columns={4}>
+                        <Grid item xs={4}>
+                          <TextField
+                            label="Name"
+                            type="text"
+                            name={`name-${index}`}
+                            fullWidth
+                            defaultValue={null}
+                            onBlur={handleChange}
+                            error={!!errors[`name-${index}`]}
+                            helperText={
+                              errors[`name-${index}`]
+                                ? "Name is required"
+                                : null
+                            }
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <TextField
+                            label="Surname"
+                            type="text"
+                            name={`surname-${index}`}
+                            fullWidth
+                            defaultValue={null}
+                            onBlur={handleChange}
+                            error={!!errors[`surname-${index}`]}
+                            helperText={
+                              errors[`surname-${index}`]
+                                ? "Surname is required"
+                                : ""
+                            }
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <TextField
+                            label="Email"
+                            type="text"
+                            name={`email-${index}`}
+                            fullWidth
+                            defaultValue={null}
+                            onBlur={handleChange}
+                            error={!!errors[`email-${index}`]}
+                            helperText={
+                              errors[`email-${index}`]
+                                ? "Email is required"
+                                : ""
+                            }
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <TextField
+                            label="Phone"
+                            type="text"
+                            name={`phone-${index}`}
+                            fullWidth
+                            defaultValue={null}
+                            onBlur={handleChange}
+                            error={!!errors[`phone-${index}`]}
+                            helperText={
+                              errors[`phone-${index}`]
+                                ? "Phone is required"
+                                : ""
+                            }
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Grid container spacing={2} columns={4}>
+                        <Grid item xs={4}>
+                          <TextField
+                            label="Airplane luggage"
+                            type="number"
+                            name={`airplane-luggage-${index}`}
+                            fullWidth
+                            InputProps={{
+                              inputProps: {
+                                max: 1,
+                                min: 0,
+                              },
+                            }}
+                            defaultValue={
+                              arrayPassengerInfos[index][
+                                `airplane-luggage-${index}`
+                              ] || 0
+                            }
+                            onChange={handleChange}
+                            error={!!errors[`airplane-luggage-${index}`]}
+                            helperText={errors[`airplane-luggage-${index}`]}
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <TextField
+                            label="Hold luggage"
+                            type="number"
+                            name={`hold-luggage-${index}`}
+                            fullWidth
+                            InputProps={{
+                              inputProps: {
+                                max: 5,
+                                min: 0,
+                              },
+                            }}
+                            defaultValue={
+                              arrayPassengerInfos[index][
+                                `hold-luggage-${index}`
+                              ] || 0
+                            }
+                            onChange={handleChange}
+                            error={!!errors[`hold-luggage-${index}`]}
+                            helperText={errors[`hold-luggage-${index}`]}
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <TextField
+                            label="Seat number"
+                            type="text"
+                            defaultValue={passenger.seatNumber}
+                            name={`seat-number-${index}`}
+                            disabled
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <FormControl fullWidth>
+                            <InputLabel htmlFor="outlined-adornment-price">
+                              Seat price
+                            </InputLabel>
+                            <OutlinedInput
+                              id="outlined-adornment-price"
+                              disabled
+                              name={`seat-price-${index}`}
+                              startAdornment={
+                                <InputAdornment position="start">
+                                  € {passenger.seatPrice}
+                                </InputAdornment>
+                              }
+                              label="Seat price"
+                            />
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              )
+            )}
+          
           <Grid
             container
             spacing={{ xs: 2, md: 3 }}

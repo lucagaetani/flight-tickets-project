@@ -65,7 +65,7 @@ const ButtonDisabled = (props) => {
         <Button
           fullWidth
           disabled={props.isDisabled || buttonDisabled || props.isDisabledReturning}
-          sx={{ mt: 2 }}
+          sx={{ mt: 3, mr: 1 }}
           variant="contained"
           color="primary"
           onClick={handleClick}

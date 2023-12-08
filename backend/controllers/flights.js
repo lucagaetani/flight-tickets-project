@@ -14,7 +14,6 @@ const getFlightsForBooking = async (req, res, next) => {
     let whereClauseDeparture;
     let arrival;
 
-
     if (returningDate) {
       arrival = new Date(returningDate);
       whereClauseDeparture = {

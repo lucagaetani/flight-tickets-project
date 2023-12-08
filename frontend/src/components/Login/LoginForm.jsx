@@ -36,11 +36,11 @@ const LoginForm = () => {
             navigateTo("/");
           }
       } catch(error) {
-        alert(`Error: ${error}. Can't do fetch of auth. Page rendered`);
+        console.log(`Error: ${error}. Can't do fetch of auth. Page rendered`);
       }
     })();
     setLoading(false);
-  }, []);
+  }, [navigateTo]);
 
   const handleDispatch = (data) => {
     dispatch(addUserData(data));
@@ -70,35 +70,30 @@ const LoginForm = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      const requestOptions = {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      };
-      fetch("http://localhost:3000/users/login", requestOptions, {
-        credentials: "same-origin",
-      })
-        .then((response) => response.json())
-        .then((res) => {
-          if (res.success === true) {
+      (async () => {
+        try {
+          const requestOptions = {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          };
+          const response = await fetch("http://localhost:3000/users/login", requestOptions, {
+            credentials: "same-origin",
+          });
+          const res = await response.json()
+          if (res.success) {
             handleDispatch(res.data);
             navigateTo("/");
           } else {
-            {
-              alert(
-                `Error received: ${res.message}`
-              );
-            }
+            console.log(`Error received: ${res.message}`);
           }
-        })
-        .catch((error) => {
-          {
-            alert(`Error: ${error}. Can't do fetch`);
-          }
-        });
+        } catch(error) {
+          console.log(`Error received: ${error}`);
+        }
+      })();
     }
   };
 
@@ -117,11 +112,11 @@ const LoginForm = () => {
 
   return (
     <Box height="80vh" display="flex">
-      <form onSubmit={handleSubmit} style={{margin: "auto"}}>
-        <Container maxWidth="xs" sx={{ mt: 6, mb: 3, border: "1px solid #C4C4C4", borderRadius: "1rem" }}>
+      <form onSubmit={handleSubmit} style={{margin: "auto", p: 20}}>
+        <Container maxWidth={'xs'} sx={{ mt: 6, mb: 3 }}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Typography variant="h3" sx={{mt: 2}} textAlign={"center"} fontWeight={"bold"}>
+              <Typography variant="h4" sx={{mt: 2, mb: 1}} textAlign={"center"} fontWeight={"bold"}>
                 Login
               </Typography>
             </Grid>
@@ -151,26 +146,25 @@ const LoginForm = () => {
                 helperText={errors.password}
               />
             </Grid>
-            <Grid item xs={12} sx={{ display: "grid", justifyContent: "center" }}>
-              <Button type="submit" variant="contained" color="primary">
+            <Grid item xs={12}>
+              <Button type="submit" variant="contained" color="primary" fullWidth sx={{height: "50px"}}>
                 Submit
               </Button>
             </Grid>
             <Grid item xs={12} sx={{ mb: 3 }}>
               <Typography variant="body2" textAlign="center">
-                {"...or if you want, you can "}
+                {"Don't have an account? "}
                 <Link
                   component="button"
                   variant="body2"
-                  sx={{ verticalAlign: "top !important" }}
+                  sx={{ verticalAlign: "top !important", textDecoration: "none !important" }}
                   onClick={() => {
                     navigateTo("/register");
                   }}
                   align="inherit"
                 >
-                  register
+                  Sign up
                 </Link>
-                {" here"}
               </Typography>
             </Grid>
           </Grid>

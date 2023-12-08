@@ -1,15 +1,11 @@
 import { AppBar, Box, Toolbar, Typography, Button } from "@mui/material";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlaneDeparture } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const navigateTo = useNavigate();
-  let userData = useSelector((state) => state.userData);
-  if (!userData) {
-    userData = null;
-  }
+  let userData = JSON.parse(localStorage.getItem("reduxState")) ? JSON.parse(localStorage.getItem("reduxState")).userData : null;
 
   const handleLogout = () => {
     const requestOptions = {
@@ -26,6 +22,7 @@ const Navbar = () => {
       .then((res) => {
         console.log(JSON.stringify(res));
         if (res.success === true) {
+          localStorage.removeItem("reduxState");
           {
             alert(
               "You correctly logout from the site and will be redirected to the homepage"
