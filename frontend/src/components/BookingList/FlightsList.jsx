@@ -118,6 +118,7 @@ const FlightsList = () => {
                 transition: "0.5s linear",
                 cursor: "pointer"
               }}
+              onClick={() => setSelectedRowIdsDeparture(rowsDeparture[index])}
               key={`Departure-`+ index}
             >
               <Grid container columns={3}>
@@ -168,6 +169,7 @@ const FlightsList = () => {
                 transition: "0.5s linear",
                 cursor: "pointer"
               }}
+              onClick={() => setSelectedRowIdsDeparture(rowsDeparture[index])}
               key={`Departure-`+ index}
             >
               <Grid container columns={3}>
@@ -216,6 +218,7 @@ const FlightsList = () => {
                 transition: "0.5s linear",
                 cursor: "pointer"
               }}
+              onClick={() => setSelectedRowIdsReturning(rowsReturning[index])}
               key={`Returning-`+ index}
             >
               <Grid container columns={3}>

@@ -1,4 +1,4 @@
-//TODO: gestione ritorno e prezzo volo
+//TODO: prezzo volo
 import { useEffect, useState } from "react";
 import {
   Box,

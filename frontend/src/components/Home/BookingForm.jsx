@@ -117,6 +117,7 @@ const BookingForm = () => {
                 value={formData.airportFrom}
                 onChange={handleChange}
                 error={!!errors.airportFrom}
+                helperText={errors.airportFrom}
                 label="Airport From"
                 MenuProps={{
                   anchorOrigin: {
@@ -174,6 +175,7 @@ const BookingForm = () => {
                 value={formData.airportTo}
                 onChange={handleChange}
                 error={!!errors.airportTo}
+                helperText={errors.airportTo}
                 label="Airport To"
               >
                 {airports.map((airport) => (

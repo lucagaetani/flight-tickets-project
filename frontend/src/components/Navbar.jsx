@@ -2,10 +2,20 @@ import { AppBar, Box, Toolbar, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlaneDeparture } from '@fortawesome/free-solid-svg-icons';
+import { useState } from "react";
 
 const Navbar = () => {
   const navigateTo = useNavigate();
+  const [showUser, setShowUser] = useState(false);
   let userData = JSON.parse(localStorage.getItem("reduxState")) ? JSON.parse(localStorage.getItem("reduxState")).userData : null;
+
+  const handleShowUser = () => {
+    setShowUser(true);
+  }
+
+  const handleOpenProfile = () => {
+    navigateTo("/user");
+  }
 
   const handleLogout = () => {
     const requestOptions = {
@@ -63,12 +73,19 @@ const Navbar = () => {
           {console.log(userData)}
           {userData ? (
             <>
-              <Typography variant="body1" component="div">
-                Hey, {userData.name + " " + userData.surname}!
+              <Typography variant="body1" component="div" onClick={handleShowUser}>
+                  Hey, {userData.name + " " + userData.surname}!
               </Typography>
-              <Button color="inherit" onClick={handleLogout}>
-                Logout
-              </Button>
+              {showUser && (
+                <Box>
+                  <Button color="inherit" onClick={handleOpenProfile}>
+                    Open profile
+                  </Button>
+                  <Button color="inherit" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </Box>
+              )}
             </>
           ) : (
             <Button color="inherit" onClick={handleLogin}>

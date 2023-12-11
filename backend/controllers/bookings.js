@@ -8,6 +8,37 @@ const { checkSeatForBooking } = require("./seats");
 const { checkFlightForBooking } = require("./flights");
 
 const getBookingsForUser = async (req, res, next) => {
+  const decodedState = decodeURIComponent(req.query.state);
+  const { email } = JSON.parse(decodedState);
+
+  try {
+    const user = Users.findByPk(email);
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        message: "User sent not exists"
+      });
+    }
+
+    const bookings = Bookings.findAll({
+      where: {
+        fk_email: email
+      }
+    });
+
+    res.status(501).json({
+      success: true,
+      message: "",
+      data: bookings
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed retrieval of bookings",
+      error: error.message
+    });
+  }
 }
 
 const getBooking = async (req, res, next) => {
