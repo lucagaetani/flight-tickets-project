@@ -7,6 +7,7 @@ import {
   Typography,
   Slide,
   Container,
+  TextField,
 } from "@mui/material";
 
 const UserPageComponent = () => {
@@ -18,34 +19,40 @@ const UserPageComponent = () => {
     //chiama api bookings
   }, [])
 
-  const handleBookings = (string) => {
-    if (string !== "bookings") {
-      setSelectedBookings(false);
-    }
+  const handleBookings = () => {
+      setSelectedBookings(true);
+  }
+
+  const handleEdit = () => {
+    setSelectedBookings(false);
+  }
+
+  const handleChange = () => {
+
   }
 
   return (
-    <Container>
+    <Container sx={{mt: 2}}>
       <Grid container columns={{ xs: 1, md: 2}}>
         <Grid item xs={1} md={2} sx={{ borderBottom: "1px solid #C4C4C4" }}>
-          <Typography variant="B">
+          <Typography variant="h2">
             Hello, {userData.name} {userData.surname}
           </Typography>
         </Grid>
-        <Grid item xs={1} md={2}>
+        <Grid item xs={1} md={1}>
           <Button
-            onClick={handleBookings("bookings")}
+            onClick={handleBookings}
             sx={{ mt: 3, mr: 1 }}
-            fullWidth
             variant="contained"
             color="primary"
           >
             Bookings
           </Button>
+        </Grid>
+        <Grid item xs={1} md={1}>
           <Button
-            onClick={handleBookings}
+            onClick={handleEdit}
             sx={{ mt: 3, mr: 1 }}
-            fullWidth
             variant="contained"
             color="primary"
           >
@@ -53,18 +60,20 @@ const UserPageComponent = () => {
           </Button>
         </Grid>
         {selectedBookings ? (
-          <Slide>
+          <Slide direction="up" >
+            <>
             <Grid item xs={1} md={2} sx={{ borderBottom: "1px solid #C4C4C4" }}>
-              <Typography variant="B">
+              <Typography variant="h5">
                 Flights booked:
               </Typography>
             </Grid>
-              Aggiungi i bookings
+            </>
           </Slide>
         ) : (
-          <Slide>
+          <Slide direction="up">
+            <>
             <Grid item xs={1} md={2}>
-              <Typography variant="B">
+              <Typography variant="h5">
                 Edit profile
               </Typography>
             </Grid>
@@ -116,6 +125,7 @@ const UserPageComponent = () => {
                 helperText={errors.password}
               />
             </Grid>
+            </>
           </Slide>
         )}
       </Grid>
