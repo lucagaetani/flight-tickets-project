@@ -20,22 +20,32 @@ const Cart = (props) => {
 
   useEffect(() => {
     let totalPrice = 0;
+    console.log(props.priceDeparture)
+    totalPrice += props.priceDeparture;
+    if (props.selectedReturningFlight) {
+      totalPrice += props.priceReturning;
+    }
     if (props.selectedSeatsReturning) {
       props.selectedSeatsDeparture.forEach((seat) => {
-        totalPrice += seat.seatPrice;
+        if (seat.seatPrice) {
+          totalPrice += seat.seatPrice;
+        }
       });
       props.selectedSeatsReturning.forEach((seat) => {
-        totalPrice += seat.seatPrice;
+        if (seat.seatPrice) {
+          totalPrice += seat.seatPrice;
+        }
       });
-      setTotalCartPrice(totalPrice);
     } else if (props.selectedSeatsDeparture) {
       props.selectedSeatsDeparture.forEach((seat) => {
-        totalPrice += seat.seatPrice;
+        if (seat.seatPrice) {
+          totalPrice += seat.seatPrice;
+        }
       });
-      setTotalCartPrice(totalPrice);
     }
+    setTotalCartPrice(totalPrice);
     setLoading(false);
-  }, [props.selectedSeatsDeparture, props.selectedSeatsReturning]);
+  }, [props.selectedSeatsDeparture, props.selectedSeatsReturning, props.priceDeparture, props.priceReturning, props.selectedReturningFlight]);
 
   const handleClick = () => {
     setExpanded(!expanded);
@@ -65,6 +75,8 @@ const Cart = (props) => {
     selectedReturningFlight: PropTypes.array,
     selectedSeatsDeparture: PropTypes.array,
     selectedSeatsReturning: PropTypes.array,
+    priceDeparture: PropTypes.number,
+    priceReturning: PropTypes.number
   };
 
   return (
@@ -135,7 +147,7 @@ const Cart = (props) => {
                   </Typography>
                 </Grid>
                 <Grid item xs={1}>
-                  <Typography>Price:</Typography>
+                  <Typography>Price: {props.priceDeparture} €</Typography>
                 </Grid>
               </Grid>
             </Grid>
@@ -170,7 +182,7 @@ const Cart = (props) => {
                     </Typography>
                   </Grid>
                   <Grid item xs={1}>
-                    <Typography>Price:</Typography>
+                    <Typography>Price: {props.priceReturning} €</Typography>
                   </Grid>
                 </Grid>
               </Grid>
@@ -213,11 +225,17 @@ const Cart = (props) => {
                 <Typography textAlign={"center"} fontWeight={"bold"}>
                   Seats departure info
                 </Typography>
-                {props.selectedSeatsDeparture.map((seat, index) => (
-                  <Typography key={`seat-${index}`}>
-                    • € {seat.seatPrice} - Seat {seat.seatNumber}
+                {props.selectedSeatsDeparture.length > 0 ? props.selectedSeatsDeparture.map((seat, index) => (
+                    (seat.seatNumber &&
+                      <Typography key={`seat-${index}`}>
+                        • € {seat.seatPrice} - Seat {seat.seatNumber}
+                      </Typography>
+                    )
+                  )) :
+                  <Typography>
+                    No seats selected
                   </Typography>
-                ))}
+                }
               </Grid>
             )}
             {props.selectedSeatsReturning && (
@@ -234,11 +252,17 @@ const Cart = (props) => {
                 <Typography textAlign={"center"} fontWeight={"bold"}>
                   Seats returning info
                 </Typography>
-                {props.selectedSeatsReturning.map((seat, index) => (
+                {props.selectedReturningFlight.length > 0 ? props.selectedSeatsReturning.map((seat, index) => (
+                  (seat.seatNumber &&
                   <Typography key={`seat-${index}`}>
                     • € {seat.seatPrice} - Seat {seat.seatNumber}
                   </Typography>
-                ))}
+                )
+              )) :
+                  <Typography>
+                    No seats selected
+                  </Typography>
+                }
               </Grid>
             )}
           </Grid>

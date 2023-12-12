@@ -31,11 +31,13 @@ const ButtonDisabled = (props) => {
   const handleClick = () => {
     const flightState = {
       selectedDepartureFlight: props.selectedDepartureFlight,
+      priceDeparture: props.priceDeparture,
       formData: props.formData
     }
 
     if (props.selectedReturningFlight) {
-      flightState.selectedReturningFlight = props.selectedReturningFlight
+      flightState.selectedReturningFlight = props.selectedReturningFlight,
+      flightState.priceReturning = props.priceReturning
     }
 
     navigateTo("/seats", { state: { flightState } });
@@ -46,7 +48,9 @@ const ButtonDisabled = (props) => {
     selectedReturningFlight: PropTypes.array,
     isDisabled: PropTypes.bool.isRequired,
     isDisabledReturning: PropTypes.bool,
-    formData: PropTypes.object.isRequired
+    formData: PropTypes.object.isRequired,
+    priceDeparture: PropTypes.number.isRequired,
+    priceReturning: PropTypes.number
   };
 
   return (

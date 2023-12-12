@@ -153,12 +153,15 @@ const LuggageUserInfo = () => {
           selectedReturningFlight={state.flightState.selectedReturningFlight}
           selectedSeatsDeparture={state.flightState.selectedSeatsDeparture}
           selectedSeatsReturning={state.flightState.selectedSeatsReturning}
+          priceDeparture={state.flightState.priceDeparture}
+          priceReturning={state.flightState.priceReturning}
         />
       ) : (
         <Cart
           formData={state.flightState.formData}
           selectedDepartureFlight={state.flightState.selectedDepartureFlight}
           selectedSeatsDeparture={state.flightState.selectedSeatsDeparture}
+          priceDeparture={state.flightState.priceDeparture}
         />
       )}
 
@@ -167,17 +170,12 @@ const LuggageUserInfo = () => {
           sx={{
             width: "100%",
             height: "100%",
-            border: "1px solid #C4C4C4",
-            borderRadius: "1rem",
             minHeight: "150px",
-            mt: 2,
-            pt: "0px !important",
-            pl: "0px !important",
+            mt: 2
           }}
         >
           <Typography
             variant="h5"
-            sx={{ p: 2, borderBottom: "1px solid #C4C4C4" }}
           >
             {`Write user info and choose luggage for each passenger`}
           </Typography>
@@ -329,7 +327,7 @@ const LuggageUserInfo = () => {
                             <TextField
                               label="Seat number"
                               type="text"
-                              defaultValue={passenger.seatNumber}
+                              defaultValue={passenger.seatNumber ? passenger.seatNumber : "Seat not selected"}
                               name={`seat-number-${index}`}
                               disabled
                               fullWidth
@@ -346,7 +344,7 @@ const LuggageUserInfo = () => {
                                 name={`seat-price-${index}`}
                                 startAdornment={
                                   <InputAdornment position="start">
-                                    € {passenger.seatPrice}
+                                    € {passenger.seatPrice ? passenger.seatPrice : 0}
                                   </InputAdornment>
                                 }
                                 label="Seat price"
@@ -505,7 +503,7 @@ const LuggageUserInfo = () => {
                           <TextField
                             label="Seat number"
                             type="text"
-                            defaultValue={passenger.seatNumber}
+                            defaultValue={passenger.seatNumber ? passenger.seatNumber : "Seat not selected"}
                             name={`seat-number-${index}`}
                             disabled
                             fullWidth
@@ -522,7 +520,7 @@ const LuggageUserInfo = () => {
                               name={`seat-price-${index}`}
                               startAdornment={
                                 <InputAdornment position="start">
-                                  € {passenger.seatPrice}
+                                  € {passenger.seatPrice ? passenger.seatPrice : 0}
                                 </InputAdornment>
                               }
                               label="Seat price"
@@ -574,3 +572,4 @@ const LuggageUserInfo = () => {
 };
 
 export default LuggageUserInfo;
+
