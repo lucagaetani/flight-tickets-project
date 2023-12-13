@@ -6,7 +6,7 @@ const WebSocket = require("ws");
 const wss = require("./middleware/websocket");
 const auth = require("./middleware/auth.js");
 const instanceSequelize = require("./database");
-///node require("crypto").randomBytes(35).toString("hex")
+//Per generare la stringa: node require("crypto").randomBytes(35).toString("hex")
 
 //APP
 const app = express();
@@ -41,10 +41,13 @@ const routerAirports = require("./routes/airports");
 const routerUsers = require("./routes/users");
 const routerFlights = require("./routes/flights");
 const routerSeats = require("./routes/seats");
+const routerItineraries = require("./routes/itineraries")
+
 app.use("/airports", routerAirports);
 app.use("/users", routerUsers);
 app.use("/flights", routerFlights);
 app.use("/seats", routerSeats);
+app.use("/itineraries", routerItineraries);
 
 //DATABASE
 instanceSequelize
@@ -61,6 +64,7 @@ require("./models/airlines");
 require("./models/airports");
 require("./models/flights");
 require("./models/seats");
+require("./models/itineraries");
 
 app.get("/", function (req, res) {
   res.send(req.headers, req.originalUrl, req.method, req.body);

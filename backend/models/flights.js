@@ -33,10 +33,7 @@ const Flights = instanceSequelize.define(
     fk_airline: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    fk_stopover: {
-      type: DataTypes.STRING,
-    },
+    }
   },
   {
     freezeTableName: true,
@@ -96,6 +93,26 @@ async function insertFlights() {
       fk_stopover: null,
     },
     {
+      flight_number: "U2 2039",
+      fk_IATA_from: "VCE",
+      fk_IATA_to: "LHR",
+      departure: "2024-02-22 18:00:00.000 +00:00",
+      arrival: "2024-02-22 19:30:00.000 +00:00",
+      price: "89.0",
+      fk_airline: 1,
+      fk_stopover: null,
+    },
+    {
+      flight_number: "U2 2835",
+      fk_IATA_from: "LHR",
+      fk_IATA_to: "ORY",
+      departure: "2024-02-23 04:00:00.000 +00:00",
+      arrival: "2024-02-23 07:30:00.000 +00:00",
+      price: "89.0",
+      fk_airline: 1,
+      fk_stopover: null,
+    },
+    {
       flight_number: "U2 4890",
       fk_IATA_from: "ORY",
       fk_IATA_to: "VCE",
@@ -128,11 +145,11 @@ async function insertFlights() {
   ]);
 }
 
-/*
+
 (async () => {
     await Flights.sync({ force: true });
     insertFlights();
 })();
-*/
+
 
 module.exports = Flights;
