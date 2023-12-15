@@ -30,6 +30,10 @@ const Itineraries = instanceSequelize.define(
       type: DataTypes.FLOAT,
       allowNull: false,
     },
+    estimatedCO2: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     fk_flight_numbers: {
       type: DataTypes.ARRAY,
       allowNull: false,
@@ -41,17 +45,7 @@ const Itineraries = instanceSequelize.define(
   }
 );
 
-Flights.belongsTo(Airports, {
-  foreignKey: "fk_IATA_from",
-  as: "departureAirport",
-});
-
-Flights.belongsTo(Airports, {
-  foreignKey: "fk_IATA_to",
-  as: "arrivalAirport",
-});
-
-Itineraries.belongsToMany(Flights, { through: 'fk_flight_numbers' }); 
+Itineraries.hasMany(Flights, { foreignKey: 'fk_flight_numbers' });
 
 async function insertItineraries() {
   await Itineraries.bulkCreate([

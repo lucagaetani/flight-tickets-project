@@ -5,19 +5,19 @@ import ButtonDisabled from "./ButtonDisabled";
 import AirlineLogo from "./AirlineLogo";
 
 const FlightsList = () => {
-  const [rowsDeparture, setRowsDeparture] = useState([]);
-  const [rowsReturning, setRowsReturning] = useState([]);
-  const [selectedRowIdsDeparture, setSelectedRowIdsDeparture] = useState([]);
-  const [selectedRowIdsReturning, setSelectedRowIdsReturning] = useState([]);
-  const [priceDeparture, setPriceDeparture] = useState(0);
-  const [priceReturning, setPriceReturning] = useState(0);
-  const [yesReturning, setYesReturning] = useState(true);
+  const [rows, setRows] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [price, setPrice] = useState(0);
   const { state } = useLocation();
   const navigateTo = useNavigate();
 
   useEffect(() => {
     console.log(state);
-    setYesReturning(!state.formData.oneWay);
+    const dataToSend = {
+      airportFrom: state.selectedDepartureFlight ? state.formData.airportTo : state.formData.airportFrom,
+      airportTo: state.selectedDepartureFlight ? state.formData.airportFrom : state.formData.airportTo,
+      date: state.selectedDepartureFlight ? state.formData.returningDate : state.formData.departureDate,
+    }
     (async () => {
       const requestOptions = {
         method: "GET",
@@ -25,12 +25,13 @@ const FlightsList = () => {
       };
       try {
         const url = `http://localhost:3000/flights/getFlights?state=${encodeURIComponent(
-          JSON.stringify(state)
+          JSON.stringify(dataToSend)
         )}`;
         const response = await fetch(url, requestOptions);
         const data = await response.json();
         if (data.success === true) {
           let arrayToInsert = [];
+          console.log(data);
           //Departure
           data.data[0].forEach((row) => {
             let newRow = {

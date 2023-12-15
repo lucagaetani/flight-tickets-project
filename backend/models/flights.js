@@ -56,10 +56,6 @@ Flights.belongsTo(Airlines, {
   as: "airline",
 });
 
-Flights.belongsTo(Flights, {
-  foreignKey: "fk_stopover",
-});
-
 async function insertFlights() {
   await Flights.bulkCreate([
     {

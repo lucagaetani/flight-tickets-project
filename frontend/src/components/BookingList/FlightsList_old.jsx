@@ -1,52 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Container, Button, Grid, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { Container, Button, Grid, Typography, Paper, Box } from "@mui/material";
 import ButtonDisabled from "./ButtonDisabled";
-
-const columns = [
-  {
-    field: "flight_number",
-    headerName: "Flights Number",
-    width: 150,
-  },
-  {
-    field: "airline",
-    headerName: "Airline",
-    width: 150,
-  },
-  {
-    field: "fk_IATA_from",
-    headerName: "Airport From",
-    width: 300,
-  },
-  {
-    field: "fk_IATA_to",
-    headerName: "Airport To",
-    width: 300,
-  },
-  {
-    field: "departure",
-    headerName: "Departure",
-    width: 200,
-  },
-  {
-    field: "arrival",
-    headerName: "Arrival",
-    width: 200,
-  },
-  {
-    field: "price",
-    headerName: "Price",
-    width: 200,
-  },
-];
+import AirlineLogo from "./AirlineLogo";
 
 const FlightsList = () => {
-  const [selectedRowIdsDeparture, setSelectedRowIdsDeparture] = useState([]);
-  const [selectedRowIdsReturning, setSelectedRowIdsReturning] = useState([]);
   const [rowsDeparture, setRowsDeparture] = useState([]);
   const [rowsReturning, setRowsReturning] = useState([]);
+  const [selectedRowIdsDeparture, setSelectedRowIdsDeparture] = useState([]);
+  const [selectedRowIdsReturning, setSelectedRowIdsReturning] = useState([]);
+  const [priceDeparture, setPriceDeparture] = useState(0);
+  const [priceReturning, setPriceReturning] = useState(0);
   const [yesReturning, setYesReturning] = useState(true);
   const { state } = useLocation();
   const navigateTo = useNavigate();
@@ -100,7 +64,7 @@ const FlightsList = () => {
           }
         } else {
           {
-            alert(
+            console.log(
               `Error: ${data.message}${data.error ? ". " + data.error : ""}`
             );
           }
@@ -113,70 +77,221 @@ const FlightsList = () => {
     })();
   }, [navigateTo, state]);
 
-  const getRowId = (row) => row.flight_number;
-
-  const handleSelectionChangeDeparture = (newSelection) => {
-    setSelectedRowIdsDeparture(newSelection);
-  };
-
-  const handleSelectionChangeReturning = (newSelection) => {
-    setSelectedRowIdsReturning(newSelection);
-  };
-
-  const handleClick = () => {
+  const handleBack = () => {
     navigateTo("/");
   };
 
   return (
-    <Container minwidth="lg" minheight={300} sx={{ mt: 3, width: "100%" }}>
-      <Typography sx={{ mt: 3 }} variant="h5">
-        {`Choose a departure flight - ${state.formData.airportFrom} to ${state.formData.airportTo}`}
+    <Container minwidth="lg" sx={{ mt: 3, width: "100%" }}>
+      <Typography sx={{ mt: 3, mb: 1 }} variant="h5" fontWeight={"bold"}>
+        {state.formData.oneWay
+          ? `1. Choose departure flight`
+          : `1. Choose departure and returning flights`}
       </Typography>
 
-      <DataGrid
-        rows={rowsDeparture}
-        initialState={{
-          ...rowsDeparture.initialState,
-          pagination: { paginationModel: { pageSize: 5 } },
-        }}
-        pageSizeOptions={[5, 10]}
-        columns={columns}
-        getRowId={getRowId}
-        autoHeight
-        selectionModel={selectedRowIdsDeparture}
-        onRowSelectionModelChange={handleSelectionChangeDeparture}
-      />
-
-      {yesReturning && (
-        <Typography sx={{ mt: 3 }} variant="h5">
-          {`Choose a returning flight - ${state.formData.airportTo} to ${state.formData.airportFrom}`}
-        </Typography>
-      )}
-
-      {yesReturning && (
-        <DataGrid
-          rows={rowsReturning}
-          columns={columns}
-          pageSize={5}
-          getRowId={getRowId}
-          autoHeight
-          selectionModel={selectedRowIdsReturning}
-          onRowSelectionModelChange={handleSelectionChangeReturning}
-        />
-      )}
+      <Grid container spacing={3} columns={{ xs: 1, md: 2 }}>
+        {state.formData.oneWay ? (
+          <Grid
+            item
+            xs={1}
+            md={2}
+          >
+            <Typography
+              variant="h5"
+              sx={{ p: 2 }}
+            >
+              Departure flights from {state.formData.airportFrom} to{" "}
+              {state.formData.airportTo}
+            </Typography>
+            <Box
+              sx={{
+                overflow: "auto",
+                height: "450px",
+              }}
+            >
+              {rowsDeparture.map((flight, index) => (
+                <Paper
+                  elevation={selectedRowIdsDeparture[0] === flight.flight_number ? 3 : 1}
+                  sx={{
+                    backgroundColor: selectedRowIdsDeparture[0] === flight.flight_number ? "#D4D4D4" : "white",
+                    p: 2,
+                    ml: 2,
+                    mr: 2,
+                    mt: 2,
+                    transition: "0.5s linear",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setSelectedRowIdsDeparture([
+                      flight.flight_number,
+                    ]);
+                    setPriceDeparture(parseInt(flight.price));
+                  }}
+                  key={`Departure-` + index}
+                >
+                  <Grid container columns={3}>
+                    <Grid item xs={1}>
+                      <Typography fontWeight={"bold"}>
+                        {flight.flight_number}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={1}>
+                      <Box sx={{ height: "43px", width: "246px" }}>
+                        <AirlineLogo airline={flight.airline} />
+                      </Box>
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Typography>Departure: {flight.departure}</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Typography>Arrival: {flight.arrival}</Typography>
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Typography>Price: {flight.price}</Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              ))}
+            </Box>
+          </Grid>
+        ) : (
+          <>
+            <Grid
+              item
+              xs={1}
+              md={1}
+            >
+              <Typography
+                variant="h5"
+                sx={{ p: 2 }}
+              >
+                Departure flight from {state.formData.airportFrom} to{" "}
+                {state.formData.airportTo}
+              </Typography>
+              <Box sx={{ overflow: "auto", height: "500px", pb: 0.5 }}>
+                {rowsDeparture.map((flight, index) => (
+                  <Paper
+                    elevation={selectedRowIdsDeparture[0] === flight.flight_number ? 3 : 1}
+                    sx={{
+                      backgroundColor: selectedRowIdsDeparture[0] === flight.flight_number
+                        ? "#D4D4D4"
+                        : "white",
+                      p: 2,
+                      ml: 2,
+                      mr: 2,
+                      mt: 2,
+                      transition: "0.5s linear",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setSelectedRowIdsDeparture([
+                        flight.flight_number,
+                      ]);
+                      setPriceDeparture(parseInt(flight.price));
+                    }}
+                    key={`Departure-` + index}
+                  >
+                    <Grid container columns={3}>
+                      <Grid item xs={1}>
+                        <Typography fontWeight={"bold"}>
+                          {flight.flight_number}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={1}></Grid>
+                      <Grid item xs={1}>
+                        <AirlineLogo airline={flight.airline} />
+                      </Grid>
+                      <Grid item xs={1}>
+                        <Typography>Departure: {flight.departure}</Typography>
+                      </Grid>
+                      <Grid item xs={1}>
+                        <Typography>Arrival: {flight.arrival}</Typography>
+                      </Grid>
+                      <Grid item xs={1}>
+                        <Typography>Price: {flight.price}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                ))}
+              </Box>
+            </Grid>
+            <Grid
+              item
+              xs={1}
+              md={1}
+            >
+              <Typography
+                variant="h5"
+                sx={{ p: 2 }}
+              >
+                Returning flights from {state.formData.airportTo} to{" "}
+                {state.formData.airportFrom}
+              </Typography>
+              <Box sx={{ overflow: "auto", height: "450px", pb: 0.5 }}>
+                {rowsReturning.map((flight, index) => (
+                  <Paper
+                    elevation={selectedRowIdsReturning[0] === flight.flight_number ? 3 : 1}
+                    sx={{
+                      backgroundColor: selectedRowIdsReturning[0] === flight.flight_number
+                        ? "#D4D4D4"
+                        : "white",
+                      p: 2,
+                      ml: 2,
+                      mr: 2,
+                      mt: 2,
+                      transition: "0.5s linear",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setSelectedRowIdsReturning([
+                        flight.flight_number,
+                      ]);
+                      setPriceReturning(parseInt(flight.price));
+                    }}
+                    key={`Returning-` + index}
+                  >
+                    <Grid container columns={3}>
+                      <Grid item xs={1}>
+                        <Typography fontWeight={"bold"}>
+                          {flight.flight_number}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={1}></Grid>
+                      <Grid item xs={1}>
+                        <AirlineLogo airline={flight.airline} />
+                      </Grid>
+                      <Grid item xs={1}>
+                        <Typography>Departure: {flight.departure}</Typography>
+                      </Grid>
+                      <Grid item xs={1}>
+                        <Typography>Arrival: {flight.arrival}</Typography>
+                      </Grid>
+                      <Grid item xs={1}>
+                        <Typography>Price: {flight.price}</Typography>
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                ))}
+              </Box>
+            </Grid>
+          </>
+        )}
+      </Grid>
 
       <Grid
         container
-        spacing={3}
-        sx={{ mt: 3 }}
+        spacing={{ xs: 2, md: 3 }}
+        columns={{ xs: 6, sm: 8, md: 12 }}
+        sx={{ mt: 3, mb: 3 }}
         display={"flex"}
         justifyContent={"center"}
       >
         <Grid item xs={2}>
           <Button
+            onClick={handleBack}
+            sx={{ mt: 3, mr: 1 }}
             fullWidth
-            onClick={handleClick}
-            sx={{ mt: 2 }}
             variant="contained"
             color="primary"
           >
@@ -189,12 +304,15 @@ const FlightsList = () => {
             formData={state.formData}
             selectedDepartureFlight={selectedRowIdsDeparture}
             selectedReturningFlight={selectedRowIdsReturning}
+            priceDeparture={priceDeparture}
+            priceReturning={priceReturning}
             isDisabledReturning={selectedRowIdsReturning.length === 0}
           />
         ) : (
           <ButtonDisabled
             isDisabled={selectedRowIdsDeparture.length === 0}
             formData={state.formData}
+            priceDeparture={priceDeparture}
             selectedDepartureFlight={selectedRowIdsDeparture}
           />
         )}
