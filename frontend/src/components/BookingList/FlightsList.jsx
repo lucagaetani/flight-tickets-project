@@ -1,37 +1,40 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Container, Button, Grid, Typography, Paper, Box, CircularProgress, Tooltip } from "@mui/material";
-import ButtonDisabled from "./ButtonDisabled";
-import AirlineLogo from "./AirlineLogo";
+import { Container, Button, Grid, Typography, Box, CircularProgress, Tooltip } from "@mui/material";
 import DefaultDialog from "../DefaultDialog";
+import ItineraryRow from "./ItineraryRow";
 
 const FlightsList = () => {
+  const [openDialog, setOpenDialog] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRow, setSelectedRow] = useState([]);
-  const [price, setPrice] = useState(0);
+  const [selectedRow, setSelectedRow] = useState(-1);
   const [buttonConfirmDisabled, setButtonConfirmDisabled] = useState(true);
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
-  const [isLogged, setIsLogged] = useState(false);
   const { state } = useLocation();
   const navigateTo = useNavigate();
 
   useEffect(() => {
+    console.log(selectedRow);
+    if (selectedRow !== -1) {
+      setButtonConfirmDisabled(false);
+    }
   }, [selectedRow]);
 
   useEffect(() => {
-    console.log(contentDialog);
-    console.log(titleDialog);
-    setOpenDialog(true);
-  }, [contentDialog])
+    if (contentDialog !== "") {
+      setOpenDialog(true);
+    }
+  }, [contentDialog]);
 
   useEffect(() => {
+    console.log(state);
     const dataToSend = {
-      airportFrom: state.selectedDepartureFlight ? state.formData.airportTo : state.formData.airportFrom,
-      airportTo: state.selectedDepartureFlight ? state.formData.airportFrom : state.formData.airportTo,
-      date: state.selectedDepartureFlight ? state.formData.returningDate : state.formData.departingDate,
+      airportFrom: state.flightState ? state.formData.airportTo : state.formData.airportFrom,
+      airportTo: state.flightState ? state.formData.airportFrom : state.formData.airportTo,
+      date: state.flightState ? state.formData.returningDate : state.formData.departingDate,
     };
     (async () => {
       const requestOptions = {
@@ -45,7 +48,7 @@ const FlightsList = () => {
         const response = await fetch(url, requestOptions);
         const res = await response.json();
         if (res.success === true) {
-          console.log(res);
+          console.log(res.data);
           setRows(res.data);
         } else {
           {
@@ -70,28 +73,71 @@ const FlightsList = () => {
           requestOptions
         );
         const res = await response.json();
+        if (!res.success) {
+          setTitleDialog("Error");
+          setContentDialog(`You aren't logged in. Please log in to continue`);
+        } else {
+          setIsLogged(true);
+        }
       } catch (error) {
         {
           setTitleDialog("Error");
           setContentDialog(`Error: ${error}. Can't do fetch of auth.`);
-          setIsLogged(true);
         }
       }
+      setLoading(false);
     })();
-    setLoading(false);
   }, [navigateTo, state]);
 
   const handleBack = () => {
-
+    navigateTo("/");
   }
 
   const handleConfirm = () => {
-
-  }
+    const selectedDepartureItinerary = {
+      arrivalFrom: selectedRow.arrivalFrom,
+      arrivalTo: selectedRow.arrivalTo,
+      departure: selectedRow.departure,
+      arrival: selectedRow.arrival,
+      price: selectedRow.price,
+      estimatedC02: selectedRow.estimatedC02
+    };
   
-  const handleExpandedPaper = () => {
+    const flightState = {
+      formData: state.formData,
+      selectedDepartureItinerary: selectedDepartureItinerary,
+      selectedDepartureFlight: selectedRow.fk_flight_numbers,
+      priceDeparture: selectedRow.price
+    };
+  
+    if (state.formData.oneWay) {
+      navigateTo("/seats", { state: { flightState } });
+    } else if (!state.flightState) {
+      navigateTo("/booking", { state: { 
+        formData: state.formData,
+        flightState: flightState,
+       } });
+    } else {
+      const selectedReturningItinerary = {
+        arrivalFrom: selectedRow.arrivalFrom,
+        arrivalTo: selectedRow.arrivalTo,
+        departure: selectedRow.departure,
+        arrival: selectedRow.arrival,
+        price: selectedRow.price,
+        estimatedC02: selectedRow.estimatedC02
+      };
 
+      flightState.selectedReturningItinerary = selectedReturningItinerary;
+      flightState.selectedReturningFlight = selectedRow.fk_flight_numbers;
+      flightState.priceReturning = selectedRow.priceReturning;
+  
+      navigateTo("/seats", { state: { flightState } });
+    }
   }
+
+  const handlePaperClick = (row) => {
+    setSelectedRow(row);
+  };
 
   if (loading) {
     return (
@@ -112,11 +158,26 @@ const FlightsList = () => {
 
   return (
     <Container minwidth="lg" sx={{ mt: 3, width: "100%" }}>
-      <DefaultDialog toOpen={false} title={titleDialog} contentText={contentDialog} />
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} />
       <Typography sx={{ mt: 3, mb: 1 }} variant="h5" fontWeight={"bold"}>
         {state.formData.oneWay
-          ? `1. Choose flight`
-          : `1. Choose departure and returning flights`}
+          ? `1. Choose flight` 
+          : !state.flightState ? `1. Choose departure flight for ${state.formData.airportFrom} - ${state.formData.airportTo}` : `1. Choose returning flight for ${state.formData.airportTo} - ${state.formData.airportFrom}`}
+      </Typography>
+
+      <Typography>
+        Information inserted:
+        <br />
+        {state.formData.oneWay ? (
+          <>
+            • {state.formData.airportFrom} - {state.formData.airportTo} for the date {new Date(state.formData.departingDate).toLocaleString('en-GB').substring(0, 10)}
+          </>
+        ) : (
+          <>
+            • {state.formData.airportFrom} - {state.formData.airportTo} for the date {new Date(state.formData.departingDate).toLocaleString('en-GB').substring(0, 10)} <br />
+            • {state.formData.airportTo} - {state.formData.airportFrom} for the date {new Date(state.formData.returningDate).toLocaleString('en-GB').substring(0, 10)}
+          </>
+        )}
       </Typography>
 
       {rows.length === 0 ? (
@@ -132,39 +193,14 @@ const FlightsList = () => {
       </Box>
       ) : (
         rows.map((row, index) => (
-          <Paper key={`itinerary-`+index}>
-            <Grid 
-              container
-              columns={{ xs: 2, md: 3 }}
-            >
-              <Grid item xs={1} md={1}>
-                <Typography>
-                  {new Date(row.departure).getHours() + ":" + new Date(row.departure).getMinutes() + " -> " + new Date(row.arrival).getHours() + ":" + new Date(row.arrival).getMinutes()}
-                </Typography>
-              </Grid>
-              <Grid item xs={1} md={1}>
-                <Typography>
-                  row.price
-                </Typography>
-              </Grid>
-              <Grid item xs={1} md={1}>
-                <Typography>
-                  {!state.formData.oneWay ? "Direct" : state.selectedDepartureFlight ? "Departure" : "Arrival"}
-                </Typography>
-              </Grid>
-              <Grid item xs={2} md={1}>
-                <Button
-                  onClick={handleExpandedPaper}
-                  sx={{ mt: 3, mr: 1 }}
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                >
-                  Expand
-                </Button>
-              </Grid>
-            </Grid>
-          </Paper>
+          <ItineraryRow 
+            key={`itinerary-${row.id}`}
+            row={row}
+            index={index}
+            selected={selectedRow.id === row.id}
+            onPaperClick={() => handlePaperClick(row)}
+          />
+          
         ))
       )}
 
@@ -189,23 +225,22 @@ const FlightsList = () => {
         </Grid>
           {isLogged ? (
             <Grid item xs={2}>
-             <Button
-              onClick={handleConfirm}
-              disabled={disabled}
-              sx={{ mt: 3, mr: 1 }}
-              fullWidth
-              variant="contained"
-              color="primary"
-            >
-              Confirm
-            </Button>
+              <Button
+                onClick={handleConfirm}
+                disabled={buttonConfirmDisabled}
+                sx={{ mt: 3, mr: 1 }}
+                fullWidth
+                variant="contained"
+                color="primary"
+              >
+                Confirm
+              </Button>
             </Grid>
           ) : (
             <Tooltip title={"You have to be logged to continue"}>
               <Grid item xs={2}>
                 <Button
-                  onClick={handleConfirm}
-                  disabled={buttonConfirmDisabled}
+                  disabled={true}
                   sx={{ mt: 3, mr: 1 }}
                   fullWidth
                   variant="contained"

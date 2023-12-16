@@ -16,7 +16,7 @@ const getBookingsForUser = async (req, res, next) => {
     if (!user) {
       res.status(400).json({
         success: false,
-        message: "User sent not exists"
+        message: "User sent doesn't exists"
       });
     }
 

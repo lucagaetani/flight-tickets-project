@@ -8,14 +8,10 @@ import {
   Typography,
   Paper,
   Tooltip,
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
+  CircularProgress
 } from "@mui/material";
 import Cart from "../Cart";
+import DefaultDialog from "../DefaultDialog";
 
 const SeatPicker = () => {
   const [seats, setSeats] = useState([]);
@@ -51,6 +47,7 @@ const SeatPicker = () => {
   },[currentSelection])
 
   useEffect(() => {
+    console.log(state);
     if (currentSelection.seatName && currentSelection.seatNumber) {
       setSelectedSeats((prevSelectedSeats) => {
         if (
@@ -80,14 +77,12 @@ const SeatPicker = () => {
         };
         let seats;
         if (
-          state.flightState.selectedReturningFlight &&
-          state.flightState.selectedSeatsDeparture
+          (state.flightState?.selectedSeatsDeparture && state.flightState?.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length)
         ) {
           setSelectedSeats([]);
-          seats = state.flightState.selectedReturningFlight[0];
-          console.log(seats);
+          seats = state.flightState.selectedReturningFlight[state.flightState.selectedSeatsReturning.length];
         } else {
-          seats = state.flightState.selectedDepartureFlight[0];
+          seats = state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture ? state.flightState.selectedSeatsDeparture.length : 0];
         }
         const url = `http://localhost:3000/seats/getSeats?state=${encodeURIComponent(
           JSON.stringify(seats)
@@ -190,24 +185,7 @@ const SeatPicker = () => {
 
   return (
     <Box>
-      <Dialog
-        open={openDialogSeats}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{"Error"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Seat selected. Please choose another
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} autoFocus>
-            Ok
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DefaultDialog toOpen={openDialogSeats} title={"Error"} contentText={"Seat selected. Please choose another"} />
       {state.flightState.selectedReturningFlight ? (
         <Cart
           formData={state.flightState.formData}

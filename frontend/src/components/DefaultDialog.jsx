@@ -1,9 +1,13 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import PropTypes from 'prop-types';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const DefaultDialog = (props) => {
   const [open, setOpen] = useState(props.toOpen);
+
+  useEffect(() => {
+    setOpen(props.toOpen);
+  }, [props.toOpen]);
 
   const handleClose = () => {
     setOpen(false);

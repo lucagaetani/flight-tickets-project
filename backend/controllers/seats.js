@@ -8,9 +8,16 @@ const getSeatsForFlight = async (req, res, next) => {
     const seats = await Seats.findAll({
       attributes: ["seat_number","price","is_booked"],
       where: {
-        flight_number: seatsJSON
+        flight_number: seatsJSON.flight_number
       },
     });
+
+    if (!seats) {
+      return res.status(401).json({
+        success: false,
+        message: "No seats retrieved in this flight",
+      });
+    }
 
     return res.status(200).json({
       success: true,

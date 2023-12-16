@@ -74,11 +74,11 @@ const Navbar = () => {
           {console.log(userData)}
           {userData ? (
             <>
-              <Typography variant="body1" component="div" onClick={handleShowUser} ref={containerRef}>
+              <Typography variant="body1" component="div" sx={{ cursor: "pointer" }} onClick={handleShowUser} ref={containerRef}>
                   Hey, {userData.name + " " + userData.surname}!
               </Typography>
               {showUser && (
-                <Slide direction="left" in={showUser}>
+                <Slide direction="left" in={showUser} mountOnEnter unmountOnExit>
                   <Box
                     sx={{
                       display: "flex",
