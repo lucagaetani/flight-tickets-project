@@ -97,6 +97,7 @@ const SeatPicker = () => {
       } catch (error) {
         console.log(error);
       }
+      setLoading(false);
     })();
 
     setSelectedSeats(Array.from({length: (parseInt(adults))}, (_, i) => ({
@@ -113,8 +114,6 @@ const SeatPicker = () => {
         seatPrice: "",
       })),
     ]);
-
-    setLoading(false);
   }, [state, adults, children]);
 
   const handleClick = () => {

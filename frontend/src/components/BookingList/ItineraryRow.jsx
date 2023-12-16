@@ -44,7 +44,7 @@ const ItineraryRow = (props) => {
       >
         <Grid item xs={1} md={1}>
           <Typography>
-            {new Date(props.row.departure).getHours() + ":" + (new Date(props.row.departure).getMinutes() < 10 ? '0' : '') + new Date(props.row.departure).getMinutes() + " -> " + new Date(props.row.arrival).getHours() + ":" + (new Date(props.row.arrival).getMinutes() < 10 ? '0' : '') + new Date(props.row.arrival).getMinutes()}
+            {new Date(props.row.departure).getHours() + ":" + (new Date(props.row.departure).getMinutes() < 10 ? '0' : '') + new Date(props.row.departure).getMinutes() + " → " + new Date(props.row.arrival).getHours() + ":" + (new Date(props.row.arrival).getMinutes() < 10 ? '0' : '') + new Date(props.row.arrival).getMinutes()}
           </Typography>
         </Grid>
         <Grid item xs={1} md={1}>
