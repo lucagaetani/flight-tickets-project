@@ -57,12 +57,6 @@ Flights.belongsTo(Airlines, {
   as: "airline",
 });
 
-Flights.belongsToMany(Itineraries, {
-  through: 'ItineraryFlights', // This should be the same join table name
-  foreignKey: 'flightNumber', // Foreign key in the join table related to Flights
-  otherKey: 'itineraryId', // Foreign key in the join table related to Itineraries
-});
-
 async function insertFlights() {
   await Flights.bulkCreate([
     {
@@ -148,11 +142,11 @@ async function insertFlights() {
   ]);
 }
 
-
+/*
 (async () => {
     await Flights.sync({ force: true });
     insertFlights();
 })();
-
+*/
 
 module.exports = Flights;

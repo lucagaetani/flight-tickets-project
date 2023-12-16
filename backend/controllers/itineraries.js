@@ -4,6 +4,7 @@ const { validationResult } = require("express-validator");
 const Flights = require("../models/flights");
 const Airports = require("../models/airports");
 const Airlines = require("../models/airlines");
+const { Op } = require("@sequelize/core");
 
 const getItinerariesForBooking = async (req, res, next) => {
   try {
@@ -13,22 +14,36 @@ const getItinerariesForBooking = async (req, res, next) => {
 
     const itineraries = await Itineraries.findAll({
       where: {
-        airportFrom,
-        airportTo,
+        fk_IATA_from: airportFrom,
+        fk_IATA_to: airportTo,
         departure: dateToSearch
+      }
+    });
+
+    if (itineraries.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "Successfully retrieved all itineraries, but they are 0",
+        data: itineraries
+      });
+    }
+
+    const flights = await Flights.findAll({
+      where: {
+        flight_number: {
+          [Op.in]: itineraries.fk_flight_numbers
+        }
       },
       include: [
-        {
-          model: Flights,
-          include: [
-            { model: Airports, as: 'departureAirport', attributes: ['name'] },
-            { model: Airports, as: 'arrivalAirport', attributes: ['name'] },
-            { model: Airlines, as: 'airline', attributes: ['name'] },
-          ],
-          attributes: ['flight_number', 'fk_IATA_from', 'fk_IATA_to', 'departure', 'arrival', 'price', 'fk_airline'],
-        },
-      ],
+        { model: Airports, as: 'departureAirport', attributes: ['name'] },
+        { model: Airports, as: 'arrivalAirport', attributes: ['name'] },
+        { model: Airlines, as: 'airline', attributes: ['name'] },
+      ]
     });
+
+    for (let i=0; i<itineraries.fk_flight_numbers.length; i++) {
+      itineraries.fk_flight_numbers[i] = flights[i];
+    }
 
     res.status(200).json({
       success: true,

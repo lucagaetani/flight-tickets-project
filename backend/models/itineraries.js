@@ -45,12 +45,6 @@ const Itineraries = instanceSequelize.define(
   }
 );
 
-Itineraries.belongsToMany(Flights, {
-  through: 'ItineraryFlights', // This is the join table name
-  foreignKey: 'itineraryId', // Foreign key in the join table related to Itineraries
-  otherKey: 'flightNumber', // Foreign key in the join table related to Flights
-});
-
 async function insertItineraries() {
   await Itineraries.bulkCreate([
     {
@@ -119,11 +113,11 @@ async function insertItineraries() {
   ]);
 }
 
-
+/*
 (async () => {
     await Itineraries.sync({ force: true });
     insertItineraries();
 })();
-
+*/
 
 module.exports = Itineraries;
