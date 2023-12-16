@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
 const Airports = require("./airports");
 const Airlines = require("./airlines");
+const Itineraries = require("./itineraries");
 
 const Flights = instanceSequelize.define(
   "Flights",
@@ -54,6 +55,12 @@ Flights.belongsTo(Airports, {
 Flights.belongsTo(Airlines, {
   foreignKey: "fk_airline",
   as: "airline",
+});
+
+Flights.belongsToMany(Itineraries, {
+  through: 'ItineraryFlights', // This should be the same join table name
+  foreignKey: 'flightNumber', // Foreign key in the join table related to Flights
+  otherKey: 'itineraryId', // Foreign key in the join table related to Itineraries
 });
 
 async function insertFlights() {

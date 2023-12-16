@@ -8,7 +8,7 @@ const Airlines = require("../models/airlines");
 const getItinerariesForBooking = async (req, res, next) => {
   try {
     const decodedState = decodeURIComponent(req.query.state);
-    const { airportFrom, airportTo, date } = JSON.parse(decodedState).data;
+    const { airportFrom, airportTo, date } = JSON.parse(decodedState);
     const dateToSearch = new Date(date);
 
     const itineraries = await Itineraries.findAll({
@@ -40,7 +40,7 @@ const getItinerariesForBooking = async (req, res, next) => {
     res.status(500).json({
       success: false,
       message: "Failed retrieval of itineraries",
-      error
+      error: error.message
     });
   }
 }

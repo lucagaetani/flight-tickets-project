@@ -6,9 +6,9 @@ const Itineraries = instanceSequelize.define(
   "Itineraries",
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
     },
     fk_IATA_from: {
       type: DataTypes.STRING(3),
@@ -35,7 +35,7 @@ const Itineraries = instanceSequelize.define(
       allowNull: false
     },
     fk_flight_numbers: {
-      type: DataTypes.ARRAY,
+      type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false,
     }
   },
@@ -45,7 +45,11 @@ const Itineraries = instanceSequelize.define(
   }
 );
 
-Itineraries.hasMany(Flights, { foreignKey: 'fk_flight_numbers' });
+Itineraries.belongsToMany(Flights, {
+  through: 'ItineraryFlights', // This is the join table name
+  foreignKey: 'itineraryId', // Foreign key in the join table related to Itineraries
+  otherKey: 'flightNumber', // Foreign key in the join table related to Flights
+});
 
 async function insertItineraries() {
   await Itineraries.bulkCreate([
@@ -55,36 +59,61 @@ async function insertItineraries() {
       departure: "2024-02-20 12:00:00.000 +00:00",
       arrival: "2024-02-20 14:30:00.000 +00:00",
       price: "46.0",
+      estimatedCO2: "120",
       fk_flight_numbers: ["U2 4833"]
     },
     {
       fk_IATA_from: "VCE",
       fk_IATA_to: "ORY",
+      departure: "2024-02-20 15:00:00.000 +00:00",
+      arrival: "2024-02-20 17:30:00.000 +00:00",
+      price: "96.0",
+      estimatedCO2: "100",
       fk_flight_numbers: ["U2 4826"]
     },
     {
       fk_IATA_from: "VCE",
       fk_IATA_to: "ORY",
+      departure: "2024-02-21 12:00:00.000 +00:00",
+      arrival: "2024-02-21 14:30:00.000 +00:00",
+      price: "89.0",
+      estimatedCO2: "150",
       fk_flight_numbers: ["U2 4009"]
     },
     {
       fk_IATA_from: "VCE",
       fk_IATA_to: "ORY",
+      departure: "2024-02-22 18:00:00.000 +00:00",
+      arrival: "2024-02-23 07:30:00.000 +00:00",
+      price: "178.0",
+      estimatedCO2: "220",
       fk_flight_numbers: ["U2 2039", "U2 2835"]
     },
     {
       fk_IATA_from: "ORY",
       fk_IATA_to: "VCE",
+      departure: "2024-02-25 10:00:00.000 +00:00",
+      arrival: "2024-02-25 12:30:00.000 +00:00",
+      price: "50.0",
+      estimatedCO2: "150",
       fk_flight_numbers: ["U2 4826"]
     },
     {
       fk_IATA_from: "ORY",
       fk_IATA_to: "VCE",
+      departure: "2024-03-01 11:00:00.000 +00:00",
+      arrival: "2024-03-01 13:30:00.000 +00:00",
+      price: "160.0",
+      estimatedCO2: "100",
       fk_flight_numbers: ["AF 3294"]
     },
     {
       fk_IATA_from: "BNA",
       fk_IATA_to: "LHR",
+      departure: "2023-11-30 19:45:00.000 +00:00",
+      arrival: "2023-11-31 08:45:00.000 +00:00",
+      price: "120.0",
+      estimatedCO2: "150",
       fk_flight_numbers: ["BA 222"]
     },
   ]);
