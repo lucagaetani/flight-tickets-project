@@ -105,7 +105,7 @@ const getUsers = async (res, req, next) => {
 };
 
 const getUser = async (req, res, next) => {
-  const { email } = req.body;
+  const email = req;
 
   try {
     const user = await Users.findByPk(email);

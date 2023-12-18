@@ -2,8 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const WebSocket = require("ws");
-const wss = require("./middleware/websocket");
 const auth = require("./middleware/auth.js");
 const instanceSequelize = require("./database");
 //Per generare la stringa: node require("crypto").randomBytes(35).toString("hex")
@@ -27,26 +25,19 @@ app.use(cookieParser());
 //TOKEN VERIFICATION
 app.get("/auth", auth.verifyCookie);
 
-//WEBSERVER
-wss.on("connection", (ws) => {
-  console.log("WebSocket connection established");
-
-  ws.on("message", (message) => {
-    console.log(`Received message from client: ${message}`);
-  });
-});
-
 //ROUTERS
 const routerAirports = require("./routes/airports");
 const routerUsers = require("./routes/users");
 const routerFlights = require("./routes/flights");
 const routerSeats = require("./routes/seats");
-const routerItineraries = require("./routes/itineraries")
+const routerBookings = require("./routes/bookings");
+const routerItineraries = require("./routes/itineraries");
 
 app.use("/airports", routerAirports);
 app.use("/users", routerUsers);
 app.use("/flights", routerFlights);
 app.use("/seats", routerSeats);
+app.use("/bookings", routerBookings);
 app.use("/itineraries", routerItineraries);
 
 //DATABASE
@@ -73,10 +64,4 @@ app.get("/", function (req, res) {
 //LISTENER
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("App is listening on port " + listener.address().port);
-});
-
-listener.on("upgrade", (request, socket, head) => {
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit("connection", ws, request);
-  });
 });

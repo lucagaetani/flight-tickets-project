@@ -38,7 +38,7 @@ const SeatPicker = () => {
       seatNumber: "",
       seatPrice: "",
     });
-  }, [adults]);
+  }, [state]);
 
   useEffect(() => {
     if (currentSelection.seatName && currentSelection.seatNumber) {

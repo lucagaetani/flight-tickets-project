@@ -1,7 +1,7 @@
 //Routers for Airports
 const express = require("express");
 const { body } = require("express-validator");
-const bookingsController = require("../controllers/booking");
+const bookingsController = require("../controllers/bookings");
 
 const router = express.Router();
 
@@ -18,6 +18,6 @@ router.get("/getBookingsForUser", bookingsController.getBookingsForUser);
 
 router.get("/getBooking", bookingsController.getBooking);
 
-router.post("/insertOne", validateBooking, bookingsController.insertBookings);
+router.post("/insertBookings", validateBooking, bookingsController.insertBookings);
 
 module.exports = router;

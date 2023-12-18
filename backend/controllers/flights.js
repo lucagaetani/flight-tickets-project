@@ -105,9 +105,9 @@ const getFlightsForBooking = async (req, res, next) => {
 };
 
 const checkFlightForBooking = async (req, res, next) => {
-  const flightNumberDeparture = req.body;
+  const { flight_number } = req;
 
-  const existingFlightNumberDeparture = await Flights.findByPk({flightNumberDeparture, transaction});
+  const existingFlightNumberDeparture = await Flights.findByPk({flight_number, transaction});
     if (!existingFlightNumberDeparture) {
       return res.status(400).json({
         success: false,

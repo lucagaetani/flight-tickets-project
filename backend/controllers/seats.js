@@ -34,37 +34,37 @@ const getSeatsForFlight = async (req, res, next) => {
 };
 
 const checkSeatForBooking = async (req, res, next) => {
-  const { arraySeats, flight_number } = req.body;
+  const { seatNumber, flight_number } = req;
   try {
-    arraySeats.forEach(async (seat_number) => {
-      const check = Seats.findOne({
-        where: {
-          seat_number,
-          flight_number
-        }
-      });
-      if (!check) {
-        res.status(400).json({
-          success: false,
-          seat_number,
-          message: `Seat ${seat_number} doesn't exist`,
-        });
-      } else if (check.isBooked) {
-        res.status(400).json({
-          success: false,
-          seat_number: check.seat_number,
-          message: `Seat ${check.seat_number} has just booked`,
-        });
+    const check = Seats.findOne({
+      where: {
+        seat_number: seatNumber,
+        flight_number
       }
-    })
+    });
+
+    if (!check) {
+      return res.status(400).json({
+        success: false,
+        seat_number: seatNumber,
+        message: `Seat ${seat_number} doesn't exist`,
+      });
+    } else if (check.isBooked) {
+      return res.status(400).json({
+        success: false,
+        seat_number: check.seat_number,
+        message: `Seat ${check.seat_number} booked previously`,
+      });
+    }
+
     res.status(200).json({
       success: true,
-      message: "Successfully checked all seats"
+      message: "Successfully checked seat"
     });
   } catch(error) {
     res.status(500).json({
       success: false,
-      message: "Failed checking of seats",
+      message: "Failed checking of seat",
       error: error.message,
     });
   }

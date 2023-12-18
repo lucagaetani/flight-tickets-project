@@ -4,34 +4,17 @@ const seatsController = require("../controllers/seats");
 
 const router = express.Router();
 
+const validateSeats = [
+  //TODO: booking
+  /*
+  body("IATA_code").trim().notEmpty().isLength({ max: 3 }),
+  body("name").trim().notEmpty(),
+  body("country").trim().notEmpty(),
+  */
+];
+
 router.get("/getSeats", seatsController.getSeatsForFlight);
 
-router.post(
-  "/book",
-  [
-    // Add express-validator validation for the request body
-    // Example: check('flightNumber').isString().notEmpty(),
-    //         check('seats').isArray().notEmpty(),
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-
-    try {
-      const payload = req.body;
-      const result = await seatsController.bookSeats(payload);
-
-      res.json(result);
-    } catch (error) {
-      console.error(`Error handling /book route: ${error.message}`);
-      res
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
-    }
-  }
-);
+//router.post("/book", validateSeats, seatsController.bookSeats);
 
 module.exports = router;
