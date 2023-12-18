@@ -71,7 +71,6 @@ const Navbar = () => {
           </Typography>
           <Box sx={{ flexGrow: 1 }}>
           </Box>
-          {console.log(userData)}
           {userData ? (
             <>
               <Typography variant="body1" component="div" sx={{ cursor: "pointer" }} onClick={handleShowUser} ref={containerRef}>

@@ -1,27 +1,22 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import PropTypes from 'prop-types';
-import { useEffect, useState } from "react";
 
 const DefaultDialog = (props) => {
-  const [open, setOpen] = useState(props.toOpen);
-
-  useEffect(() => {
-    setOpen(props.toOpen);
-  }, [props.toOpen]);
 
   const handleClose = () => {
-    setOpen(false);
+    props.setOpenDialogFalse();
   };
 
   DefaultDialog.propTypes = {
     toOpen: PropTypes.bool.isRequired,
     title: PropTypes.string.isRequired,
-    contentText: PropTypes.string.isRequired
+    contentText: PropTypes.string.isRequired,
+    setOpenDialogFalse: PropTypes.func.isRequired
   };
 
   return (
     <Dialog
-      open={open}
+      open={props.toOpen}
       onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"

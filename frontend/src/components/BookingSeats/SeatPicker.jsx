@@ -41,16 +41,6 @@ const SeatPicker = () => {
   }, [adults]);
 
   useEffect(() => {
-    if (contentDialog) {
-      setOpenDialog(true);
-    }
-  }, [contentDialog]);
-
-  useEffect(() => {
-    console.log(selectedSeats);
-  },[selectedSeats]);
-
-  useEffect(() => {
     if (currentSelection.seatName && currentSelection.seatNumber) {
       setSelectedSeats((prevSelectedSeats) => {
         if (
@@ -141,6 +131,7 @@ const SeatPicker = () => {
     ) {
       setTitleDialog("Error");
       setContentDialog("Seat selected. Please choose another");
+      setOpenDialog(true);
     } else {
       setCurrentSelection((prevState) => ({
         ...prevState,
@@ -153,44 +144,47 @@ const SeatPicker = () => {
   const handleConfirm = () => {
     const flightState = state.flightState;
 
-    if (state.flightState.selectedReturningFlight) {
-      if (state.flightState.selectedSeatsDeparture && state.flightState?.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length) {
-        if (state.flightState.selectedReturningFlight && state.flightState?.selectedReturningFlight.length === state.flightState.selectedReturningFlight.length) {
-          flightState.selectedSeatsReturning[state.flightState.selectedReturningFlight.length] = [selectedSeats];
-          navigateTo("/info", { state: { flightState } });
-        } else {
-          if (flightState.selectedSeatsReturning) {
-            flightState.selectedSeatsReturning[state.flightState.selectedSeatsReturning.length] = [selectedSeats];
-            navigateTo("/seats", { state: { flightState } });
+    //First: i check if it's direct flight or not
+    if (!state.flightState.formData.oneWay) {
+      //It's not a direct flight: if the seats chosen (or not chosen) are in the same length of the number of flights, go forward, otherwise select seats for other flights
+      if (state.flightState.selectedSeatsDeparture) {
+        if (state.flightState.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length) {
+          if (state.flightState.selectedSeatsReturning) {
+            if (state.flightState.selectedSeatsReturning.length === state.flightState.selectedReturningFlight.length) {
+              flightState.selectedSeatsReturning[state.flightState.selectedReturningFlight.length] = [selectedSeats];
+              navigateTo("/info", { state: { flightState } });
+            } else {
+              flightState.selectedSeatsReturning[state.flightState.selectedSeatsReturning.length] = [selectedSeats];
+              navigateTo("/seats", { state: { flightState } });
+            }
           } else {
             flightState.selectedSeatsReturning = [];
             flightState.selectedSeatsReturning[0] = [selectedSeats];
             navigateTo("/seats", { state: { flightState } });
           }
-        }
-      } else {
-        if (flightState.selectedSeatsDeparture) {
+        } else {
           flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
           navigateTo("/seats", { state: { flightState } });
-        } else {
-          flightState.selectedSeatsDeparture = [];
-          flightState.selectedSeatsDeparture[0] = [selectedSeats];
-          navigateTo("/seats", { state: { flightState } });
         }
+      } else {
+        flightState.selectedSeatsDeparture = [];
+        flightState.selectedSeatsDeparture[0] = [selectedSeats];
+        navigateTo("/seats", { state: { flightState } });
       }
     } else {
-      if (state.flightState?.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length) {
-        flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
-        navigateTo("/info", { state: { flightState } });
-      } else {
-        if (flightState.selectedSeatsDeparture) {
+      //It's a direct flight: if the seats chosen (or not chosen) are in the same length of the number of flights, go forward, otherwise select seats for other flights
+      if (flightState.selectedSeatsDeparture) {
+        if (state.flightState.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length) {
+          flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
+          navigateTo("/info", { state: { flightState } });
+        } else {
           flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
           navigateTo("/seats", { state: { flightState } });
-        } else {
-          flightState.selectedSeatsDeparture = [];
-          flightState.selectedSeatsDeparture[0] = [selectedSeats];
-          navigateTo("/seats", { state: { flightState } });
         }
+      } else {
+        flightState.selectedSeatsDeparture = [];
+        flightState.selectedSeatsDeparture[0] = [selectedSeats];
+        navigateTo("/seats", { state: { flightState } });
       }
     }
   };
@@ -214,7 +208,7 @@ const SeatPicker = () => {
 
   return (
     <Box>
-      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} />
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
       {state.flightState.selectedReturningFlight ? (
         <Cart
           formData={state.flightState.formData}
@@ -233,6 +227,11 @@ const SeatPicker = () => {
       )}
 
       <Container maxWidth="lg">
+        <Typography sx={{ mt: 3, mb: 1 }} variant="h5" fontWeight={"bold"}>
+          {(state.flightState.formData.oneWay)
+            ? `2. Choose seats for ${state.flightState.formData.airportFrom} - ${state.flightState.formData.airportTo}` 
+            : (state.flightState.selectedDepartureFlight.length !== state.flightState.selectedSeatsDeparture.length) ? `2. Choose departure flight for ${state.flightState.formData.airportFrom} - ${state.flightState.formData.airportTo}` : `2. Choose returning flight for ${state.flightState.formData.airportTo} - ${state.flightState.formData.airportFrom}`}
+        </Typography>
         <Grid
           container
           columns={{ xs: 1, md: 2 }}
@@ -318,8 +317,8 @@ const SeatPicker = () => {
           </Grid>
           <Grid item xs={1} md={1} sx={{ mt: 1 }}>
             <Typography variant="h5">
-              {!state.flightState.selectedSeatsDeparture
-                ? `Choose a seat flight for ${state.flightState.formData.airportFrom} to ${state.flightState.formData.airportTo}`
+              {state.flightState.formData.oneWay
+                ? `Choose a seat flight for ${state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture ? state.flightState.selectedSeatsDeparture.length : 0].flight_number}`
                 : `Choose a seat flight for ${state.flightState.formData.airportTo} to ${state.flightState.formData.airportFrom}`}
             </Typography>
 
