@@ -24,7 +24,9 @@ const SeatPicker = () => {
   });
   const [loading, setLoading] = useState(true);
   const { adults, children } = state.flightState.formData;
-  const [openDialogSeats, setOpenDialogSeats] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [titleDialog, setTitleDialog] = useState("");
+  const [contentDialog, setContentDialog] = useState("");
   const navigateTo = useNavigate();
 
   useEffect(() => {
@@ -39,15 +41,16 @@ const SeatPicker = () => {
   }, [adults]);
 
   useEffect(() => {
+    if (contentDialog) {
+      setOpenDialog(true);
+    }
+  }, [contentDialog]);
+
+  useEffect(() => {
     console.log(selectedSeats);
-  }, [selectedSeats]);
+  },[selectedSeats]);
 
   useEffect(() => {
-    console.log(currentSelection);
-  },[currentSelection])
-
-  useEffect(() => {
-    console.log(state);
     if (currentSelection.seatName && currentSelection.seatNumber) {
       setSelectedSeats((prevSelectedSeats) => {
         if (
@@ -68,6 +71,7 @@ const SeatPicker = () => {
   }, [currentSelection]);
 
   useEffect(() => {
+    console.log(state);
     (async () => {
       try {
         const requestOptions = {
@@ -80,7 +84,7 @@ const SeatPicker = () => {
           (state.flightState?.selectedSeatsDeparture && state.flightState?.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length)
         ) {
           setSelectedSeats([]);
-          seats = state.flightState.selectedReturningFlight[state.flightState.selectedSeatsReturning.length];
+          seats = state.flightState.selectedReturningFlight[state.flightState.selectedSeatsReturning.length ? state.flightState.selectedSeatsReturning.length : 0];
         } else {
           seats = state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture ? state.flightState.selectedSeatsDeparture.length : 0];
         }
@@ -88,14 +92,16 @@ const SeatPicker = () => {
           JSON.stringify(seats)
         )}`;
         const response = await fetch(url, requestOptions);
-        const data = await response.json();
-        if (data.success) {
-          setSeats(data.data);
+        const res = await response.json();
+        if (res.success) {
+          setSeats(res.data);
         } else {
-          console.log(data.error);
+          setTitleDialog("Error");
+          setContentDialog(`Error: ${res.message}`);
         }
       } catch (error) {
-        console.log(error);
+        setTitleDialog("Error");
+        setContentDialog(`Error fetching data: ${error}`);
       }
       setLoading(false);
     })();
@@ -124,10 +130,6 @@ const SeatPicker = () => {
     navigateTo("/booking", { state: { formData } });
   };
 
-  const handleClose = () => {
-    setOpenDialogSeats(false);
-  };
-
   const handleSeatClick = (seatNumber, seatPrice) => {
     if (
       selectedSeats.find((obj) => {
@@ -137,8 +139,8 @@ const SeatPicker = () => {
         );
       })
     ) {
-      console.log("eee");
-      setOpenDialogSeats(true);
+      setTitleDialog("Error");
+      setContentDialog("Seat selected. Please choose another");
     } else {
       setCurrentSelection((prevState) => ({
         ...prevState,
@@ -152,16 +154,44 @@ const SeatPicker = () => {
     const flightState = state.flightState;
 
     if (state.flightState.selectedReturningFlight) {
-      if (state.flightState.selectedSeatsDeparture) {
-        flightState.selectedSeatsReturning = selectedSeats;
-        navigateTo("/info", { state: { flightState } });
+      if (state.flightState.selectedSeatsDeparture && state.flightState?.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length) {
+        if (state.flightState.selectedReturningFlight && state.flightState?.selectedReturningFlight.length === state.flightState.selectedReturningFlight.length) {
+          flightState.selectedSeatsReturning[state.flightState.selectedReturningFlight.length] = [selectedSeats];
+          navigateTo("/info", { state: { flightState } });
+        } else {
+          if (flightState.selectedSeatsReturning) {
+            flightState.selectedSeatsReturning[state.flightState.selectedSeatsReturning.length] = [selectedSeats];
+            navigateTo("/seats", { state: { flightState } });
+          } else {
+            flightState.selectedSeatsReturning = [];
+            flightState.selectedSeatsReturning[0] = [selectedSeats];
+            navigateTo("/seats", { state: { flightState } });
+          }
+        }
       } else {
-        flightState.selectedSeatsDeparture = selectedSeats;
-        navigateTo("/seats", { state: { flightState } });
+        if (flightState.selectedSeatsDeparture) {
+          flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
+          navigateTo("/seats", { state: { flightState } });
+        } else {
+          flightState.selectedSeatsDeparture = [];
+          flightState.selectedSeatsDeparture[0] = [selectedSeats];
+          navigateTo("/seats", { state: { flightState } });
+        }
       }
     } else {
-      flightState.selectedSeatsDeparture = selectedSeats;
-      navigateTo("/info", { state: { flightState } });
+      if (state.flightState?.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length) {
+        flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
+        navigateTo("/info", { state: { flightState } });
+      } else {
+        if (flightState.selectedSeatsDeparture) {
+          flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
+          navigateTo("/seats", { state: { flightState } });
+        } else {
+          flightState.selectedSeatsDeparture = [];
+          flightState.selectedSeatsDeparture[0] = [selectedSeats];
+          navigateTo("/seats", { state: { flightState } });
+        }
+      }
     }
   };
 
@@ -184,7 +214,7 @@ const SeatPicker = () => {
 
   return (
     <Box>
-      <DefaultDialog toOpen={openDialogSeats} title={"Error"} contentText={"Seat selected. Please choose another"} />
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} />
       {state.flightState.selectedReturningFlight ? (
         <Cart
           formData={state.flightState.formData}

@@ -12,6 +12,7 @@ import {
   Box,
   CircularProgress
 } from "@mui/material";
+import DefaultDialog from "../DefaultDialog";
 
 const LoginForm = () => {
   const navigateTo = useNavigate();
@@ -21,24 +22,21 @@ const LoginForm = () => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
+  const [titleDialog, setTitleDialog] = useState("");
+  const [contentDialog, setContentDialog] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const requestOptions = {
-      method: "GET",
-      credentials: "include",
-    };
-    (async () => {
-      try {
-        const response = await fetch("http://localhost:3000/auth", requestOptions);
-        const res = await response.json();
-          if (res.success === true) {
-            navigateTo("/");
-          }
-      } catch(error) {
-        console.log(`Error: ${error}. Can't do fetch of auth. Page rendered`);
-      }
-    })();
+    if (contentDialog) {
+      setOpenDialog(true);
+    }
+  }, [contentDialog]);
+
+  useEffect(() => {
+    if (localStorage.getItem("reduxState")) {
+      navigateTo("/");
+    }
     setLoading(false);
   }, [navigateTo]);
 
@@ -88,10 +86,12 @@ const LoginForm = () => {
             handleDispatch(res.data);
             navigateTo("/");
           } else {
-            console.log(`Error received: ${res.message}`);
+            setTitleDialog("Error");
+            setContentDialog(`Error: ${res.message}}`);
           }
         } catch(error) {
-          console.log(`Error received: ${error}`);
+          setTitleDialog("Error");
+          setContentDialog(`Error fetching data: ${error}`);
         }
       })();
     }
@@ -112,6 +112,7 @@ const LoginForm = () => {
 
   return (
     <Box height="80vh" display="flex">
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} />
       <form onSubmit={handleSubmit} style={{margin: "auto", p: 20}}>
         <Container maxWidth={'xs'} sx={{ mt: 6, mb: 3 }}>
           <Grid container spacing={3}>

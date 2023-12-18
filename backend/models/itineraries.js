@@ -86,11 +86,11 @@ async function insertItineraries() {
     {
       fk_IATA_from: "ORY",
       fk_IATA_to: "VCE",
-      departure: "2024-02-25 10:00:00.000 +00:00",
-      arrival: "2024-02-25 12:30:00.000 +00:00",
-      price: "50.0",
-      estimatedCO2: "150",
-      fk_flight_numbers: ["U2 4826"]
+      departure: "2024-02-20 15:00:00.000 +00:00",
+      arrival: "2024-02-20 17:30:00.000 +00:00",
+      price: "96.0",
+      estimatedCO2: "155",
+      fk_flight_numbers: ["U2 4890"]
     },
     {
       fk_IATA_from: "ORY",

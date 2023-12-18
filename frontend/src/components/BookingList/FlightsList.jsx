@@ -17,14 +17,13 @@ const FlightsList = () => {
   const navigateTo = useNavigate();
 
   useEffect(() => {
-    console.log(selectedRow);
     if (selectedRow !== -1) {
       setButtonConfirmDisabled(false);
     }
   }, [selectedRow]);
 
   useEffect(() => {
-    if (contentDialog !== "") {
+    if (contentDialog) {
       setOpenDialog(true);
     }
   }, [contentDialog]);
@@ -53,7 +52,7 @@ const FlightsList = () => {
         } else {
           {
             setTitleDialog("Error");
-            setContentDialog(`Error: ${res.message}${res.error ? ". " + res.error : ""}`);
+            setContentDialog(`Error: ${res.message}`);
           }
         }
       } catch (error) {
@@ -73,10 +72,7 @@ const FlightsList = () => {
           requestOptions
         );
         const res = await response.json();
-        if (!res.success) {
-          setTitleDialog("Error");
-          setContentDialog(`You aren't logged in. Please log in to continue`);
-        } else {
+        if (res.success) {
           setIsLogged(true);
         }
       } catch (error) {
@@ -94,31 +90,8 @@ const FlightsList = () => {
   }
 
   const handleConfirm = () => {
-    const selectedDepartureItinerary = {
-      arrivalFrom: selectedRow.arrivalFrom,
-      arrivalTo: selectedRow.arrivalTo,
-      departure: selectedRow.departure,
-      arrival: selectedRow.arrival,
-      price: selectedRow.price,
-      estimatedC02: selectedRow.estimatedC02
-    };
-  
-    const flightState = {
-      formData: state.formData,
-      selectedDepartureItinerary: selectedDepartureItinerary,
-      selectedDepartureFlight: selectedRow.fk_flight_numbers,
-      priceDeparture: selectedRow.price
-    };
-  
     if (state.formData.oneWay) {
-      navigateTo("/seats", { state: { flightState } });
-    } else if (!state.flightState) {
-      navigateTo("/booking", { state: { 
-        formData: state.formData,
-        flightState: flightState,
-       } });
-    } else {
-      const selectedReturningItinerary = {
+      const selectedDepartureItinerary = {
         arrivalFrom: selectedRow.arrivalFrom,
         arrivalTo: selectedRow.arrivalTo,
         departure: selectedRow.departure,
@@ -126,10 +99,48 @@ const FlightsList = () => {
         price: selectedRow.price,
         estimatedC02: selectedRow.estimatedC02
       };
+    
+      const flightState = {
+        formData: state.formData,
+        selectedDepartureItinerary: selectedDepartureItinerary,
+        selectedDepartureFlight: selectedRow.fk_flight_numbers,
+        priceDeparture: selectedRow.price
+      };
 
-      flightState.selectedReturningItinerary = selectedReturningItinerary;
+      navigateTo("/seats", { state: { flightState } });
+    } else if (!state.flightState) {
+      const selectedDepartureItinerary = {
+        arrivalFrom: selectedRow.arrivalFrom,
+        arrivalTo: selectedRow.arrivalTo,
+        departure: selectedRow.departure,
+        arrival: selectedRow.arrival,
+        price: selectedRow.price,
+        estimatedC02: selectedRow.estimatedC02
+      };
+    
+      const flightState = {
+        formData: state.formData,
+        selectedDepartureItinerary: selectedDepartureItinerary,
+        selectedDepartureFlight: selectedRow.fk_flight_numbers,
+        priceDeparture: selectedRow.price
+      };
+
+      navigateTo("/booking", { state: { 
+        formData: state.formData,
+        flightState: flightState,
+       } });
+    } else {
+      const flightState = state.flightState;
+      flightState.selectedReturningItinerary = {
+        arrivalFrom: selectedRow.arrivalFrom,
+        arrivalTo: selectedRow.arrivalTo,
+        departure: selectedRow.departure,
+        arrival: selectedRow.arrival,
+        price: selectedRow.price,
+        estimatedC02: selectedRow.estimatedC02
+      };
       flightState.selectedReturningFlight = selectedRow.fk_flight_numbers;
-      flightState.priceReturning = selectedRow.priceReturning;
+      flightState.priceReturning = selectedRow.price;
   
       navigateTo("/seats", { state: { flightState } });
     }
@@ -161,7 +172,7 @@ const FlightsList = () => {
       <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} />
       <Typography sx={{ mt: 3, mb: 1 }} variant="h5" fontWeight={"bold"}>
         {state.formData.oneWay
-          ? `1. Choose flight` 
+          ? `1. Choose flight for ${state.formData.airportFrom} - ${state.formData.airportTo}` 
           : !state.flightState ? `1. Choose departure flight for ${state.formData.airportFrom} - ${state.formData.airportTo}` : `1. Choose returning flight for ${state.formData.airportTo} - ${state.formData.airportFrom}`}
       </Typography>
 
