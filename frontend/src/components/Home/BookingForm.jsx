@@ -12,11 +12,19 @@ import {
   Container,
   Grid,
   Box,
-  CircularProgress
+  CircularProgress,
+  Tooltip,
+  FormHelperText
 } from "@mui/material";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import DefaultDialog from "../DefaultDialog";
+import { faRepeat } from '@fortawesome/free-solid-svg-icons';
 
 const BookingForm = () => {
   const navigateTo = useNavigate();
+  const [titleDialog, setTitleDialog] = useState("");
+  const [contentDialog, setContentDialog] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     airportFrom: "",
@@ -37,15 +45,18 @@ const BookingForm = () => {
       const airports = "http://localhost:3000/airports/getAirports";
       try {
         const response = await fetch(airports);
-        const data = await response.json();
-        if (data.error) {
-          throw data.message;
+        const res = await response.json();
+        if (res.success) {
+          setAirports(res.data);
+        } else {
+          setTitleDialog("Error");
+          setContentDialog(`Error: ${res.message}`);
+          setOpenDialog(true);
         }
-        setAirports(data.data);
       } catch (error) {
-        {
-          alert(`Error fetching data: ${error}`);
-        }
+        setTitleDialog("Error");
+        setContentDialog(`Error fetching data: ${error}`);
+        setOpenDialog(true);
       }
     })();
 
@@ -67,19 +78,22 @@ const BookingForm = () => {
 
     const newErrors = {};
     if (!formData.airportFrom) {
-      newErrors.airportFrom = "Airport From is required";
+      newErrors.airportFrom = "Departure airport is required";
     }
     if (!formData.airportTo) {
-      newErrors.airportTo = "Airport To is required";
+      newErrors.airportTo = "Arrival airport is required";
     }
     if (!formData.departingDate) {
-      newErrors.departingDate = "Departing Date is required";
+      newErrors.departingDate = "Departing date is required";
     }
     if (!formData.oneWay && !formData.returningDate) {
-      newErrors.returningDate = "Returning Date is required";
+      newErrors.returningDate = "Returning date is required";
     }
     if (formData.adults === "0") {
       newErrors.adults = "It has to be at least 1 adult passenger";
+    }
+    if (new Date(formData.departingDate).getTime() >= new Date(formData.returningDate).getTime()) {
+      newErrors.returningDate = "Returning Date must be after departing date";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -104,168 +118,174 @@ const BookingForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Container maxWidth="lg" sx={{ mt: 3, mb: 3, border: "1px solid #C4C4C4", borderRadius: "1rem", padding: "20px" }}>
-        <Grid container spacing={3}>
-          <Grid item xs={4}>
-            <FormControl fullWidth>
-              <InputLabel id="airportFromLabel">Airport From</InputLabel>
-              <Select
-                labelId="airportFromLabel"
-                id="airportFrom"
-                name="airportFrom"
-                value={formData.airportFrom}
-                onChange={handleChange}
-                error={!!errors.airportFrom}
-                helperText={errors.airportFrom}
-                label="Airport From"
-                MenuProps={{
-                  anchorOrigin: {
-                    vertical: "bottom",
-                    horizontal: "center",
-                  },
-                  transformOrigin: {
-                    vertical: "top",
-                    horizontal: "center",
-                  },
-                }}
-              >
-                {airports.map((airport) => (
-                  <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
-                    {airport.name} ({airport.country})
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Departing Date"
-              type="date"
-              name="departingDate"
-              fullWidth
-              value={formData.departingDate}
-              onChange={handleChange}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              error={!!errors.departingDate}
-              helperText={errors.departingDate}
-            />
-          </Grid>
-          <Grid item xs={4} sx={{ display: "grid", justifyContent: "center" }}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.oneWay}
+    <Box>
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
+      <form onSubmit={handleSubmit}>
+        <Container maxWidth="lg" sx={{ mt: 3, mb: 3, border: "1px solid #C4C4C4", borderRadius: "1rem", padding: "20px" }}>
+          <Grid container spacing={3} columns={{ xs: 1, md: 3 }}>
+            <Grid item xs={1} md={1} sx={{ display: "flex" }}>
+              <FormControl sx={{width:"80%"}} error={!!errors.airportFrom}>
+                <InputLabel id="airportFromLabel">Airport From</InputLabel>
+                <Select
+                  labelId="airportFromLabel"
+                  id="airportFrom"
+                  name="airportFrom"
+                  value={formData.airportFrom}
                   onChange={handleChange}
-                  name="oneWay"
-                />
-              }
-              label="One Way"
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <FormControl fullWidth>
-              <InputLabel id="airportToLabel">Airport To</InputLabel>
-              <Select
-                labelId="airportToLabel"
-                id="airportTo"
-                name="airportTo"
-                value={formData.airportTo}
-                onChange={handleChange}
-                error={!!errors.airportTo}
-                helperText={errors.airportTo}
-                label="Airport To"
-              >
-                {airports.map((airport) => (
-                  <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
-                    {airport.name} ({airport.country})
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={4}>
-            {!formData.oneWay && (
+                  label="Airport From"
+                  MenuProps={{
+                    anchorOrigin: {
+                      vertical: "bottom",
+                      horizontal: "center",
+                    },
+                    transformOrigin: {
+                      vertical: "top",
+                      horizontal: "center",
+                    },
+                  }}
+                >
+                  {airports.map((airport) => (
+                    <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
+                      {airport.name} ({airport.country})
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>{errors.airportFrom}</FormHelperText>
+              </FormControl>
+              <Box sx={{ mt:2.5, ml:3.5 , cursor: "pointer" }}>
+                <Tooltip title="Switch airports">
+                  <FontAwesomeIcon icon={faRepeat} onClick={() => setFormData({ ...formData, airportFrom: formData.airportTo, airportTo: formData.airportFrom })}/>
+                </Tooltip>
+              </Box>
+            </Grid>
+            <Grid item xs={1} md={1}>
               <TextField
-                label="Returning Date"
+                label="Departing Date"
                 type="date"
-                name="returningDate"
+                name="departingDate"
                 fullWidth
-                value={formData.returningDate}
+                value={formData.departingDate}
                 onChange={handleChange}
                 InputLabelProps={{
                   shrink: true,
                 }}
-                error={!!errors.returningDate}
-                helperText={errors.returningDate}
+                error={!!errors.departingDate}
+                helperText={errors.departingDate}
               />
-            )}
+            </Grid>
+            <Grid item xs={1} md={1} sx={{ display: "grid", justifyContent: "center" }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.oneWay}
+                    onChange={handleChange}
+                    name="oneWay"
+                  />
+                }
+                label="One Way"
+              />
+            </Grid>
+            <Grid item xs={1} md={1}>
+              <FormControl fullWidth error={!!errors.airportTo}>
+                <InputLabel id="airportToLabel">Airport To</InputLabel>
+                <Select
+                  labelId="airportToLabel"
+                  id="airportTo"
+                  name="airportTo"
+                  value={formData.airportTo}
+                  onChange={handleChange}
+                  label="Airport To"
+                >
+                  {airports.map((airport) => (
+                    <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
+                      {airport.name} ({airport.country})
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>{errors.airportTo}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={1} md={1}>
+              {!formData.oneWay && (
+                <TextField
+                  label="Returning Date"
+                  type="date"
+                  name="returningDate"
+                  fullWidth
+                  value={formData.returningDate}
+                  onChange={handleChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  error={!!errors.returningDate}
+                  helperText={errors.returningDate}
+                />
+              )}
+            </Grid>
+            <Grid item xs={1} md={1}></Grid>
+            <Grid item xs={1} md={1}>
+              <TextField
+                label="Adults"
+                type="number"
+                name="adults"
+                fullWidth
+                InputProps={{
+                  inputProps: {
+                    max: 5,
+                    min: 0,
+                  },
+                }}
+                value={formData.adults}
+                onChange={handleChange}
+                error={!!errors.adults}
+                helperText={errors.adults}
+              />
+            </Grid>
+            <Grid item xs={1} md={1}>
+              <TextField
+                label="Children"
+                type="number"
+                name="children"
+                fullWidth
+                InputProps={{
+                  inputProps: {
+                    max: 5,
+                    min: 0,
+                  },
+                }}
+                value={formData.children}
+                onChange={handleChange}
+                error={!!errors.children}
+                helperText={errors.children}
+              />
+            </Grid>
+            <Grid item xs={1} md={1}>
+              <TextField
+                label="Infants"
+                type="number"
+                name="infants"
+                fullWidth
+                InputProps={{
+                  inputProps: {
+                    max: 1,
+                    min: 0,
+                  },
+                }}
+                value={formData.infants}
+                onChange={handleChange}
+                error={!!errors.infants}
+                helperText={errors.infants}
+              />
+            </Grid>
+            <Grid item xs={1} md={3} sx={{ display: "grid", justifyContent: "center" }}>
+              <Button type="submit" variant="contained" color="primary">
+                Search
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item xs={4}></Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Adults"
-              type="number"
-              name="adults"
-              fullWidth
-              InputProps={{
-                inputProps: {
-                  max: 9,
-                  min: 0,
-                },
-              }}
-              value={formData.adults}
-              onChange={handleChange}
-              error={!!errors.adults}
-              helperText={errors.adults}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Children"
-              type="number"
-              name="children"
-              fullWidth
-              InputProps={{
-                inputProps: {
-                  max: 9,
-                  min: 0,
-                },
-              }}
-              value={formData.children}
-              onChange={handleChange}
-              error={!!errors.children}
-              helperText={errors.children}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <TextField
-              label="Infants"
-              type="number"
-              name="infants"
-              fullWidth
-              InputProps={{
-                inputProps: {
-                  max: 9,
-                  min: 0,
-                },
-              }}
-              value={formData.infants}
-              onChange={handleChange}
-              error={!!errors.infants}
-              helperText={errors.infants}
-            />
-          </Grid>
-          <Grid item xs={12} sx={{ display: "grid", justifyContent: "center" }}>
-            <Button type="submit" variant="contained" color="primary">
-              Search
-            </Button>
-          </Grid>
-        </Grid>
-      </Container>
-    </form>
+        </Container>
+      </form>
+    </Box>
   );
 };
 

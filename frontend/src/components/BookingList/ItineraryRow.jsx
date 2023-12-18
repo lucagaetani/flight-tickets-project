@@ -1,4 +1,4 @@
-import { Button, Grid, Paper, Slide, Typography } from "@mui/material";
+import { Button, Collapse, Grid, Paper, Typography } from "@mui/material";
 import PropTypes from 'prop-types';
 import { useState } from "react";
 import AirlineLogo from "./AirlineLogo";
@@ -77,8 +77,7 @@ const ItineraryRow = (props) => {
             {expandedPaper ? "Hide" : "Expand"}
           </Button>
         </Grid>
-        {expandedPaper && (
-          <Slide direction="down">
+          <Collapse direction="vertical" in={expandedPaper}>
             <>
                 {props.row.fk_flight_numbers.map((flight,index) => (
                   <Grid 
@@ -128,10 +127,9 @@ const ItineraryRow = (props) => {
                     </Grid>
                   </Grid>
                 ))}
-            </>
-          </Slide>
-        )}
-      </Grid>
+              </>
+            </Collapse>
+        </Grid>
     </Paper>
   );
 }

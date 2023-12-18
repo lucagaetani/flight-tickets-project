@@ -28,12 +28,6 @@ const LoginForm = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (contentDialog) {
-      setOpenDialog(true);
-    }
-  }, [contentDialog]);
-
-  useEffect(() => {
     if (localStorage.getItem("reduxState")) {
       navigateTo("/");
     }
@@ -87,11 +81,13 @@ const LoginForm = () => {
             navigateTo("/");
           } else {
             setTitleDialog("Error");
-            setContentDialog(`Error: ${res.message}}`);
+            setContentDialog(`${res.message}`);
+            setOpenDialog(true);
           }
         } catch(error) {
           setTitleDialog("Error");
           setContentDialog(`Error fetching data: ${error}`);
+          setOpenDialog(true);
         }
       })();
     }

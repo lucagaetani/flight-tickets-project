@@ -1,7 +1,7 @@
 import { AppBar, Box, Toolbar, Typography, Button, Slide } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlaneDeparture } from '@fortawesome/free-solid-svg-icons';
+import { faPlaneDeparture, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef } from "react";
 import DefaultDialog from "./DefaultDialog";
 
@@ -83,18 +83,17 @@ const Navbar = () => {
                       <Button
                         color="inherit"
                         onClick={handleOpenProfile}
-                        sx={{ marginLeft: 2 }}
                       >
-                        Open profile
+                        Profile
                       </Button>
-                      <Button color="inherit" onClick={handleLogout} sx={{ marginLeft: 2 }}>
+                      <Button color="inherit" onClick={handleLogout} >
                         Logout
                       </Button>
                     </Box>
                 </Slide>
               </Box>
               <Typography variant="body1" component="div" sx={{ cursor: "pointer", ":hover": { opacity: "0.8" } }} onClick={handleShowUser}>
-                Hey, {userData.name + " " + userData.surname}!
+                <FontAwesomeIcon icon={faUser} />
               </Typography>
             </>
           ) : (

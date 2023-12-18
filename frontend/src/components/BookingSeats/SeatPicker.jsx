@@ -156,39 +156,39 @@ const SeatPicker = () => {
         if ((flightState.selectedSeatsDeparture.length+1) === flightState.selectedDepartureFlight.length) {
           if (flightState.selectedSeatsReturning) {
             if ((flightState.selectedSeatsReturning.length+1) === flightState.selectedReturningFlight.length) {
-              flightState.selectedSeatsReturning[flightState.selectedReturningFlight.length] = [selectedSeats];
+              flightState.selectedSeatsReturning[flightState.selectedReturningFlight.length] = selectedSeats;
               navigateTo("/info", { state: { flightState } });
             } else {
-              flightState.selectedSeatsReturning[flightState.selectedSeatsReturning.length] = [selectedSeats];
+              flightState.selectedSeatsReturning[flightState.selectedSeatsReturning.length] = selectedSeats;
               navigateTo("/seats", { state: { flightState } });
             }
           } else {
             flightState.selectedSeatsReturning = [];
-            flightState.selectedSeatsReturning[0] = [selectedSeats];
+            flightState.selectedSeatsReturning[0] = selectedSeats;
             navigateTo("/seats", { state: { flightState } });
           }
         } else {
-          flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
+          flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = selectedSeats;
           navigateTo("/seats", { state: { flightState } });
         }
       } else {
         flightState.selectedSeatsDeparture = [];
-        flightState.selectedSeatsDeparture[0] = [selectedSeats];
+        flightState.selectedSeatsDeparture[0] = selectedSeats;
         navigateTo("/seats", { state: { flightState } });
       }
     } else {
       //It's a direct flight: if the seats chosen (or not chosen) are in the same length of the number of flights, go forward, otherwise select seats for other flights
       if (flightState.selectedSeatsDeparture) {
         if ((state.flightState.selectedSeatsDeparture.length+1) === state.flightState.selectedDepartureFlight.length) {
-          flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
+          flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = selectedSeats;
           navigateTo("/info", { state: { flightState } });
         } else {
-          flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
+          flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = selectedSeats;
           navigateTo("/seats", { state: { flightState } });
         }
       } else {
         flightState.selectedSeatsDeparture = [];
-        flightState.selectedSeatsDeparture[0] = [selectedSeats];
+        flightState.selectedSeatsDeparture[0] = selectedSeats;
         navigateTo("/seats", { state: { flightState } });
       }
     }

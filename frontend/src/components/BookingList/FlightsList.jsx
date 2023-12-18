@@ -23,12 +23,6 @@ const FlightsList = () => {
   }, [selectedRow]);
 
   useEffect(() => {
-    if (contentDialog) {
-      setOpenDialog(true);
-    }
-  }, [contentDialog]);
-
-  useEffect(() => {
     console.log(state);
     const dataToSend = {
       airportFrom: state.flightState ? state.formData.airportTo : state.formData.airportFrom,
@@ -53,12 +47,14 @@ const FlightsList = () => {
           {
             setTitleDialog("Error");
             setContentDialog(`Error: ${res.message}`);
+            setOpenDialog(true);
           }
         }
       } catch (error) {
         {
           setTitleDialog("Error");
           setContentDialog(`Error fetching data: ${error}`);
+          setOpenDialog(true);
         }
       }
 
@@ -79,6 +75,7 @@ const FlightsList = () => {
         {
           setTitleDialog("Error");
           setContentDialog(`Error: ${error}. Can't do fetch of auth.`);
+          setOpenDialog(true);
         }
       }
       setLoading(false);
