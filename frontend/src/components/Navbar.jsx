@@ -3,15 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlaneDeparture } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef } from "react";
+import DefaultDialog from "./DefaultDialog";
 
 const Navbar = () => {
   const navigateTo = useNavigate();
   const [showUser, setShowUser] = useState(false);
   let userData = JSON.parse(localStorage.getItem("reduxState")) ? JSON.parse(localStorage.getItem("reduxState")).userData : null;
+  const [titleDialog, setTitleDialog] = useState("");
+  const [contentDialog, setContentDialog] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
   const containerRef = useRef(null);
 
   const handleShowUser = () => {
-    setShowUser(!showUser);
+    setShowUser((prev) => (!prev));
   }
 
   const handleOpenProfile = () => {
@@ -26,32 +30,25 @@ const Navbar = () => {
         "Content-Type": "application/json",
       },
     };
-    fetch("http://localhost:3000/users/logout", requestOptions, {
-      credentials: "same-origin",
-    })
-      .then((response) => response.json())
-      .then((res) => {
-        console.log(JSON.stringify(res));
-        if (res.success === true) {
+
+    (async () => {
+      try {
+        const response = await fetch("http://localhost:3000/users/logout", requestOptions, {
+          credentials: "same-origin",
+        });
+        const res = await response.json();
+        if (res.success) {
           localStorage.removeItem("reduxState");
-          {
-            alert(
-              "You correctly logout from the site and will be redirected to the homepage"
-            );
-          }
           {
             window.location.reload(false);
           }
-          navigateTo("/");
-        } else {
-          {
-            alert(
-              `Error received: ${res.message}. You will be redirect to the homepage`
-            );
-          }
-          navigateTo("/");
         }
-      });
+      } catch(error) {
+        setTitleDialog("Error");
+        setContentDialog(`Error received: ${error}`);
+        setOpenDialog(true);
+      }
+    })();
   };
 
   const handleLogin = () => {
@@ -63,7 +60,8 @@ const Navbar = () => {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, overflow: "hidden" }}>
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} handleOkButton={() => navigateTo("/")} />
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ cursor: "pointer" }} onClick={goToHome}>
@@ -73,32 +71,31 @@ const Navbar = () => {
           </Box>
           {userData ? (
             <>
-              <Typography variant="body1" component="div" sx={{ cursor: "pointer" }} onClick={handleShowUser} ref={containerRef}>
-                  Hey, {userData.name + " " + userData.surname}!
-              </Typography>
-              {showUser && (
-                <Slide direction="left" in={showUser} mountOnEnter unmountOnExit>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                    }}
-                    ref={containerRef}
-                  >
-                    <Button
-                      color="inherit"
-                      onClick={handleOpenProfile}
-                      sx={{ marginLeft: 2 }}
+              <Box sx={{ overflow: "hidden" }} container={containerRef}>
+                <Slide direction="left" in={showUser} mountOnEnter unmountOnExit container={containerRef.current}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
                     >
-                      Open profile
-                    </Button>
-                    <Button color="inherit" onClick={handleLogout} sx={{ marginLeft: 2 }}>
-                      Logout
-                    </Button>
-                  </Box>
+                      <Button
+                        color="inherit"
+                        onClick={handleOpenProfile}
+                        sx={{ marginLeft: 2 }}
+                      >
+                        Open profile
+                      </Button>
+                      <Button color="inherit" onClick={handleLogout} sx={{ marginLeft: 2 }}>
+                        Logout
+                      </Button>
+                    </Box>
                 </Slide>
-              )}
+              </Box>
+              <Typography variant="body1" component="div" sx={{ cursor: "pointer", ":hover": { opacity: "0.8" } }} onClick={handleShowUser}>
+                Hey, {userData.name + " " + userData.surname}!
+              </Typography>
             </>
           ) : (
             <Button color="inherit" onClick={handleLogin}>

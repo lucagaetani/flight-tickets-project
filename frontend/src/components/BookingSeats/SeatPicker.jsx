@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   Grid,
@@ -59,6 +59,11 @@ const SeatPicker = () => {
       });
     }
   }, [currentSelection]);
+
+  useEffect(() => {
+    console.log("Selected seats: ");
+    console.log(selectedSeats)
+  }, [selectedSeats]);
 
   useEffect(() => {
     console.log(state);
@@ -145,16 +150,16 @@ const SeatPicker = () => {
     const flightState = state.flightState;
 
     //First: i check if it's direct flight or not
-    if (!state.flightState.formData.oneWay) {
+    if (!flightState.formData.oneWay) {
       //It's not a direct flight: if the seats chosen (or not chosen) are in the same length of the number of flights, go forward, otherwise select seats for other flights
-      if (state.flightState.selectedSeatsDeparture) {
-        if (state.flightState.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length) {
-          if (state.flightState.selectedSeatsReturning) {
-            if (state.flightState.selectedSeatsReturning.length === state.flightState.selectedReturningFlight.length) {
-              flightState.selectedSeatsReturning[state.flightState.selectedReturningFlight.length] = [selectedSeats];
+      if (flightState.selectedSeatsDeparture) {
+        if ((flightState.selectedSeatsDeparture.length+1) === flightState.selectedDepartureFlight.length) {
+          if (flightState.selectedSeatsReturning) {
+            if ((flightState.selectedSeatsReturning.length+1) === flightState.selectedReturningFlight.length) {
+              flightState.selectedSeatsReturning[flightState.selectedReturningFlight.length] = [selectedSeats];
               navigateTo("/info", { state: { flightState } });
             } else {
-              flightState.selectedSeatsReturning[state.flightState.selectedSeatsReturning.length] = [selectedSeats];
+              flightState.selectedSeatsReturning[flightState.selectedSeatsReturning.length] = [selectedSeats];
               navigateTo("/seats", { state: { flightState } });
             }
           } else {
@@ -174,7 +179,7 @@ const SeatPicker = () => {
     } else {
       //It's a direct flight: if the seats chosen (or not chosen) are in the same length of the number of flights, go forward, otherwise select seats for other flights
       if (flightState.selectedSeatsDeparture) {
-        if (state.flightState.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length) {
+        if ((state.flightState.selectedSeatsDeparture.length+1) === state.flightState.selectedDepartureFlight.length) {
           flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = [selectedSeats];
           navigateTo("/info", { state: { flightState } });
         } else {
@@ -253,9 +258,9 @@ const SeatPicker = () => {
             >
               {seats.map((seat, index) => {
                 return (
-                  <>
+                  <React.Fragment key={seat.seat_number}>
                     <Tooltip title={seat.price + "€"}>
-                      <Grid item xs={2.5} key={seat.seat_number}>
+                      <Grid item xs={2.5}>
                         <Typography
                           component={"span"}
                           sx={{ backgroundColor: "inherit" }}
@@ -310,7 +315,7 @@ const SeatPicker = () => {
                         {}
                       </Grid>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })}
             </Grid>
@@ -364,15 +369,7 @@ const SeatPicker = () => {
                             }).seatNumber)
                           : "";
                       }
-                      {
-                        selectedSeats.find((obj) => {
-                          return obj.seatName === `adult-${index}`;
-                        })
-                          ? (selectedPrice = selectedSeats.find((obj) => {
-                              return obj.seatName === `adult-${index}`;
-                            }).seatPrice)
-                          : "";
-                      }
+
                       setCurrentSelection({
                         seatName: `adult-${index}`,
                         seatNumber: selectedSeat ? selectedSeat : "",
@@ -383,11 +380,9 @@ const SeatPicker = () => {
                     <Typography variant="h6">Adult {index + 1}</Typography>
                     <Typography sx={{ mt: 2 }}>
                       Selected Seat:{" "}
-                      {selectedSeats[index].seatNumber
-                        ? selectedSeats.find((obj) => {
+                      {selectedSeats.find((obj) => {
                             return obj.seatName === `adult-${index}`;
-                          }).seatNumber
-                        : "none"}
+                      }).seatNumber}
                     </Typography>
                   </Paper>
                 ))
@@ -427,15 +422,6 @@ const SeatPicker = () => {
                             }).seatNumber)
                           : "";
                       }
-                      {
-                        selectedSeats.find((obj) => {
-                          return obj.seatName === `children-${index}`;
-                        })
-                          ? (selectedPrice = selectedSeats.find((obj) => {
-                              return obj.seatName === `children-${index}`;
-                            }).seatPrice)
-                          : "";
-                      }
                       setCurrentSelection({
                         seatName: `children-${index}`,
                         seatNumber: selectedSeat ? selectedSeat : "",
@@ -446,11 +432,9 @@ const SeatPicker = () => {
                     <Typography variant="h6">Children {index + 1}</Typography>
                     <Typography sx={{ mt: 2 }}>
                       Selected Seat:{" "}
-                      {selectedSeats[index].seatNumber
-                        ? selectedSeats.find((obj) => {
+                      {selectedSeats.find((obj) => {
                             return obj.seatName === `children-${index}`;
-                          }).seatNumber
-                        : "none"}
+                      }).seatNumber}
                     </Typography>
                   </Paper>
                 ))

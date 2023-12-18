@@ -112,7 +112,7 @@ const LoginForm = () => {
 
   return (
     <Box height="80vh" display="flex">
-      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} />
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
       <form onSubmit={handleSubmit} style={{margin: "auto", p: 20}}>
         <Container maxWidth={'xs'} sx={{ mt: 6, mb: 3 }}>
           <Grid container spacing={3}>

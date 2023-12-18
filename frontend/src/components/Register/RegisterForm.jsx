@@ -25,12 +25,6 @@ const BookingForm = () => {
   });
 
   useEffect(() => {
-    if (contentDialog) {
-      setOpenDialog(true);
-    }
-  }, [contentDialog]);
-
-  useEffect(() => {
     if (localStorage.getItem("reduxState")) {
       navigateTo("/");
     }
@@ -89,10 +83,12 @@ const BookingForm = () => {
           } else {
             setTitleDialog("Error");
             setContentDialog(`Error: ${res.message}`);
+            setOpenDialog(true);
           }
         } catch (error) {
           setTitleDialog("Error");
           setContentDialog(`Error fetching data: ${error}`);
+          setOpenDialog(true);
         }
       })();
     }
@@ -100,7 +96,7 @@ const BookingForm = () => {
 
   return (
     <Box height="80vh" display="flex">
-      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} />
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
       <form onSubmit={handleSubmit} style={{margin: "auto", p: 20}}>
         <Container maxWidth="xs" sx={{mt: 3, mb: 3}}>
           <Grid container spacing={3}>

@@ -4,14 +4,20 @@ import PropTypes from 'prop-types';
 const DefaultDialog = (props) => {
 
   const handleClose = () => {
-    props.setOpenDialogFalse();
+    if (props.handleOkButton) {
+      props.setOpenDialogFalse();
+      props.handleOkButton();
+    } else {
+      props.setOpenDialogFalse();
+    }
   };
 
   DefaultDialog.propTypes = {
     toOpen: PropTypes.bool.isRequired,
     title: PropTypes.string.isRequired,
     contentText: PropTypes.string.isRequired,
-    setOpenDialogFalse: PropTypes.func.isRequired
+    setOpenDialogFalse: PropTypes.func.isRequired,
+    handleOkButton: PropTypes.func
   };
 
   return (

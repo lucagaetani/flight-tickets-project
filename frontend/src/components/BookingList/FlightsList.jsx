@@ -169,7 +169,7 @@ const FlightsList = () => {
 
   return (
     <Container minwidth="lg" sx={{ mt: 3, width: "100%" }}>
-      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} />
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
       <Typography sx={{ mt: 3, mb: 1 }} variant="h5" fontWeight={"bold"}>
         {state.formData.oneWay
           ? `1. Choose flight for ${state.formData.airportFrom} - ${state.formData.airportTo}` 
