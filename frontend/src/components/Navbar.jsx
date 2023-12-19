@@ -11,7 +11,7 @@ import { deleteUserData } from "../redux/actions";
 const Navbar = () => {
   const navigateTo = useNavigate();
   const [showUser, setShowUser] = useState(false);
-  let userData = useSelector((state) => state.userData);
+  const userData = useSelector((state) => state.userData);
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
   const [openDialog, setOpenDialog] = useState(false);

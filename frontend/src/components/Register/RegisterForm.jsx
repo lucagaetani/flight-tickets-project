@@ -10,10 +10,12 @@ import {
 } from '@mui/material';
 import validator from 'validator';
 import DefaultDialog from "../DefaultDialog";
+import { useSelector } from "react-redux";
 
 const BookingForm = () => {
   const navigateTo = useNavigate();
   const [titleDialog, setTitleDialog] = useState("");
+  const userData = useSelector((state) => state.userData);
   const [contentDialog, setContentDialog] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [errors, setErrors] = useState({});
@@ -25,10 +27,10 @@ const BookingForm = () => {
   });
 
   useEffect(() => {
-    if (localStorage.getItem("reduxState")) {
+    if (userData) {
       navigateTo("/");
     }
-  }, []);
+  }, [navigateTo, userData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
