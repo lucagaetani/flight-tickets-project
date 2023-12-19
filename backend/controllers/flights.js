@@ -90,13 +90,13 @@ const getFlightsForBooking = async (req, res, next) => {
       );
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Successfully retrieved flights",
       data: arrayDepartureReturning,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed retrieval of flight",
       error: error.message,
@@ -105,9 +105,9 @@ const getFlightsForBooking = async (req, res, next) => {
 };
 
 const checkFlightForBooking = async (req, res, next) => {
-  const { flight_number } = req;
+  const { flightNumber } = req;
 
-  const existingFlightNumberDeparture = await Flights.findByPk({flight_number, transaction});
+  const existingFlightNumberDeparture = await Flights.findByPk({flight_number: flightNumber});
     if (!existingFlightNumberDeparture) {
       return res.status(400).json({
         success: false,

@@ -66,6 +66,7 @@ const SeatPicker = () => {
   }, [selectedSeats]);
 
   useEffect(() => {
+    console.log("STATE: ");
     console.log(state);
     (async () => {
       try {
@@ -179,7 +180,7 @@ const SeatPicker = () => {
     } else {
       //It's a direct flight: if the seats chosen (or not chosen) are in the same length of the number of flights, go forward, otherwise select seats for other flights
       if (flightState.selectedSeatsDeparture) {
-        if ((state.flightState.selectedSeatsDeparture.length+1) === state.flightState.selectedDepartureFlight.length) {
+        if ((flightState.selectedSeatsDeparture.length+1) === state.flightState.selectedDepartureFlight.length) {
           flightState.selectedSeatsDeparture[state.flightState.selectedSeatsDeparture.length] = selectedSeats;
           navigateTo("/info", { state: { flightState } });
         } else {
@@ -222,12 +223,15 @@ const SeatPicker = () => {
           selectedSeatsDeparture={state.flightState.selectedSeatsDeparture}
           priceDeparture={state.flightState.priceDeparture}
           priceReturning={state.flightState.priceReturning}
+          selectedSeats={selectedSeats}
         />
       ) : (
         <Cart
           formData={state.flightState.formData}
           selectedDepartureFlight={state.flightState.selectedDepartureFlight}
+          selectedSeatsDeparture={state.flightState.selectedSeatsDeparture}
           priceDeparture={state.flightState.priceDeparture}
+          selectedSeats={selectedSeats}
         />
       )}
 

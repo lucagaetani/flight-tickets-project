@@ -31,9 +31,23 @@ const verifyCookie = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded.user;
+
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    if (currentTimestamp > 1713820062) {
+      return res.status(401).json({
+        success: false,
+        message: "Expired token",
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: "Cookie parsed correctly",
+      userData: {
+        name: decoded.name,
+        surname: decoded.surname,
+        email: decoded.email
+      }
     });
   } catch (err) {
     res.status(400).json({

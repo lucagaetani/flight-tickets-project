@@ -4,15 +4,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlaneDeparture, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef } from "react";
 import DefaultDialog from "./DefaultDialog";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { deleteUserData } from "../redux/actions";
 
 const Navbar = () => {
   const navigateTo = useNavigate();
   const [showUser, setShowUser] = useState(false);
-  let userData = JSON.parse(localStorage.getItem("reduxState")) ? JSON.parse(localStorage.getItem("reduxState")).userData : null;
+  let userData = useSelector((state) => state.userData);
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const containerRef = useRef(null);
+  const dispatch = useDispatch();
 
   const handleShowUser = () => {
     setShowUser((prev) => (!prev));
@@ -38,7 +42,7 @@ const Navbar = () => {
         });
         const res = await response.json();
         if (res.success) {
-          localStorage.removeItem("reduxState");
+          dispatch(deleteUserData())
           {
             window.location.reload(false);
           }

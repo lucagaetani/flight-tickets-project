@@ -126,6 +126,7 @@ const LuggageUserInfo = () => {
           selectedSeatsReturning={state.flightState.selectedSeatsReturning}
           priceDeparture={state.flightState.priceDeparture}
           priceReturning={state.flightState.priceReturning}
+          arrayPassengerInfos={arrayPassengerInfos}
         />
       ) : (
         <Cart
@@ -133,6 +134,7 @@ const LuggageUserInfo = () => {
           selectedDepartureFlight={state.flightState.selectedDepartureFlight}
           selectedSeatsDeparture={state.flightState.selectedSeatsDeparture}
           priceDeparture={state.flightState.priceDeparture}
+          arrayPassengerInfos={arrayPassengerInfos}
         />
       )}
 

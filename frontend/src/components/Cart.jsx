@@ -1,12 +1,11 @@
 //TODO: prezzo volo
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
   CircularProgress,
   Collapse,
   Grid,
-  List,
   Typography
 } from "@mui/material";
 import PropTypes from "prop-types";
@@ -24,25 +23,39 @@ const Cart = (props) => {
       totalPrice += props.priceReturning;
     }
     if (props.selectedSeatsReturning) {
-      props.selectedSeatsReturning.forEach((selectedSeats) => {
-        selectedSeats.forEach((seat) => {
+      props.selectedSeatsReturning.forEach((selectedFlight) => {
+        selectedFlight.forEach((seat) => {
           if (seat.seatPrice) {
             totalPrice += seat.seatPrice;
           }
         });
       });
     } else if (props.selectedSeatsDeparture) {
-      props.selectedSeatsDeparture.forEach((selectedSeats) => {
-        selectedSeats.forEach((seat) => {
+      props.selectedSeatsDeparture.forEach((selectedFlight) => {
+        selectedFlight.forEach((seat) => {
           if (seat.seatPrice) {
             totalPrice += seat.seatPrice;
           }
         });
       });
     }
+    if (props.arrayPassengerInfos) {
+      props.arrayPassengerInfos.forEach((passenger, index) => {
+        if (passenger[`hold-luggage-${index}`]) {
+          totalPrice += (parseInt(passenger[`hold-luggage-${index}`])*65);
+        }
+      });
+    }
+    if (props.selectedSeats) {
+      props.selectedSeats.forEach((selectedFlight) => {
+        if (selectedFlight.seatPrice) {
+          totalPrice += selectedFlight.seatPrice;
+        }
+      });
+    }
     setTotalCartPrice(totalPrice);
     setLoading(false);
-  }, [props.selectedSeatsDeparture, props.selectedSeatsReturning, props.priceDeparture, props.priceReturning, props.selectedReturningFlight]);
+  }, [props]);
 
   const handleClick = () => {
     setExpanded(!expanded);
@@ -73,7 +86,9 @@ const Cart = (props) => {
     selectedSeatsDeparture: PropTypes.array,
     selectedSeatsReturning: PropTypes.array,
     priceDeparture: PropTypes.number,
-    priceReturning: PropTypes.number
+    priceReturning: PropTypes.number,
+    arrayPassengerInfos: PropTypes.array,
+    selectedSeats: PropTypes.array
   };
 
   return (
@@ -255,20 +270,22 @@ const Cart = (props) => {
               <Typography textAlign={"center"} fontWeight={"bold"}>
                 Seats departure info
               </Typography>
-              {props.selectedSeatsDeparture.map((selectedSeats, selectedIndex) => (
-                <>
-                  <Typography key={`flightSeats-`+selectedIndex}>
-                    • {props.selectedDepartureFlight[selectedIndex].flight_number}{": "}
-                  </Typography>
-                  {selectedSeats.map((seat,index) => {
-                    return (seat.seatNumber &&
-                      <Typography key={`seat-${index}`}>
-                        {"€ " + seat.seatPrice} - Seat {seat.seatNumber}
-                      </Typography>
-                    )
-                  })}
-                </>
-              ))}
+              {
+                props.selectedSeatsDeparture.map((selectedFlight, selectedIndex) => (
+                  <React.Fragment key={`flightSeats-`+selectedIndex}>
+                    <Typography>
+                      • {props.selectedDepartureFlight[selectedIndex].flight_number}{": "}
+                    </Typography>
+                    {selectedFlight.map((seat,index) => {
+                      return (seat.seatNumber &&
+                        <Typography key={`seat-${index}`}>
+                          {"€ " + seat.seatPrice} - Seat {seat.seatNumber}
+                        </Typography>
+                      )
+                    })}
+                  </React.Fragment>
+                ))
+              }
             </Grid>
           )}
           {props.selectedSeatsReturning && (
@@ -287,20 +304,22 @@ const Cart = (props) => {
               <Typography textAlign={"center"} fontWeight={"bold"}>
                 Seats returning info
               </Typography>
-              {props.selectedSeatsReturning.map((selectedSeats, selectedIndex) => (
-                <>
-                  <Typography key={`flightSeats-`+selectedIndex}>
-                    • {props.selectedReturningFlight[selectedIndex].flight_number}{": "}
-                  </Typography>
-                  {selectedSeats.map((seat,index) => {
-                    return (seat.seatNumber &&
-                      <Typography key={`seat-${index}`}>
-                        {"€ " + seat.seatPrice} - Seat {seat.seatNumber}
-                      </Typography>
-                    )
-                  })}
-                </>
-              ))}
+              {
+                props.selectedSeatsReturning.map((selectedFlight, selectedIndex) => (
+                  <React.Fragment key={`flightSeats-`+selectedIndex}>
+                    <Typography>
+                      • {props.selectedSeatsReturning[selectedIndex].flight_number}{": "}
+                    </Typography>
+                    {selectedFlight.map((seat,index) => {
+                      return (seat.seatNumber &&
+                        <Typography key={`seat-${index}`}>
+                          {(selectedFlight.seatPrice && selectedFlight.seatNumber) ? "€ " + selectedFlight.seatPrice + "- Seat" + selectedFlight.seatNumber : null}
+                        </Typography>
+                      )
+                    })}
+                  </React.Fragment>
+                ))
+              }
             </Grid>
           )}
         </Grid>

@@ -1,4 +1,4 @@
-let user;
+let user = null;
 
 /**
  * Check if the cookie exists or not (if not, it means the user is not logged in)
@@ -13,9 +13,7 @@ await (async () => {
     const response = await fetch("http://localhost:3000/auth", requestOptions);
     const res = await response.json();
       if (res.success === true) {
-        user = JSON.parse(localStorage.getItem("reduxState")).userData;
-      } else {
-        user = localStorage.removeItem("reduxState");
+        user = res.userData;
       }
   } catch(error) {
     console.log(`Error: ${error}. Can't do fetch of auth. Page rendered`);

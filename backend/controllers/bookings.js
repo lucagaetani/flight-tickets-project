@@ -69,7 +69,7 @@ const insertBookings = async (req, res, next) => {
     //Checking the consistency of all fks and data sent
     const flightState = req.body.flightState;
 
-    flightState.seatsFlightsDeparture.map(async (flight, index) => {
+    flightState.seatsFlightsDeparture.forEach(async (flight, index) => {
       let res = await checkSeatForBooking(flight[index]);
       if (!res) {
         await transaction.rollback();
@@ -84,7 +84,7 @@ const insertBookings = async (req, res, next) => {
     });
 
     if (flightState.seatsFlightsReturning) {
-      flightState.seatsFlightsReturning.map(async (flight, index) => {
+      flightState.seatsFlightsReturning.forEach(async (flight, index) => {
         let res = await checkSeatForBooking(flight[index]);
         if (!res) {
           await transaction.rollback();
