@@ -36,7 +36,7 @@ const verifyCookie = (req, res, next) => {
      * If i'm beyond 3 hours (max age of token), token expires
      */
     const currentTimestamp = Math.floor(Date.now() / 1000);
-    if ((currentTimestamp-decoded.iat) > 10800000) {
+    if (((Math.floor(Date.now() / 1000)-decoded.iat)*1000) > 10800000) {
       res.clearCookie("jwt");
       return res.status(401).json({
         success: false,

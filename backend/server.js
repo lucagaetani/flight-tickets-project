@@ -32,6 +32,7 @@ const routerFlights = require("./routes/flights");
 const routerSeats = require("./routes/seats");
 const routerBookings = require("./routes/bookings");
 const routerItineraries = require("./routes/itineraries");
+const routerTickets = require("./routes/tickets");
 
 app.use("/airports", routerAirports);
 app.use("/users", routerUsers);
@@ -39,6 +40,7 @@ app.use("/flights", routerFlights);
 app.use("/seats", routerSeats);
 app.use("/bookings", routerBookings);
 app.use("/itineraries", routerItineraries);
+app.use("/tickets", routerTickets);
 
 //DATABASE
 instanceSequelize
@@ -55,6 +57,7 @@ require("./models/airlines");
 require("./models/airports");
 require("./models/flights");
 require("./models/seats");
+require("./models/tickets");
 require("./models/itineraries");
 
 app.get("/", function (req, res) {

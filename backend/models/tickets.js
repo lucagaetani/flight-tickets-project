@@ -14,43 +14,33 @@ const Tickets = instanceSequelize.define(
 		},
 		name: {
 			type: DataTypes.STRING,
-			allowNull: false
 		},
 		surname: {
 			type: DataTypes.STRING,
-			allowNull: false
 		},
 		email: {
 			type: DataTypes.STRING,
-			allowNull: false
 		},
 		phone: {
 			type: DataTypes.STRING,
-			allowNull: false
 		},
 		airplaneLuggage: {
 			type: DataTypes.INTEGER,
-			allowNull: false
 		},
 		holdLuggage: {
 			type: DataTypes.INTEGER,
-			allowNull: false
 		},
 		fk_seat_number: {
 			type: DataTypes.STRING,
-			allowNull: false
 		},
 		seat_price: {
 			type: DataTypes.FLOAT,
-			allowNull: false
 		},
 		fk_flight_number: {
 			type: DataTypes.STRING,
-			allowNull: false
 		},
 		fk_booking: {
 			type: DataTypes.INTEGER,
-			allowNull: false
 		}
 	},
 	{

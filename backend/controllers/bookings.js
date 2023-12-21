@@ -193,21 +193,40 @@ const insertBookings = async (req, res, next) => {
       });
     }
 
+    const ticket = await Tickets.create({
+      name: "drip",
+      surname: "tip",
+      email: "dip",
+      phone: "48329384",
+      airplaneLuggage: 0,
+      holdLuggage: 0,
+      fk_seat_number: "A4",
+      seat_price: 90.5,
+      fk_flight_number: "U2 8484",
+      fk_booking: 1
+    }, transaction)
+
     const createTickets = async (flights, isReturning = false) => {
       for (const flight of flights) {
         for (const seat of flight) {
           const passengerInfo = seat.arrayPassengerInfo;
           console.log(passengerInfo);
+          if (!passengerInfo["airportLuggage"]) {
+            passengerInfo["airportLuggage"] = 0;
+          }
+          if (!passengerInfo["holdLuggage"]) {
+            passengerInfo["holdLuggage"] = 0;
+          }
           const ticketsBooking = await Tickets.create({
             name: passengerInfo["name"],
             surname: passengerInfo["surname"],
             email: passengerInfo["email"],
             phone: passengerInfo["phone"],
-            airportLuggage: passengerInfo["airportLuggage"] || 0,
-            holdLuggage: passengerInfo["holdLuggage"] || 0,
+            airportLuggage: passengerInfo["airportLuggage"],
+            holdLuggage: passengerInfo["holdLuggage"],
             fk_seat_number: seat.seatNumber,
-            seat_price: seat.seat_price,
-            fk_flight: seat.flight_number,
+            seat_price: seat.seatPrice,
+            fk_flight_number: seat.flightNumber,
             fk_booking: booking.id,
           }, transaction);
 
@@ -230,18 +249,17 @@ const insertBookings = async (req, res, next) => {
 
     await transaction.commit();
 
-    if (selectedReturningFlight) {
+    if (seatsFlightsReturning) {
       res.status(200).send({
         success: true,
         message: "Departure booking inserted successfully",
-        departureBooking
+        booking
       });
     } else {
       res.status(200).send({
         success: true,
         message: "Departure and returning booking inserted successfully",
-        departureBooking,
-        returningBooking
+        booking
       });
     }
 
