@@ -89,12 +89,10 @@ const FlightsList = () => {
   const handleConfirm = () => {
     if (state.formData.oneWay) {
       const selectedDepartureItinerary = {
-        arrivalFrom: selectedRow.arrivalFrom,
-        arrivalTo: selectedRow.arrivalTo,
+        id: selectedRow.id,
         departure: selectedRow.departure,
         arrival: selectedRow.arrival,
         price: selectedRow.price,
-        estimatedC02: selectedRow.estimatedC02
       };
     
       const flightState = {
@@ -107,12 +105,10 @@ const FlightsList = () => {
       navigateTo("/seats", { state: { flightState } });
     } else if (!state.flightState) {
       const selectedDepartureItinerary = {
-        arrivalFrom: selectedRow.arrivalFrom,
-        arrivalTo: selectedRow.arrivalTo,
+        id: selectedRow.id,
         departure: selectedRow.departure,
         arrival: selectedRow.arrival,
         price: selectedRow.price,
-        estimatedC02: selectedRow.estimatedC02
       };
     
       const flightState = {
@@ -129,12 +125,10 @@ const FlightsList = () => {
     } else {
       const flightState = state.flightState;
       flightState.selectedReturningItinerary = {
-        arrivalFrom: selectedRow.arrivalFrom,
-        arrivalTo: selectedRow.arrivalTo,
+        id: selectedRow.id,
         departure: selectedRow.departure,
         arrival: selectedRow.arrival,
         price: selectedRow.price,
-        estimatedC02: selectedRow.estimatedC02
       };
       flightState.selectedReturningFlight = selectedRow.fk_flight_numbers;
       flightState.priceReturning = selectedRow.price;

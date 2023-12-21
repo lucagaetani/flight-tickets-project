@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
-const Flights = require("./flights");
 const Users = require("./users");
+const Itineraries = require("./itineraries");
 
 const Bookings = instanceSequelize.define(
   "Bookings",
@@ -15,18 +15,13 @@ const Bookings = instanceSequelize.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    fk_flight: {
-      type: DataTypes.STRING,
+    fk_itinerary_departure: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    date_departure: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    date_arrival: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
+    fk_itinerary_returning: {
+      type: DataTypes.INTEGER
+    }
   },
   {
     freezeTableName: true,
@@ -34,17 +29,21 @@ const Bookings = instanceSequelize.define(
   }
 );
 
-Bookings.belongsTo(Flights, {
-	foreignKey: "fk_flight"
+Bookings.belongsTo(Itineraries, {
+	foreignKey: "fk_itinerary_departure"
+});
+
+Bookings.belongsTo(Itineraries, {
+	foreignKey: "fk_itinerary_returning"
 });
 
 Bookings.belongsTo(Users, {
   foreignKey: "fk_email"
-})
+});
 
 /*
 (async () => {
-    await Booking.sync({ force: true });
+    await Bookings.sync({ force: true });
 })();
 */
 

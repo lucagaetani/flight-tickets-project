@@ -2,13 +2,15 @@ const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
 const Bookings = require("./bookings");
 const Seats = require("./seats");
+const Flights = require("./flights");
 
 const Tickets = instanceSequelize.define(
 	"Tickets",
 	{
 		id: {
-			type: DataTypes.UUIDV4,
-			primaryKey: true
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			autoIncrement: true
 		},
 		name: {
 			type: DataTypes.STRING,
@@ -19,11 +21,11 @@ const Tickets = instanceSequelize.define(
 			allowNull: false
 		},
 		email: {
-			type: DataTypes.DATE,
+			type: DataTypes.STRING,
 			allowNull: false
 		},
 		phone: {
-			type: DataTypes.INTEGER,
+			type: DataTypes.STRING,
 			allowNull: false
 		},
 		airplaneLuggage: {
@@ -38,12 +40,16 @@ const Tickets = instanceSequelize.define(
 			type: DataTypes.STRING,
 			allowNull: false
 		},
-		fk_seat_price: {
+		seat_price: {
 			type: DataTypes.FLOAT,
 			allowNull: false
 		},
+		fk_flight_number: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
 		fk_booking: {
-			type: DataTypes.UUIDV4,
+			type: DataTypes.INTEGER,
 			allowNull: false
 		}
 	},
@@ -57,19 +63,19 @@ Tickets.belongsTo(Bookings, {
 	foreignKey: "fk_booking"
 });
 
+Tickets.belongsTo(Flights, {
+	foreignKey: "fk_flight_number"
+});
+
 Tickets.belongsTo(Seats, {
 	foreignKey: "fk_seat_number"
 });
 
-Tickets.belongsTo(Bookings, {
-	foreignKey: "fk_seat_price"
-});
 
 
-/*
 (async () => {
 	await Tickets.sync({ force: true });
 })();
-*/
+
 
 module.exports = Tickets;

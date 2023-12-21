@@ -109,17 +109,17 @@ const getUser = async (req, res, next) => {
 
   try {
     const user = await Users.findByPk(email);
-    res.status(200).json({
+    return {
       success: true,
       message: "Successfully retrieved user",
       data: user,
-    });
+    };
   } catch (error) {
-    res.status(500).json({
+    return {
       success: false,
       message: "Failed retrieval of users",
       error: error.message,
-    });
+    };
   }
 };
 

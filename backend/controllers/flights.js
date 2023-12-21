@@ -107,12 +107,12 @@ const getFlightsForBooking = async (req, res, next) => {
 const checkFlightForBooking = async (req, res, next) => {
   const { flightNumber } = req;
 
-  const existingFlightNumberDeparture = await Flights.findByPk({flight_number: flightNumber});
+  const existingFlightNumberDeparture = await Flights.findByPk(flightNumber);
     if (!existingFlightNumberDeparture) {
-      return res.status(400).json({
+      return {
         success: false,
         message: "Non-existing departure flight number",
-      });
+      };
     }
   return existingFlightNumberDeparture;
 }

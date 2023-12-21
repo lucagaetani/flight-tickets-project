@@ -44,29 +44,26 @@ const checkSeatForBooking = async (req, res, next) => {
     });
 
     if (!check) {
-      return res.status(400).json({
+      return {
         success: false,
         seat_number: seatNumber,
         message: `Seat ${seatNumber} doesn't exist`,
-      });
+      };
     } else if (check.isBooked) {
-      return res.status(400).json({
+      return {
         success: false,
         seat_number: check.seat_number,
         message: `Seat ${check.seat_number} booked previously`,
-      });
+      };
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Successfully checked seat"
-    });
+    return check;
   } catch(error) {
-    return res.status(500).json({
+    return {
       success: false,
       message: "Failed checking of seat",
       error: error.message,
-    });
+    };
   }
 }
 

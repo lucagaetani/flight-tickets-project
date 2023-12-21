@@ -13,28 +13,40 @@ const Loading = () => {
   const navigateTo = useNavigate();
   const userData = useSelector((state) => state.userData);
 
+  const removeNumberedSuffixes = (obj) => {
+    const result = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const newKey = key.replace(/-\d+$/, ''); // Remove the -1 suffix
+        result[newKey] = obj[key];
+      }
+    }
+    return result;
+  }
+
   useEffect(() => {
     console.log(state);
     (async () => {
       //Check if seats are empty to book it
       try {
-        console.log(userData);
         const sendData = {
         };
         //Assign to every seat his flight
         const seatsFlightsDeparture = state.flightState.selectedSeatsDeparture.map((selectedSeats) => {
           return selectedSeats.map((seat, index) => {
             seat.flightNumber = state.flightState.selectedDepartureFlight[index].flight_number;
-            seat.passengerInfo = state.flightState.arrayPassengerInfo[0];
+            seat.itineraryId = state.flightState.selectedDepartureItinerary.id;
+            seat.arrayPassengerInfo = removeNumberedSuffixes(state.flightState.arrayPassengerInfo[index]);
             return seat;
           })
         });
+
+        
         /*Prepare data to send, it will send:
-            - seatsFlightsDeparture: seats chosen for each flight departure
-            - arrayPassengerInfo: passenger info for each flight departure
+            - seatsFlightsDeparture: seats chosen for each flight departure, flights chosen, itinerary id and info of the passenger
             - userEmail: email of the user logged into the app
           Optionally, if the user has chosen returning flights:
-            - seatsFlightsReturning: seats chosen for each flight returning
+            - seatsFlightsReturning: seats chosen for each flight returning and flights chosen, flights chosen and itinerary id
         */
         sendData.flightState = {
           seatsFlightsDeparture: seatsFlightsDeparture,
@@ -44,12 +56,14 @@ const Loading = () => {
           const seatsFlightsReturning = state.flightState.selectedSeatsReturning.map((selectedSeats) => {
             return selectedSeats.map((seat, index) => {
               seat.flightNumber = state.flightState.selectedReturningFlight[index].flight_number;
-              seat.passengerInfo = state.flightState.arrayPassengerInfo[0];
+              seat.itineraryId = state.flightState.selectedDepartureReturning.id;
+              seat.arrayPassengerInfo = state.flightState.arrayPassengerInfo[index];
               return seat;
             })
           });
           sendData.flightState.seatsFlightsReturning = seatsFlightsReturning;
         }
+        console.log(sendData);
         setTitle("Launched request. Waiting for answer");
         setValue(40);
         //Delete state
@@ -77,7 +91,7 @@ const Loading = () => {
           success: false,
           message: error
         }
-        //navigateTo("/end", { state: { res } });
+        navigateTo("/end", { state: { res } });
       }
     })();
   }, [state])

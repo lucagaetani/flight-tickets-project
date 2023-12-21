@@ -32,8 +32,12 @@ const verifyCookie = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded.user;
 
+    /**
+     * If i'm beyond 3 hours (max age of token), token expires
+     */
     const currentTimestamp = Math.floor(Date.now() / 1000);
-    if (currentTimestamp > 1713820062) {
+    if ((currentTimestamp-decoded.iat) > 10800000) {
+      res.clearCookie("jwt");
       return res.status(401).json({
         success: false,
         message: "Expired token",
