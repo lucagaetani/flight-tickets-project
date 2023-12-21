@@ -68,9 +68,9 @@ const insertBookings = async (req, res, next) => {
   try {
     //Checking the consistency of all fks and data sent
     const flightState = req.body.flightState;
-
     const seatsFlightsDeparture = flightState.seatsFlightsDeparture;
     const seatsFlightsReturning = flightState.seatsFlightsReturning;
+
 
     for (const flight of seatsFlightsDeparture) {
       for (const seat of flight) {
@@ -185,59 +185,39 @@ const insertBookings = async (req, res, next) => {
       fk_itinerary_returning: seatsFlightsReturning ? seatsFlightsReturning[0][0].itineraryId : null,
     }, transaction);
 
-    if (!booking) {
-      await transaction.rollback();
-      return res.status(400).json({
-        success: false,
-        message: "Cannot booking departure",
-      });
-    }
-
-    const ticket = await Tickets.create({
-      name: "drip",
-      surname: "tip",
-      email: "dip",
-      phone: "48329384",
-      airplaneLuggage: 0,
-      holdLuggage: 0,
-      fk_seat_number: "A4",
-      seat_price: 90.5,
-      fk_flight_number: "U2 8484",
-      fk_booking: 1
-    }, transaction)
-
+    const arrayOfTickets = [];
     const createTickets = async (flights, isReturning = false) => {
       for (const flight of flights) {
         for (const seat of flight) {
-          const passengerInfo = seat.arrayPassengerInfo;
-          console.log(passengerInfo);
-          if (!passengerInfo["airportLuggage"]) {
-            passengerInfo["airportLuggage"] = 0;
-          }
-          if (!passengerInfo["holdLuggage"]) {
-            passengerInfo["holdLuggage"] = 0;
-          }
-          const ticketsBooking = await Tickets.create({
-            name: passengerInfo["name"],
-            surname: passengerInfo["surname"],
-            email: passengerInfo["email"],
-            phone: passengerInfo["phone"],
-            airportLuggage: passengerInfo["airportLuggage"],
-            holdLuggage: passengerInfo["holdLuggage"],
+          arrayOfTickets.push({
+            name: seat.arrayPassengerInfo["name"],
+            surname: seat.arrayPassengerInfo["surname"],
+            email: seat.arrayPassengerInfo["email"],
+            phone: seat.arrayPassengerInfo["phone"],
+            airportLuggage: seat.arrayPassengerInfo["airportLuggage"] || 0,
+            holdLuggage: seat.arrayPassengerInfo["holdLuggage"] || 0,
             fk_seat_number: seat.seatNumber,
             seat_price: seat.seatPrice,
             fk_flight_number: seat.flightNumber,
             fk_booking: booking.id,
-          }, transaction);
-
-          if (!ticketsBooking) {
-            await transaction.rollback();
-            return res.status(400).json({
-              success: false,
-              message: `Cannot book ${isReturning ? "returning" : "departure"} tickets`,
-            });
-          }
+          });
         }
+      }
+      const ticketsBooking = await Tickets.bulkCreate(arrayOfTickets, transaction);
+      //RAW QUERY
+      await sequelize.query(
+        'SELECT *, "text with literal $$1 and literal $$status" as t FROM projects WHERE status = $1',
+        {
+          bind: ['active'],
+          type: QueryTypes.SELECT
+        }
+      )
+      if (!ticketsBooking) {
+        await transaction.rollback();
+        return res.status(400).json({
+          success: false,
+          message: `Cannot book ${isReturning ? "returning" : "departure"} tickets`,
+        });
       }
     };
 
@@ -245,6 +225,13 @@ const insertBookings = async (req, res, next) => {
 
     if (seatsFlightsReturning) {
       await createTickets(seatsFlightsReturning, true);
+    }
+    if (!booking) {
+      await transaction.rollback();
+      return res.status(400).json({
+        success: false,
+        message: "Cannot booking departure",
+      });
     }
 
     await transaction.commit();

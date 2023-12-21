@@ -41,10 +41,10 @@ Bookings.belongsTo(Users, {
   foreignKey: "fk_email"
 });
 
-
+/*
 (async () => {
     await Bookings.sync({ force: true });
 })();
-
+*/
 
 module.exports = Bookings;
