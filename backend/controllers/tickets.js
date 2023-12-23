@@ -4,37 +4,37 @@ const Tickets = require("../models/tickets");
 const instanceSequelize = require("../database");
 
 const insertTickets = async (req, res, next) => {
-  const transaction = await instanceSequelize.transaction();
+  const arrayOfTickets = req;
+
   try {
-    const ticket = await Tickets.create({
-      name: "drip",
-      surname: "tip",
-      email: "dip",
-      phone: "48329384",
-      airplaneLuggage: 0,
-      holdLuggage: 0,
-      fk_seat_number: "A4",
-      seat_price: 90.5,
-      fk_flight_number: "U2 8484",
-      fk_booking: 1
-    }, transaction)
-    console.log(ticket);
-    if (ticket) {
-      res.status(200).json({
-        success: true
+    for (const ticket of arrayOfTickets) {
+      const existingTicket = await Tickets.findOne({
+        where: {
+          fk_flight_number: ticket.fk_flight_number,
+          fk_seat_number: ticket.fk_seat_number
+        }
       });
-    } else {
-      transaction.rollback();
-      res.status(401).json({
-        success: false
-      });
+      if (existingTicket) {
+        return {
+          success: false,
+          message: "Ticket already exists",
+        };
+      }
     }
-    transaction.commit();
+
+    const ticketBookings = await Tickets.bulkCreate(arrayOfTickets);
+    if (!ticketBookings) {
+      return {
+        success: false,
+        message: "Cannot insert tickets",
+      };
+    }
+    return ticketBookings;
   } catch (error) {
-    transaction.rollback();
-    res.status(400).json({
-      success: false
-    });
+    return {
+      success: false,
+      message: error
+    };
   }
 };
 

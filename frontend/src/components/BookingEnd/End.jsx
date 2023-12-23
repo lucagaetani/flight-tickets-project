@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
+  Box,
   Container,
   Typography
 } from "@mui/material";
 
-const Loading = () => {
+const End = () => {
   const { state } = useLocation();
-  const navigateTo = useNavigate();
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
@@ -19,29 +19,47 @@ const Loading = () => {
 
   if (success) {
     return (
-      <Container maxWidth={"lg"}>
-        <Typography variant="h2" fontWeight={"bold"}>
-          Congratulations!
-          <br />
-          {state.res.returningBooking ? 
-          "Booking accepted for departure with id: and arrival with id: " : 
-          "Booking accepted for only departure flight with id: "}
-        </Typography>
-      </Container>
+      <Box sx={{
+        display: "flex",
+        height: "70vh",
+        pl: 3,
+        pr: 3
+      }}>
+        <Container maxWidth={"lg"} sx={{ margin: "auto" }}>
+          <Typography variant="h2" fontWeight={"bold"}>
+            Congratulations!
+          </Typography>
+          <Typography variant="h5">
+            {"Booking accepted with id: " + state.res.booking.id }
+          </Typography>
+          <Typography variant="h5">
+            {"Go to your profile to check your bookings."}
+          </Typography>
+        </Container>
+      </Box>
     )
   } else {
     return (
-      <Container maxWidth={"lg"}>
-        <Typography variant="h2" fontWeight={"bold"}>
-          Congratulations!
-          <br />
-          {state.res.returningBooking ? 
-          "Booking accepted for departure with id: and arrival with id: " : 
-          "Booking accepted for only departure flight with id: "}
-        </Typography>
-      </Container>
+      <Box sx={{
+        display: "flex",
+        height: "70vh",
+        pl: 3,
+        pr: 3
+      }}>
+        <Container maxWidth={"lg"} sx={{ margin: "auto" }}>
+          <Typography variant="h2" fontWeight={"bold"}>
+            An error occurred!
+          </Typography>
+          <Typography variant="h5">
+            {"Booking not accepted. Reason: " + state.res.message }
+          </Typography>
+          <Typography variant="h5">
+            {"Please try again."}
+          </Typography>
+        </Container>
+      </Box>
     )
   }
 }
 
-export default Loading;
+export default End;

@@ -14,20 +14,24 @@ const Tickets = instanceSequelize.define(
 		},
 		name: {
 			type: DataTypes.STRING,
+			allowNull: false
 		},
 		surname: {
 			type: DataTypes.STRING,
+			allowNull: false
 		},
 		email: {
 			type: DataTypes.STRING,
+			allowNull: false
 		},
 		phone: {
 			type: DataTypes.STRING,
+			allowNull: false
 		},
-		airplaneLuggage: {
+		airplane_luggage: {
 			type: DataTypes.INTEGER,
 		},
-		holdLuggage: {
+		hold_luggage: {
 			type: DataTypes.INTEGER,
 		},
 		fk_seat_number: {
@@ -38,9 +42,11 @@ const Tickets = instanceSequelize.define(
 		},
 		fk_flight_number: {
 			type: DataTypes.STRING,
+			allowNull: false
 		},
 		fk_booking: {
 			type: DataTypes.INTEGER,
+			allowNull: false
 		}
 	},
 	{
@@ -62,10 +68,11 @@ Tickets.belongsTo(Seats, {
 });
 
 
-
+/*
 (async () => {
 	await Tickets.sync({ force: true });
 })();
+*/
 
 
 module.exports = Tickets;

@@ -522,11 +522,11 @@ async function insertSeats() {
   ]);
 }
 
-
+/*
 (async () => {
     await Seats.sync({ force: true });
     insertSeats();
 })();
-
+*/
 
 module.exports = Seats;

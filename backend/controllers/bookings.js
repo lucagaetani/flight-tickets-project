@@ -8,6 +8,8 @@ const { checkSeatForBooking } = require("./seats");
 const { checkFlightForBooking } = require("./flights");
 const Seats = require("../models/seats");
 const { getUser } = require("./users");
+const { QueryTypes } = require("sequelize");
+const { insertTickets } = require("./tickets");
 
 const getBookingsForUser = async (req, res, next) => {
   const decodedState = decodeURIComponent(req.query.state);
@@ -69,7 +71,9 @@ const insertBookings = async (req, res, next) => {
     //Checking the consistency of all fks and data sent
     const flightState = req.body.flightState;
     const seatsFlightsDeparture = flightState.seatsFlightsDeparture;
+    const departureTicketsToBook = flightState.seatsFlightsDeparture;
     const seatsFlightsReturning = flightState.seatsFlightsReturning;
+    const returningTicketsToBook = flightState.seatsFlightsReturning;
 
 
     for (const flight of seatsFlightsDeparture) {
@@ -125,13 +129,30 @@ const insertBookings = async (req, res, next) => {
     //Insert departure booking with tickets
     for (const flight  of seatsFlightsDeparture) {
       for (const seat of flight) {
+        const existingBookedSeat = await Seats.findOne({
+          where: {
+            flight_number: seat.flightNumber,
+            seat_number: seat.seatNumber,
+            is_booked: true
+          }
+        });
+
+        if (existingBookedSeat) {
+          await transaction.rollback();
+          return res.status(400).json({
+            success: false,
+            message: "Seat already booked",
+          });
+        }
+
         const seatBooking = await Seats.update(
           {
             is_booked: true
           },
           {
             where: {
-              seat_number: seat.seatName
+              seat_number: seat.seatNumber,
+              flight_number: seat.flightNumber
             }
           },
           transaction
@@ -185,8 +206,8 @@ const insertBookings = async (req, res, next) => {
       fk_itinerary_returning: seatsFlightsReturning ? seatsFlightsReturning[0][0].itineraryId : null,
     }, transaction);
 
-    const arrayOfTickets = [];
     const createTickets = async (flights, isReturning = false) => {
+      const arrayOfTickets = [];
       for (const flight of flights) {
         for (const seat of flight) {
           arrayOfTickets.push({
@@ -203,35 +224,21 @@ const insertBookings = async (req, res, next) => {
           });
         }
       }
-      const ticketsBooking = await Tickets.bulkCreate(arrayOfTickets, transaction);
-      //RAW QUERY
-      await sequelize.query(
-        'SELECT *, "text with literal $$1 and literal $$status" as t FROM projects WHERE status = $1',
-        {
-          bind: ['active'],
-          type: QueryTypes.SELECT
-        }
-      )
-      if (!ticketsBooking) {
-        await transaction.rollback();
-        return res.status(400).json({
-          success: false,
-          message: `Cannot book ${isReturning ? "returning" : "departure"} tickets`,
-        });
-      }
-    };
-
-    await createTickets(seatsFlightsDeparture);
-
-    if (seatsFlightsReturning) {
-      await createTickets(seatsFlightsReturning, true);
+      return arrayOfTickets;
     }
-    if (!booking) {
+    
+    const departureTicketsBooking = await insertTickets(await createTickets(departureTicketsToBook));
+    if (departureTicketsBooking.error) {
       await transaction.rollback();
-      return res.status(400).json({
-        success: false,
-        message: "Cannot booking departure",
-      });
+      return res.status(400).json(departureTicketsBooking);
+    }
+
+    if (returningTicketsToBook) {
+      const returningTicketsBooking = await insertTickets(await createTickets(returningTicketsToBook));
+      if (!returningTicketsBooking.error) {
+        await transaction.rollback();
+        return res.status(400).json(returningTicketsBooking);
+      }
     }
 
     await transaction.commit();

@@ -32,9 +32,9 @@ const Loading = () => {
         const sendData = {
         };
         //Assign to every seat his flight
-        const seatsFlightsDeparture = state.flightState.selectedSeatsDeparture.map((selectedSeats) => {
+        const seatsFlightsDeparture = state.flightState.selectedSeatsDeparture.map((selectedSeats, selectedIndex) => {
           return selectedSeats.map((seat, index) => {
-            seat.flightNumber = state.flightState.selectedDepartureFlight[index].flight_number;
+            seat.flightNumber = state.flightState.selectedDepartureFlight[selectedIndex].flight_number;
             seat.itineraryId = state.flightState.selectedDepartureItinerary.id;
             seat.arrayPassengerInfo = removeNumberedSuffixes(state.flightState.arrayPassengerInfo[index]);
             return seat;
