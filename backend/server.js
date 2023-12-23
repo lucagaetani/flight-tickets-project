@@ -59,6 +59,7 @@ require("./models/flights");
 require("./models/seats");
 require("./models/tickets");
 require("./models/itineraries");
+require("./models/itineraries_flights");
 
 app.get("/", function (req, res) {
   res.send(req.headers, req.originalUrl, req.method, req.body);

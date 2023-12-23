@@ -64,7 +64,7 @@ const ItineraryRow = (props) => {
         </Grid>
         <Grid item xs={1} md={1}>
           <Typography>
-            {props.row.fk_flight_numbers.length === 1 ? "Direct" : props.row.fk_flight_numbers.length-1 === 1 ? "1 stop" : props.row.fk_flight_numbers.length-1 + " stop"}
+            {props.row["Itineraries_Flights"].length === 1 ? "Direct" : props.row["Itineraries_Flights"].length-1 === 1 ? "1 stop" : props.row["Itineraries_Flights"].length-1 + " stop"}
           </Typography>
         </Grid>
         <Grid item xs={2} md={5}>
@@ -79,7 +79,7 @@ const ItineraryRow = (props) => {
         </Grid>
           <Collapse direction="vertical" in={expandedPaper}>
             <>
-                {props.row.fk_flight_numbers.map((flight,index) => (
+                {props.row["Itineraries_Flights"].map((itineraryFlight,index) => (
                   <Grid 
                   container
                   spacing={{ xs: 1, md: 2 }}
@@ -91,38 +91,38 @@ const ItineraryRow = (props) => {
                 >
                     <Grid item xs={1} md={1}>
                       <Typography fontWeight={"bold"}>
-                        {index+1}{"."} {flight.flight_number}
-                        <AirlineLogo airline={flight.airline.name} />
+                        {index+1}{"."} {itineraryFlight.Flight.flight_number}
+                        <AirlineLogo airline={itineraryFlight.Flight.airline.name} />
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        {Math.floor(((new Date(flight.arrival).getTime() - new Date(flight.departure).getTime())/1000)/3600) + "h " + Math.floor((((new Date(flight.arrival).getTime() - new Date(flight.departure).getTime())/1000)%3600)/60) + "m"}
+                        {Math.floor(((new Date(itineraryFlight.Flight.arrival).getTime() - new Date(itineraryFlight.Flight.departure).getTime())/1000)/3600) + "h " + Math.floor((((new Date(itineraryFlight.Flight.arrival).getTime() - new Date(itineraryFlight.Flight.departure).getTime())/1000)%3600)/60) + "m"}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Departure: {flight.departureAirport.name}
+                        Departure: {itineraryFlight.Flight.departureAirport.name}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Arrival: {flight.arrivalAirport.name}
+                        Arrival: {itineraryFlight.Flight.arrivalAirport.name}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Departure date and time: {new Date(flight.departure).toLocaleString('en-GB')}
+                        Departure date and time: {new Date(itineraryFlight.Flight.departure).toLocaleString('en-GB')}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Arrival date and time: {new Date(flight.arrival).toLocaleString('en-GB')}
+                        Arrival date and time: {new Date(itineraryFlight.Flight.arrival).toLocaleString('en-GB')}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Price: € {flight.price}
+                        Price: € {itineraryFlight.Flight.price}
                       </Typography>
                     </Grid>
                   </Grid>

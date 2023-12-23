@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
 const Flights = require("./flights");
+const Itineraries_Flights = require("./itineraries_flights");
 
 const Itineraries = instanceSequelize.define(
   "Itineraries",
@@ -33,10 +34,6 @@ const Itineraries = instanceSequelize.define(
     estimatedCO2: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    fk_flight_numbers: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
     }
   },
   {
@@ -44,6 +41,10 @@ const Itineraries = instanceSequelize.define(
     timestamps: false,
   }
 );
+
+Itineraries.hasMany(Itineraries_Flights, {
+  foreignKey: "fk_itinerary",
+});
 
 async function insertItineraries() {
   await Itineraries.bulkCreate([
@@ -53,8 +54,7 @@ async function insertItineraries() {
       departure: "2024-02-20 12:00:00.000 +00:00",
       arrival: "2024-02-20 14:30:00.000 +00:00",
       price: "46.0",
-      estimatedCO2: "120",
-      fk_flight_numbers: ["U2 4833"]
+      estimatedCO2: "120"
     },
     {
       fk_IATA_from: "VCE",
@@ -62,8 +62,7 @@ async function insertItineraries() {
       departure: "2024-02-20 15:00:00.000 +00:00",
       arrival: "2024-02-20 17:30:00.000 +00:00",
       price: "96.0",
-      estimatedCO2: "100",
-      fk_flight_numbers: ["U2 4826"]
+      estimatedCO2: "100"
     },
     {
       fk_IATA_from: "VCE",
@@ -71,8 +70,7 @@ async function insertItineraries() {
       departure: "2024-02-21 12:00:00.000 +00:00",
       arrival: "2024-02-21 14:30:00.000 +00:00",
       price: "89.0",
-      estimatedCO2: "150",
-      fk_flight_numbers: ["U2 4009"]
+      estimatedCO2: "150"
     },
     {
       fk_IATA_from: "VCE",
@@ -80,8 +78,7 @@ async function insertItineraries() {
       departure: "2024-02-22 18:00:00.000 +00:00",
       arrival: "2024-02-23 07:30:00.000 +00:00",
       price: "178.0",
-      estimatedCO2: "220",
-      fk_flight_numbers: ["U2 2039", "U2 2835"]
+      estimatedCO2: "220"
     },
     {
       fk_IATA_from: "ORY",
@@ -89,8 +86,7 @@ async function insertItineraries() {
       departure: "2024-02-20 15:00:00.000 +00:00",
       arrival: "2024-02-20 17:30:00.000 +00:00",
       price: "96.0",
-      estimatedCO2: "155",
-      fk_flight_numbers: ["U2 4890"]
+      estimatedCO2: "155"
     },
     {
       fk_IATA_from: "ORY",
@@ -98,8 +94,7 @@ async function insertItineraries() {
       departure: "2024-03-01 11:00:00.000 +00:00",
       arrival: "2024-03-01 13:30:00.000 +00:00",
       price: "160.0",
-      estimatedCO2: "100",
-      fk_flight_numbers: ["AF 3294"]
+      estimatedCO2: "100"
     },
     {
       fk_IATA_from: "BNA",
@@ -107,8 +102,7 @@ async function insertItineraries() {
       departure: "2023-11-30 19:45:00.000 +00:00",
       arrival: "2023-11-31 08:45:00.000 +00:00",
       price: "120.0",
-      estimatedCO2: "150",
-      fk_flight_numbers: ["BA 222"]
+      estimatedCO2: "150"
     },
   ]);
 }

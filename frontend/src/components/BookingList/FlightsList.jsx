@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Container, Button, Grid, Typography, Box, CircularProgress, Tooltip } from "@mui/material";
 import DefaultDialog from "../DefaultDialog";
 import ItineraryRow from "./ItineraryRow";
@@ -10,6 +11,7 @@ const FlightsList = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRow, setSelectedRow] = useState(-1);
+  const userData = useSelector((state) => state.userData);
   const [buttonConfirmDisabled, setButtonConfirmDisabled] = useState(true);
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
@@ -17,6 +19,7 @@ const FlightsList = () => {
   const navigateTo = useNavigate();
 
   useEffect(() => {
+    console.log(selectedRow);
     if (selectedRow !== -1) {
       setButtonConfirmDisabled(false);
     }
@@ -58,35 +61,20 @@ const FlightsList = () => {
         }
       }
 
-      try {
-        const requestOptions = {
-          method: "GET",
-          credentials: "include",
-        };
-        const response = await fetch(
-          "http://localhost:3000/auth",
-          requestOptions
-        );
-        const res = await response.json();
-        if (res.success) {
-          setIsLogged(true);
-        }
-      } catch (error) {
-        {
-          setTitleDialog("Error");
-          setContentDialog(`Error: ${error}. Can't do fetch of auth.`);
-          setOpenDialog(true);
-        }
+      if (userData) {
+        setIsLogged(true);
       }
+
       setLoading(false);
     })();
-  }, [navigateTo, state]);
+  }, [navigateTo, state, userData]);
 
   const handleBack = () => {
     navigateTo("/");
   }
 
   const handleConfirm = () => {
+    selectedRow.fk_flight_numbers = selectedRow.Itineraries_Flights.map((flight) => {return flight.Flight});
     if (state.formData.oneWay) {
       const selectedDepartureItinerary = {
         id: selectedRow.id,

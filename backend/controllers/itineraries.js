@@ -3,6 +3,7 @@ const Flights = require("../models/flights");
 const Airports = require("../models/airports");
 const Airlines = require("../models/airlines");
 const { Op } = require("@sequelize/core");
+const Itineraries_Flights = require("../models/itineraries_flights");
 
 const getItinerariesForBooking = async (req, res, next) => {
   try {
@@ -20,8 +21,31 @@ const getItinerariesForBooking = async (req, res, next) => {
           [Op.gte]: dateToSearch00,
           [Op.lte]: dateToSearch23
         }
-      }
+      },
+      include: [
+        {
+          model: Itineraries_Flights,
+          include: [
+            {
+              model: Flights,
+              include: [
+                { model: Airports, as: 'departureAirport', attributes: ['name'] },
+                { model: Airports, as: 'arrivalAirport', attributes: ['name'] },
+                { model: Airlines, as: 'airline', attributes: ['name'] },
+              ]
+            }
+          ]
+        }
+      ]
     });
+
+    if (!itineraries) {
+      return res.status(200).json({
+        success: true,
+        message: "No itineraries retrieved",
+        data: itineraries
+      });
+    }
 
     if (itineraries.length === 0) {
       return res.status(200).json({
@@ -31,6 +55,12 @@ const getItinerariesForBooking = async (req, res, next) => {
       });
     }
 
+    return res.status(200).json({
+      success: true,
+      message: "Successfully retrieved all itineraries",
+      data: itineraries
+    });
+    /*
     for (let i = 0; i < itineraries.length; i++) {
       const flights = await Flights.findAll({
         where: {
@@ -52,15 +82,11 @@ const getItinerariesForBooking = async (req, res, next) => {
 
       itineraries[i].fk_flight_numbers = flights;
     }
-
-    res.status(200).json({
-      success: true,
-      message: "Successfully retrieved all itineraries",
-      data: itineraries
-    });
+    */
 
   } catch(error) {
-    res.status(500).json({
+    console.log(error);
+    return res.status(500).json({
       success: false,
       message: "Failed retrieval of itineraries",
       error: error.message

@@ -2,7 +2,6 @@ const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
 const Airports = require("./airports");
 const Airlines = require("./airlines");
-const Itineraries = require("./itineraries");
 
 const Flights = instanceSequelize.define(
   "Flights",

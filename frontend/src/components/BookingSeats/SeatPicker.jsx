@@ -263,7 +263,9 @@ const SeatPicker = () => {
               {seats.map((seat, index) => {
                 return (
                   <React.Fragment key={seat.seat_number}>
-                    <Tooltip title={seat.price + "€"}>
+                    <Tooltip title={seat.price + "€"} style={{ 
+                      pointerEvents: seat.is_booked ? "none" : "auto"
+                     }}>
                       <Grid item xs={2.5}>
                         <Typography
                           component={"span"}
@@ -273,14 +275,13 @@ const SeatPicker = () => {
                             elevation={3}
                             style={{
                               padding: "0.5em",
-                              backgroundColor: seat.isBooked
+                              backgroundColor: seat.is_booked
                                 ? "#FF5733"
                                 : selectedSeats.find((obj) => {
                                     return obj.seatNumber === seat.seat_number;
                                   })
                                 ? "orange"
                                 : "#DAF7A6",
-                              disabled: seat.isBooked ? "true" : "false",
                               textAlign: "center",
                               margin: "1em",
                               cursor: "pointer",
@@ -291,7 +292,7 @@ const SeatPicker = () => {
                               e.target.style.backgroundColor = "lightblue";
                             }}
                             onMouseLeave={(e) => {
-                              e.target.style.backgroundColor = seat.isBooked
+                              e.target.style.backgroundColor = seat.is_booked
                                 ? "#FF5733"
                                 : selectedSeats.find((obj) => {
                                     return obj.seatNumber === seat.seat_number;
