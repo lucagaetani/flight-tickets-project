@@ -16,8 +16,6 @@ const validateBooking = [
 
 router.get("/getBookingsForUser", bookingsController.getBookingsForUser);
 
-router.get("/getBooking", bookingsController.getBooking);
-
 router.post("/insertBookings", validateBooking, bookingsController.insertBookings);
 
 module.exports = router;

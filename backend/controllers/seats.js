@@ -10,6 +10,9 @@ const getSeatsForFlight = async (req, res, next) => {
       where: {
         flight_number: seatsJSON.flight_number
       },
+      order: [
+        ['seat_number', 'ASC']
+      ]
     });
 
     if (!seats) {

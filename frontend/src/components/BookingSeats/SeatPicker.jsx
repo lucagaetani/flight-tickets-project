@@ -89,7 +89,7 @@ const SeatPicker = () => {
         )}`;
         const response = await fetch(url, requestOptions);
         const res = await response.json();
-        if (res.success) {
+        if (res.success) {        
           setSeats(res.data);
         } else {
           setTitleDialog("Error");

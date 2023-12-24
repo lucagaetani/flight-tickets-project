@@ -13,7 +13,7 @@ const { insertTickets } = require("./tickets");
 
 const getBookingsForUser = async (req, res, next) => {
   const decodedState = decodeURIComponent(req.query.state);
-  const { email } = JSON.parse(decodedState);
+  const email = JSON.parse(decodedState);
 
   try {
     const user = Users.findByPk(email);
@@ -24,37 +24,26 @@ const getBookingsForUser = async (req, res, next) => {
       });
     }
 
-    const bookings = Bookings.findAll({
+    const bookings = await Bookings.findAll({
       where: {
         fk_email: email
       }
     });
 
-    res.status(501).json({
+    return res.status(200).json({
       success: true,
-      message: "",
+      message: "Successfully retrieved all bookings for the user",
       data: bookings
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(400).json({
       success: false,
       message: "Failed retrieval of bookings",
       error: error.message
     });
   }
 }
-
-const getBooking = async (req, res, next) => {
-  try {
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Failed retrieval of flight",
-      error: error.message,
-    });
-  }
-};
 
 const insertBookings = async (req, res, next) => {
   const transaction = await instanceSequelize.transaction();
@@ -268,6 +257,5 @@ const insertBookings = async (req, res, next) => {
   }
 };
 
-exports.getBooking = getBooking;
 exports.getBookingsForUser = getBookingsForUser;
 exports.insertBookings = insertBookings;

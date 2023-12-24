@@ -80,13 +80,15 @@ const ItineraryRow = (props) => {
           <Collapse direction="vertical" in={expandedPaper}>
             <>
                 {props.row["Itineraries_Flights"].map((itineraryFlight,index) => (
+                  <>
                   <Grid 
                   container
                   spacing={{ xs: 1, md: 2 }}
                   columns={{ xs: 2, md: 5 }}
                   key={"flight"+index}
                   sx={{
-                    marginLeft: "-3px !important"
+                    marginLeft: "0px !important",
+                    pr: 2
                   }}
                 >
                     <Grid item xs={1} md={1}>
@@ -126,6 +128,32 @@ const ItineraryRow = (props) => {
                       </Typography>
                     </Grid>
                   </Grid>
+                  {props.row["Itineraries_Flights"][index+1] && (
+                    <Grid 
+                      container
+                      spacing={{ xs: 1, md: 2 }}
+                      columns={{ xs: 2, md: 5 }}
+                      key={"stopover"+index}
+                      sx={{
+                        marginLeft: "0px !important",
+                        justifyContent: "center",
+                        m: "auto"
+                      }}
+                    >
+                      <Grid item xs={1} md={5} sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        pl: "0px !important",
+                        mt: 2,
+                        mb: 2
+                      }}>
+                        <Typography fontWeight={"bold"}>
+                          Waiting time for the stopover: {Math.floor(((new Date(props.row["Itineraries_Flights"][index+1].Flight.departure).getTime() - new Date(itineraryFlight.Flight.arrival).getTime())/1000)/3600) + "h " + Math.floor((((new Date(props.row["Itineraries_Flights"][index+1].Flight.departure).getTime() - new Date(itineraryFlight.Flight.arrival).getTime())/1000)%3600)/60) + "m"}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  )}
+                  </>
                 ))}
               </>
             </Collapse>
