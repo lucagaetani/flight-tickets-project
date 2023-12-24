@@ -10,13 +10,18 @@ const Seats = require("../models/seats");
 const { getUser } = require("./users");
 const { QueryTypes } = require("sequelize");
 const { insertTickets } = require("./tickets");
+const Itineraries = require("../models/itineraries");
+const Flights = require("../models/flights");
+const Itineraries_Flights = require("../models/itineraries_flights");
+const Airports = require("../models/airports");
+const Airlines = require("../models/airlines");
 
 const getBookingsForUser = async (req, res, next) => {
   const decodedState = decodeURIComponent(req.query.state);
   const email = JSON.parse(decodedState);
 
   try {
-    const user = Users.findByPk(email);
+    const user = await Users.findByPk(email);
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -25,9 +30,56 @@ const getBookingsForUser = async (req, res, next) => {
     }
 
     const bookings = await Bookings.findAll({
+      attributes: [
+        'id'
+      ],
       where: {
         fk_email: email
-      }
+      },
+      include: [{
+        model: Itineraries,
+        as: "itDep",
+        attributes: ["arrival","departure","price","estimatedCO2"],
+        include: [{
+          model: Itineraries_Flights,
+          as: "itFlights",
+          include: [
+            {
+              model: Flights,
+              as: "flight",
+              include: [
+                { model: Airlines, as: 'airline', attributes: ['name'] },
+                { model: Airports, as: 'departureAirport', attributes: ['name']},
+                { model: Airports, as: 'arrivalAirport', attributes: ['name']}
+              ],
+            },
+          ]
+        }]
+      },
+      {
+        model: Itineraries,
+        as: "itRet",
+        include: [{
+          model: Itineraries_Flights,
+          as: "itFlights",
+          include: [
+            {
+              model: Flights,
+              as: "flight",
+              include: [
+                { model: Airports, as: 'departureAirport', attributes: ['name'] },
+                { model: Airports, as: 'arrivalAirport', attributes: ['name'] },
+                { model: Airlines, as: 'airline', attributes: ['name'] },
+              ]
+            }
+          ]
+        }]
+      },
+      {
+        model: Tickets,
+        as: "tickets"
+      },
+    ],
     });
 
     return res.status(200).json({
@@ -37,6 +89,7 @@ const getBookingsForUser = async (req, res, next) => {
     });
 
   } catch (error) {
+    console.log(error);
     return res.status(400).json({
       success: false,
       message: "Failed retrieval of bookings",

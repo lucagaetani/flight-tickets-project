@@ -25,9 +25,11 @@ const getItinerariesForBooking = async (req, res, next) => {
       include: [
         {
           model: Itineraries_Flights,
+          as: "itFlights",
           include: [
             {
               model: Flights,
+              as: "flight",
               include: [
                 { model: Airports, as: 'departureAirport', attributes: ['name'] },
                 { model: Airports, as: 'arrivalAirport', attributes: ['name'] },
@@ -60,29 +62,6 @@ const getItinerariesForBooking = async (req, res, next) => {
       message: "Successfully retrieved all itineraries",
       data: itineraries
     });
-    /*
-    for (let i = 0; i < itineraries.length; i++) {
-      const flights = await Flights.findAll({
-        where: {
-          flight_number: itineraries[i].fk_flight_numbers
-        },
-        include: [
-          { model: Airports, as: 'departureAirport', attributes: ['name'] },
-          { model: Airports, as: 'arrivalAirport', attributes: ['name'] },
-          { model: Airlines, as: 'airline', attributes: ['name'] },
-        ]
-      });
-
-      if (!flights) {
-        return res.status(401).json({
-          success: false,
-          message: "No flights retrieved in this itinerary",
-        });
-      }
-
-      itineraries[i].fk_flight_numbers = flights;
-    }
-    */
 
   } catch(error) {
     console.log(error);

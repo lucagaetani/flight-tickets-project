@@ -24,6 +24,7 @@ const Itineraries_Flights = instanceSequelize.define(
 
 Itineraries_Flights.belongsTo(Flights, {
   foreignKey: "fk_flight_number",
+  as: "flight"
 });
 
 async function insertItineraries_Flights() {

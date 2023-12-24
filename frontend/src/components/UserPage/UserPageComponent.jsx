@@ -3,13 +3,14 @@ import {
   Button,
   Grid,
   Typography,
-  Slide,
   Container,
   TextField,
-  Paper,
+  Box,
+  CircularProgress,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import DefaultDialog from "../DefaultDialog";
+import UserPageRow from "./UserPageRow";
 
 const UserPageComponent = () => {
   const [selectedBookings, setSelectedBookings] = useState(true);
@@ -18,6 +19,7 @@ const UserPageComponent = () => {
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
   const userData = useSelector((state) => state.userData);
 
   useEffect(() => {
@@ -41,10 +43,12 @@ const UserPageComponent = () => {
             setContentDialog(`Error: ${res.message}`);
             setOpenDialog(true);
           }
+          setLoading();
         } catch (error) {
           setTitleDialog("Error");
           setContentDialog(`Error fetching data: ${error}`);
           setOpenDialog(true);
+          setLoading();
         }
       })();
     }
@@ -62,6 +66,23 @@ const UserPageComponent = () => {
 
   }
 
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          height: "80vh",
+        }}
+      >
+        <CircularProgress
+          sx={{
+            margin: "auto",
+          }}
+        />
+      </Box>
+    );
+  }
+
   return (
     <Container sx={{mt: 2}}>
       <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
@@ -71,7 +92,7 @@ const UserPageComponent = () => {
             Hello, {userData.name} {userData.surname}
           </Typography>
         </Grid>
-        <Grid item xs={1} md={1}>
+        <Grid item xs={1} md={1} justifyContent={"center"} display={"flex"}>
           <Button
             onClick={handleBookings}
             sx={{ mt: 3, mr: 1 }}
@@ -81,7 +102,7 @@ const UserPageComponent = () => {
             Bookings
           </Button>
         </Grid>
-        <Grid item xs={1} md={1}>
+        <Grid item xs={1} md={1} justifyContent={"center"} display={"flex"}>
           <Button
             onClick={handleEdit}
             sx={{ mt: 3, mr: 1 }}
@@ -92,93 +113,98 @@ const UserPageComponent = () => {
           </Button>
         </Grid>
         {selectedBookings ? (
-          <Slide direction="up">
-            <>
+          <>
             <Grid item xs={2} md={2} sx={{ borderBottom: "1px solid #C4C4C4", mt: 2 }}>
               <Typography variant="h5">
                 Flights booked
               </Typography>
             </Grid>
-            {bookingRows && bookingRows.map((row,index) => (
-              <Grid item xs={2} md={2} sx={{ mt: 2 }} key={"booking"+index}>
-                <Paper>
-                  <Grid container columns={{ xs: 2, md: 4 }} sx={{ p: 2 }}>
-                    <Grid item xs={1} md={1}>
-                      <Typography>
-                        {row.id}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Paper>
-              </Grid>
-            ))}
-            </>
-          </Slide>
+            {bookingRows.length === 0 ? (
+              <Box
+              sx={{
+                display: "flex",
+                height: "65vh",
+                margin: "auto"
+              }}
+            >
+              <Typography sx={{ margin: "auto" }}>
+                No rows retrieved
+              </Typography>
+            </Box>
+            ) : (
+              bookingRows.map((row,index) => (
+                <Grid item xs={2} md={2} sx={{ mt: 2 }} key={"booking"+index}>
+                  <UserPageRow 
+                    row={row}
+                    index={index}
+                  />
+                </Grid>
+              ))
+            )}
+          </>
         ) : (
-          <Slide direction="up">
-            <>
-            <Grid item xs={2} md={2} sx={{ borderBottom: "1px solid #C4C4C4", mt: 2 }}>
-              <Typography variant="h5">
-                Edit profile
-              </Typography>
+          <>
+          <Grid item xs={2} md={2} sx={{ borderBottom: "1px solid #C4C4C4", mt: 2 }}>
+            <Typography variant="h5">
+              Edit profile
+            </Typography>
+          </Grid>
+          <Grid item xs={2} md={2} sx={{ mt: 1, mb: 2 }}>
+            <Typography>
+              Here you can change profile name, surname, email or password.
+            </Typography>
+          </Grid>
+          <Grid container columns={{ xs: 1, md: 2 }} spacing={1}>
+            <Grid item xs={2} md={1}>
+              <TextField
+                label="Name"
+                type="text"
+                name={"name"}
+                fullWidth
+                defaultValue={userData.name}
+                onBlur={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
+              />
             </Grid>
-            <Grid item xs={2} md={2} sx={{ mt: 1, mb: 2 }}>
-              <Typography>
-                Here you can change profile name, surname, email or password.
-              </Typography>
+            <Grid item xs={2} md={1}>
+              <TextField
+                label="Surname"
+                type="text"
+                name={"name"}
+                fullWidth
+                defaultValue={userData.surname}
+                onBlur={handleChange}
+                error={!!errors.surname}
+                helperText={errors.surname}
+              />
             </Grid>
-            <Grid container columns={{ xs: 1, md: 2 }} spacing={1}>
-              <Grid item xs={2} md={1}>
-                <TextField
-                  label="Name"
-                  type="text"
-                  name={"name"}
-                  fullWidth
-                  defaultValue={userData.name}
-                  onBlur={handleChange}
-                  error={!!errors.name}
-                  helperText={errors.name}
-                />
-              </Grid>
-              <Grid item xs={2} md={1}>
-                <TextField
-                  label="Surname"
-                  type="text"
-                  name={"name"}
-                  fullWidth
-                  defaultValue={userData.surname}
-                  onBlur={handleChange}
-                  error={!!errors.surname}
-                  helperText={errors.surname}
-                />
-              </Grid>
-              <Grid item xs={2} md={1}>
-                <TextField
-                  label="Email"
-                  type="text"
-                  name="email"
-                  fullWidth
-                  defaultValue={userData.email}
-                  onBlur={handleChange}
-                  error={!!errors.email}
-                  helperText={errors.email}
-                />
-              </Grid>
-              <Grid item xs={2} md={1}>
-                <TextField
-                  label="Password"
-                  type="password"
-                  name="password"
-                  fullWidth
-                  defaultValue={null}
-                  onBlur={handleChange}
-                  error={!!errors.password}
-                  helperText={errors.password}
-                />
-              </Grid>
+            <Grid item xs={2} md={1}>
+              <TextField
+                label="Email"
+                type="text"
+                name="email"
+                fullWidth
+                defaultValue={userData.email}
+                onBlur={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+              />
             </Grid>
-            </>
-          </Slide>
+            <Grid item xs={2} md={1}>
+              <TextField
+                label="Password"
+                type="password"
+                name="password"
+                fullWidth
+                defaultValue={null}
+                onBlur={handleChange}
+                error={!!errors.password}
+                helperText={errors.password}
+              />
+            </Grid>
+          </Grid>
+          </>
         )}
       </Grid>
     </Container>

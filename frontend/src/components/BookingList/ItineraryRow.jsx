@@ -64,7 +64,7 @@ const ItineraryRow = (props) => {
         </Grid>
         <Grid item xs={1} md={1}>
           <Typography>
-            {props.row["Itineraries_Flights"].length === 1 ? "Direct" : props.row["Itineraries_Flights"].length-1 === 1 ? "1 stop" : props.row["Itineraries_Flights"].length-1 + " stop"}
+            {props.row["itFlights"].length === 1 ? "Direct" : props.row["itFlights"].length-1 === 1 ? "1 stop" : props.row["itFlights"].length-1 + " stop"}
           </Typography>
         </Grid>
         <Grid item xs={2} md={5}>
@@ -79,7 +79,7 @@ const ItineraryRow = (props) => {
         </Grid>
           <Collapse direction="vertical" in={expandedPaper}>
             <>
-                {props.row["Itineraries_Flights"].map((itineraryFlight,index) => (
+                {props.row["itFlights"].map((itineraryFlight,index) => (
                   <>
                   <Grid 
                   container
@@ -93,42 +93,42 @@ const ItineraryRow = (props) => {
                 >
                     <Grid item xs={1} md={1}>
                       <Typography fontWeight={"bold"}>
-                        {index+1}{"."} {itineraryFlight.Flight.flight_number}
-                        <AirlineLogo airline={itineraryFlight.Flight.airline.name} />
+                        {index+1}{"."} {itineraryFlight.flight.flight_number}
+                        <AirlineLogo airline={itineraryFlight.flight.airline.name} />
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        {Math.floor(((new Date(itineraryFlight.Flight.arrival).getTime() - new Date(itineraryFlight.Flight.departure).getTime())/1000)/3600) + "h " + Math.floor((((new Date(itineraryFlight.Flight.arrival).getTime() - new Date(itineraryFlight.Flight.departure).getTime())/1000)%3600)/60) + "m"}
+                        {Math.floor(((new Date(itineraryFlight.flight.arrival).getTime() - new Date(itineraryFlight.flight.departure).getTime())/1000)/3600) + "h " + Math.floor((((new Date(itineraryFlight.flight.arrival).getTime() - new Date(itineraryFlight.flight.departure).getTime())/1000)%3600)/60) + "m"}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Departure: {itineraryFlight.Flight.departureAirport.name}
+                        Departure: {itineraryFlight.flight.departureAirport.name}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Arrival: {itineraryFlight.Flight.arrivalAirport.name}
+                        Arrival: {itineraryFlight.flight.arrivalAirport.name}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Departure date and time: {new Date(itineraryFlight.Flight.departure).toLocaleString('en-GB')}
+                        Departure date and time: {new Date(itineraryFlight.flight.departure).toLocaleString('en-GB')}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Arrival date and time: {new Date(itineraryFlight.Flight.arrival).toLocaleString('en-GB')}
+                        Arrival date and time: {new Date(itineraryFlight.flight.arrival).toLocaleString('en-GB')}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Price: € {itineraryFlight.Flight.price}
+                        Price: € {itineraryFlight.flight.price}
                       </Typography>
                     </Grid>
                   </Grid>
-                  {props.row["Itineraries_Flights"][index+1] && (
+                  {props.row["itFlights"][index+1] && (
                     <Grid 
                       container
                       spacing={{ xs: 1, md: 2 }}
@@ -148,7 +148,7 @@ const ItineraryRow = (props) => {
                         mb: 2
                       }}>
                         <Typography fontWeight={"bold"}>
-                          Waiting time for the stopover: {Math.floor(((new Date(props.row["Itineraries_Flights"][index+1].Flight.departure).getTime() - new Date(itineraryFlight.Flight.arrival).getTime())/1000)/3600) + "h " + Math.floor((((new Date(props.row["Itineraries_Flights"][index+1].Flight.departure).getTime() - new Date(itineraryFlight.Flight.arrival).getTime())/1000)%3600)/60) + "m"}
+                          Waiting time for the stopover: {Math.floor(((new Date(props.row["itFlights"][index+1].flight.departure).getTime() - new Date(itineraryFlight.flight.arrival).getTime())/1000)/3600) + "h " + Math.floor((((new Date(props.row["itFlights"][index+1].flight.departure).getTime() - new Date(itineraryFlight.flight.arrival).getTime())/1000)%3600)/60) + "m"}
                         </Typography>
                       </Grid>
                     </Grid>

@@ -55,10 +55,6 @@ const Tickets = instanceSequelize.define(
 	}
 );
 
-Tickets.belongsTo(Bookings, {
-	foreignKey: "fk_booking"
-});
-
 Tickets.belongsTo(Flights, {
 	foreignKey: "fk_flight_number"
 });
@@ -66,7 +62,6 @@ Tickets.belongsTo(Flights, {
 Tickets.belongsTo(Seats, {
 	foreignKey: "fk_seat_number"
 });
-
 
 /*
 (async () => {

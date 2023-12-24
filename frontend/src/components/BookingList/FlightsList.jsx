@@ -74,7 +74,7 @@ const FlightsList = () => {
   }
 
   const handleConfirm = () => {
-    selectedRow.fk_flight_numbers = selectedRow.Itineraries_Flights.map((flight) => {return flight.Flight});
+    selectedRow.fk_flight_numbers = selectedRow.itFlights.map((flight) => {return flight.flight});
     if (state.formData.oneWay) {
       const selectedDepartureItinerary = {
         id: selectedRow.id,
@@ -174,7 +174,7 @@ const FlightsList = () => {
         <Box
         sx={{
           display: "flex",
-          height: "80vh",
+          height: "65vh",
         }}
       >
         <Typography sx={{ margin: "auto" }}>

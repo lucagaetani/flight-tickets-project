@@ -252,12 +252,12 @@ const SeatPicker = () => {
               spacing={{ xs: 0, md: 3.5 }}
               columns={{ xs: 12, sm: 8, md: 12 }}
               sx={{
-                mt: 5,
+                mt: 1,
                 backgroundImage: "./src/assets/planeAirframe.png",
                 backgroundRepeat: "no-repeat",
                 height: "100%",
                 width: "100%",
-                p: 2,
+                p: 0.5,
               }}
             >
               {seats.map((seat, index) => {

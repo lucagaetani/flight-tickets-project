@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
 const Flights = require("./flights");
 const Itineraries_Flights = require("./itineraries_flights");
+const Airports = require("./airports");
 
 const Itineraries = instanceSequelize.define(
   "Itineraries",
@@ -44,6 +45,7 @@ const Itineraries = instanceSequelize.define(
 
 Itineraries.hasMany(Itineraries_Flights, {
   foreignKey: "fk_itinerary",
+  as: "itFlights"
 });
 
 async function insertItineraries() {

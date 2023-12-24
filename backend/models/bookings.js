@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const instanceSequelize = require("../database");
 const Users = require("./users");
 const Itineraries = require("./itineraries");
+const Tickets = require("./tickets");
 
 const Bookings = instanceSequelize.define(
   "Bookings",
@@ -30,15 +31,22 @@ const Bookings = instanceSequelize.define(
 );
 
 Bookings.belongsTo(Itineraries, {
-	foreignKey: "fk_itinerary_departure"
+	foreignKey: "fk_itinerary_departure",
+  as: "itDep"
 });
 
 Bookings.belongsTo(Itineraries, {
-	foreignKey: "fk_itinerary_returning"
+	foreignKey: "fk_itinerary_returning",
+  as: "itRet"
 });
 
 Bookings.belongsTo(Users, {
   foreignKey: "fk_email"
+});
+
+Bookings.hasMany(Tickets, {
+  foreignKey: "fk_booking",
+	as: "tickets"
 });
 
 /*
