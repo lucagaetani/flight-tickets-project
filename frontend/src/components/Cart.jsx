@@ -16,7 +16,6 @@ const Cart = (props) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log(props);
     let totalPrice = 0;
     totalPrice += props.priceDeparture;
     if (props.selectedReturningFlight) {

@@ -111,7 +111,7 @@ const UserPageRow = (props) => {
               <Typography variant="h5" fontWeight={"bold"} sx={{ ml: "0px !important", pl: 1, pt: 1, pb: 1, pr: 1  }}>
                 Flights informations
               </Typography>
-              <Typography fontWeight={"bold"} sx={{ ml: "0px !important", pl: 1, pb: 1, pr: 1 }}>
+              <Typography fontWeight={"bold"} sx={{ ml: "0px !important", pl: 1, pb: 1, pr: 1, mt: 1, mb: 1 }}>
                 Departure
               </Typography>
               {props.row.itDep.itFlights.map((itineraryFlight,index) => (
@@ -191,7 +191,7 @@ const UserPageRow = (props) => {
                 </>
               ))}
               {props.row.itRet && (
-                <Typography fontWeight={"bold"} sx={{ ml: "0px !important", pl: 1, pb: 1, pr: 1 }}>
+                <Typography fontWeight={"bold"} sx={{ ml: "0px !important", pl: 1, pb: 1, pr: 1, mt: 1, mb: 1 }}>
                   Returning
                 </Typography>
               )}
@@ -244,7 +244,7 @@ const UserPageRow = (props) => {
                       </Typography>
                     </Grid>
                   </Grid>
-                  {props.row.itDep.itFlights[index+1] && (
+                  {props.row.itRet.itFlights[index+1] && (
                     <Grid 
                       container
                       spacing={{ xs: 1, md: 2 }}
@@ -280,7 +280,7 @@ const UserPageRow = (props) => {
                     container
                     spacing={{ xs: 1, md: 2 }}
                     columns={{ xs: 2, md: 3 }}
-                    key={"returning"+index}
+                    key={"ticketsReturning"+index}
                     sx={{
                       marginLeft: "0px !important",
                       pr: 2,

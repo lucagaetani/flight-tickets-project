@@ -222,7 +222,8 @@ const BookingForm = () => {
                 />
               )}
             </Grid>
-            <Grid item xs={1} md={1}></Grid>
+            <Grid item xs={1} md={1}>
+            </Grid>
             <Grid item xs={1} md={1}>
               <TextField
                 label="Adults"

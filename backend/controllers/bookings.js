@@ -277,7 +277,7 @@ const insertBookings = async (req, res, next) => {
 
     if (returningTicketsToBook) {
       const returningTicketsBooking = await insertTickets(await createTickets(returningTicketsToBook));
-      if (!returningTicketsBooking.error) {
+      if (returningTicketsBooking.error) {
         await transaction.rollback();
         return res.status(400).json(returningTicketsBooking);
       }

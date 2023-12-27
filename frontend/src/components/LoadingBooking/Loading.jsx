@@ -13,11 +13,12 @@ const Loading = () => {
   const navigateTo = useNavigate();
   const userData = useSelector((state) => state.userData);
 
+  //It's purpose is to remove the "-0", "-1", "-2" etc. on the key names, to make a more cleaned json to send
   const removeNumberedSuffixes = (obj) => {
     const result = {};
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        const newKey = key.replace(/-\d+$/, ''); // Remove the -1 suffix
+        const newKey = key.replace(/-\d+$/, '');
         result[newKey] = obj[key];
       }
     }
@@ -42,7 +43,8 @@ const Loading = () => {
         });
 
         
-        /*Prepare data to send, it will send:
+        /*
+          Prepare data to send, it will send:
             - seatsFlightsDeparture: seats chosen for each flight departure, flights chosen, itinerary id and info of the passenger
             - userEmail: email of the user logged into the app
           Optionally, if the user has chosen returning flights:
@@ -53,21 +55,24 @@ const Loading = () => {
           userEmail: userData.email
         }
         if (state.flightState?.selectedReturningFlight) {
-          const seatsFlightsReturning = state.flightState.selectedSeatsReturning.map((selectedSeats) => {
+          const seatsFlightsReturning = state.flightState.selectedSeatsReturning.map((selectedSeats, selectedIndex) => {
             return selectedSeats.map((seat, index) => {
-              seat.flightNumber = state.flightState.selectedReturningFlight[index].flight_number;
-              seat.itineraryId = state.flightState.selectedDepartureReturning.id;
-              seat.arrayPassengerInfo = state.flightState.arrayPassengerInfo[index];
+              seat.flightNumber = state.flightState.selectedReturningFlight[selectedIndex].flight_number;
+              seat.itineraryId = state.flightState.selectedReturningItinerary.id;
+              seat.arrayPassengerInfo = removeNumberedSuffixes(state.flightState.arrayPassengerInfo[index]);
               return seat;
             })
           });
           sendData.flightState.seatsFlightsReturning = seatsFlightsReturning;
         }
-        console.log(sendData);
+
+        //Update the progress bar
         setTitle("Launched request. Waiting for answer");
         setValue(40);
-        //Delete state
+
+        //Delete current state
         delete state.flightState;
+
         const requestOptions = {
           method: "POST",
           headers: { "Content-Type": "application/json" },
