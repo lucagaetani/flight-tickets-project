@@ -247,101 +247,126 @@ const SeatPicker = () => {
         </Typography>
         <Grid
           container
+          spacing={1}
           columns={{ xs: 1, md: 2 }}
           sx={{ mt: 1, width: "100%" }}
         >
-          <Grid item xs={1} md={1} sx={{ mt: 1 }}>
-            <Grid
-              container
-              spacing={{ xs: 0, md: 3.5 }}
-              columns={{ xs: 12, sm: 8, md: 12 }}
-              sx={{
-                mt: 1,
-                backgroundImage: "./src/assets/planeAirframe.png",
-                backgroundRepeat: "no-repeat",
-                height: "100%",
-                width: "100%",
-                p: 0.5,
-              }}
-            >
-              {seats.map((seat, index) => {
-                return (
-                  <React.Fragment key={seat.seat_number}>
-                    <Tooltip title={seat.price + "€"} style={{ 
-                      pointerEvents: seat.is_booked ? "none" : "auto"
-                     }}>
-                      <Grid item xs={2.5}>
-                        <Typography
-                          component={"span"}
-                          sx={{ backgroundColor: "inherit" }}
-                        >
-                          <Paper
-                            elevation={3}
-                            style={{
-                              padding: "0.5em",
-                              backgroundColor: seat.is_booked
-                                ? "#FF5733"
-                                : selectedSeats.find((obj) => {
-                                    return obj.seatNumber === seat.seat_number;
-                                  })
-                                ? "orange"
-                                : "#DAF7A6",
-                              textAlign: "center",
-                              margin: "1em",
-                              cursor: "pointer",
-                              transition: "background-color 0.3s ease",
-                              flexFlow: "row wrap",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.target.style.backgroundColor = "lightblue";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.target.style.backgroundColor = seat.is_booked
-                                ? "#FF5733"
-                                : selectedSeats.find((obj) => {
-                                    return obj.seatNumber === seat.seat_number;
-                                  })
-                                ? "orange"
-                                : "#DAF7A6";
-                            }}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleSeatClick(seat.seat_number, seat.price);
-                            }}
+          <Grid item xs={1} md={1} sx={{ mt: 1,
+              backgroundImage: `url('./src/assets/planeAirframe.png')`,
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "100% 125%",
+            }}>
+              <Grid
+                container
+                spacing={{ xs: 0, md: 3.5 }}
+                columns={{ xs: 12, sm: 8, md: 12 }}
+                sx={{
+                  p: 0.5,
+                  mt: "220px !important"
+                }}
+              >
+                {seats.map((seat, index) => {
+                  return (
+                    <React.Fragment key={seat.seat_number}>
+                      <Tooltip title={seat.price + "€"} style={{ 
+                        pointerEvents: seat.is_booked ? "none" : "auto"
+                      }}>
+                        <Grid item xs={2.5}>
+                          <Typography
+                            component={"span"}
+                            fontWeight={"bold"}
+                            sx={{ backgroundColor: "inherit" }}
                           >
-                            {seat.seat_number}
-                          </Paper>
-                        </Typography>
-                      </Grid>
-                    </Tooltip>
-                    {seat.seat_number === "C4" && (
-                      <Grid item xs={12} key={"empty" + index}>
-                        {}
-                      </Grid>
-                    )}
-                    {index % 4 === 1 && (
-                      <Grid item xs={2} key={"empty" + index}>
-                        {}
-                      </Grid>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </Grid>
+                            
+                            <Paper
+                              elevation={3}
+                              style={{
+                                padding: "0.5em",
+                                backgroundColor: seat.is_booked
+                                  ? "#D2122E"
+                                  : selectedSeats.find((obj) => {
+                                      return obj.seatNumber === seat.seat_number;
+                                    })
+                                  ? "#4B0082"
+                                  : seat.price >= 100 ? "black" : seat.price >= 50 ? "#7CB9E8" : "#FFC72C",
+                                textAlign: "center",
+                                margin: "1em",
+                                cursor: "pointer",
+                                transition: "background-color 0.3s ease",
+                                flexFlow: "row wrap",
+                                color: "white"
+                              }}
+                              onMouseEnter={(e) => {
+                                e.target.style.backgroundColor = "green";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.target.style.backgroundColor = seat.is_booked
+                                ? "#D2122E"
+                                : selectedSeats.find((obj) => {
+                                    return obj.seatNumber === seat.seat_number;
+                                  })
+                                ? "#4B0082"
+                                : seat.price >= 100 ? "black" : seat.price >= 50 ? "#7CB9E8" : "#FFC72C";
+                              }}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleSeatClick(seat.seat_number, seat.price);
+                              }}
+                            >
+                              {seat.seat_number}
+                            </Paper>
+                          </Typography>
+                        </Grid>
+                      </Tooltip>
+                      {seat.seat_number === "C4" && (
+                        <Grid item xs={12} key={"empty" + index}>
+                          {}
+                        </Grid>
+                      )}
+                      {index % 4 === 1 && (
+                        <Grid item xs={2} key={"empty" + index}>
+                          {}
+                        </Grid>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </Grid>
           </Grid>
           <Grid item xs={1} md={1} sx={{ mt: 1 }}>
             <Typography variant="h5">
               {state.flightState.formData.oneWay
-                ? `Choose a seat flight for ${state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture ? state.flightState.selectedSeatsDeparture.length : 0].flight_number}`
-                : `Choose a seat flight for ${state.flightState.formData.airportTo} to ${state.flightState.formData.airportFrom}`}
+                ? `You're choosing seats for flight: ${state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture ? state.flightState.selectedSeatsDeparture.length : 0].flight_number}`
+                : `You're choosing seats for flight: ${state.flightState.formData.airportTo} to ${state.flightState.formData.airportFrom}`}
             </Typography>
 
             <Typography>
               {"It's not mandatory to choose a seat. In case of no choice, your seat will be chosen randomly before the flight."}
             </Typography>
 
-            <Typography>
+            <Typography sx={{ mt: 1 }}>
               {"Some information about seats: "}
+            </Typography>
+
+            <Typography>
+              {"• "} 
+              <span style={{color: "black", fontWeight: "bold"}}>BUSINESS</span>
+              {" "}
+              seats costs 100 or more euros.
+            </Typography>
+
+            <Typography>
+              {"• "} 
+              <span style={{color: "#7CB9E8", fontWeight: "bold"}}>SMART</span>
+              {" "}
+              seats costs from 50 to 99 euros.
+            </Typography>
+
+            <Typography>
+              {"• "} 
+              <span style={{color: "#FFC72C", fontWeight: "bold"}}>ECONOMY</span>
+              {" "}
+              seats costs from 0 to 49 euros.
             </Typography>
 
             {adults
@@ -384,11 +409,17 @@ const SeatPicker = () => {
                     }}
                   >
                     <Typography variant="h6">Adult {index + 1}</Typography>
-                    <Typography sx={{ mt: 2 }}>
+                    <Typography sx={{ mt: 1 }}>
                       Selected Seat:{" "}
                       {selectedSeats.find((obj) => {
                             return obj.seatName === `adult-${index}`;
                       }).seatNumber}
+                    </Typography>
+                    <Typography sx={{ mt: 1 }}>
+                      Selected Seat Price: € {" "}
+                      {selectedSeats.find((obj) => {
+                            return obj.seatName === `adult-${index}`;
+                      }).seatPrice}
                     </Typography>
                   </Paper>
                 ))
@@ -434,11 +465,17 @@ const SeatPicker = () => {
                     }}
                   >
                     <Typography variant="h6">Children {index + 1}</Typography>
-                    <Typography sx={{ mt: 2 }}>
+                    <Typography sx={{ mt: 1 }}>
                       Selected Seat:{" "}
                       {selectedSeats.find((obj) => {
                             return obj.seatName === `children-${index}`;
                       }).seatNumber}
+                    </Typography>
+                    <Typography sx={{ mt: 1 }}>
+                      Selected Seat Price: € {" "}
+                      {selectedSeats.find((obj) => {
+                            return obj.seatName === `children-${index}`;
+                      }).seatPrice}
                     </Typography>
                   </Paper>
                 ))
