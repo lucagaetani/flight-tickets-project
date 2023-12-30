@@ -31,7 +31,7 @@ const ItineraryRow = (props) => {
         transition: "0.5s linear",
         cursor: "pointer",
         backgroundColor:
-          props.selected ? "#D4D4D4" : "white",
+          props.selected ? "#E0E0E0" : "white",
       }}
       elevation={props.selected ? 3 : 1}
       onClick={handlePaperClick}

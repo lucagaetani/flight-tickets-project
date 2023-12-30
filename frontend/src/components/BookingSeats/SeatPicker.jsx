@@ -61,13 +61,6 @@ const SeatPicker = () => {
   }, [currentSelection]);
 
   useEffect(() => {
-    console.log("Selected seats: ");
-    console.log(selectedSeats)
-  }, [selectedSeats]);
-
-  useEffect(() => {
-    console.log("STATE: ");
-    console.log(state);
     (async () => {
       try {
         const requestOptions = {
@@ -369,6 +362,13 @@ const SeatPicker = () => {
               seats costs from 0 to 49 euros.
             </Typography>
 
+            <Typography>
+              {"• "} 
+              <span style={{color: "#D2122E", fontWeight: "bold"}}>RED</span>
+              {" "}
+              seats are booked and cannot be selected.
+            </Typography>
+
             {adults
               ? Array.from({ length: adults }, (_, index) => (
                   <Paper
@@ -382,7 +382,7 @@ const SeatPicker = () => {
                       cursor: "pointer",
                       backgroundColor:
                         currentSelection.seatName === `adult-${index}`
-                          ? "#D4D4D4"
+                          ? "#E0E0E0"
                           : "white",
                     }}
                     elevation={
@@ -390,7 +390,7 @@ const SeatPicker = () => {
                     }
                     onClick={(e) => {
                       e.preventDefault();
-                      e.backgroundColor = "#D4D4D4";
+                      e.backgroundColor = "#E0E0E0";
                       e.border = "2px solid #1976d2";
                       let selectedSeat;
                       let selectedPrice;
@@ -438,7 +438,7 @@ const SeatPicker = () => {
                       cursor: "pointer",
                       backgroundColor:
                         currentSelection.seatName === `children-${index}`
-                          ? "#D4D4D4"
+                          ? "#E0E0E0"
                           : "white",
                     }}
                     elevation={
@@ -446,7 +446,7 @@ const SeatPicker = () => {
                     }
                     onClick={(e) => {
                       e.preventDefault();
-                      e.backgroundColor = "#D4D4D4";
+                      e.backgroundColor = "#E0E0E0";
                       e.border = "2px solid #1976d2";
                       let selectedSeat;
                       let selectedPrice;

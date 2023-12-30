@@ -25,7 +25,11 @@ router.get("/getAll", usersController.getUsers);
 
 router.get("/getOne", usersController.getUser);
 
+router.get("/checkPassword", usersController.checkPassword);
+
 router.post("/registerUser", validateUser, usersController.registerUser);
+
+router.post("/editUser", validateUser, usersController.editUser);
 
 router.post("/logout", auth.verifyUserToken, usersController.logout);
 

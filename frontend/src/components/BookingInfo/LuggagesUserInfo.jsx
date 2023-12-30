@@ -171,7 +171,7 @@ const LuggageUserInfo = () => {
                     transition: "0.5s linear",
                     cursor: "pointer",
                     backgroundColor:
-                      currentPassenger === index ? "#D4D4D4" : "white",
+                      currentPassenger === index ? "#E0E0E0" : "white",
                   }}
                   elevation={currentPassenger === index ? 3 : 1}
                   onClick={() => setCurrentPassenger(index)}

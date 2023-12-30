@@ -19,7 +19,7 @@ const registerUser = async (req, res, next) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "Email already in use",
+        message: "User already exists",
       });
     }
 
@@ -103,6 +103,58 @@ const getUsers = async (res, req, next) => {
     });
   }
 };
+
+const editUser = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      success: false,
+      message: "Validation error: invalid JSON",
+    });
+  }
+
+  try {
+    const oldEmail = req.body.oldEmail;
+    const newEmail = req.body.newEmail;
+    const { name, surname, password } = req.body;
+
+    const existingUser = await Users.findByPk(newEmail);
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email you want to change already exists. Cannot update email",
+      });
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+
+    const userToUpdate = {
+      email: newEmail,
+      name,
+      surname,
+      password
+    }
+
+    const updatedUser = await Users.update(userToUpdate, {
+      where: {
+        email: oldEmail,
+      },
+    });
+
+    if (!updatedUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Errors during update, user not updated",
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: "An error occurred",
+      error: error.message,
+    });
+  }
+}
 
 const getUser = async (req, res, next) => {
   const email = req;
@@ -191,6 +243,31 @@ const login = async (req, res, next) => {
   }
 };
 
+const checkPassword = async (req, res, next) => {
+  try {
+    const { email, password } = JSON.parse(decodeURIComponent(req.query.state));
+    const user = await Users.findByPk(email);
+    const result = await bcrypt.compare(password, user.password);
+    if (result) {
+      return res.status(200).json({
+        success: true,
+        message: "Password matches",
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Password does not match",
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "An error occurred",
+      error: error.message,
+    });
+  }
+}
+
 const logout = async (req, res, next) => {
   try {
     res.clearCookie("jwt");
@@ -210,6 +287,8 @@ const logout = async (req, res, next) => {
 exports.login = login;
 exports.logout = logout;
 exports.registerUser = registerUser;
+exports.editUser = editUser;
 exports.getUsers = getUsers;
 exports.getUser = getUser;
+exports.checkPassword = checkPassword;
 exports.deleteUser = deleteUser;

@@ -46,6 +46,12 @@ const BookingForm = () => {
     e.preventDefault();
 
     const newErrors = {};
+    if (!formData.name) {
+      newErrors.airportFrom = "Name is required";
+    }
+    if (!formData.surname) {
+      newErrors.airportTo = "Surname is required";
+    }
     if (!formData.email) {
       newErrors.email = 'Email is required';
     }
@@ -114,6 +120,7 @@ const BookingForm = () => {
                 variant="outlined"
                 name="email"
                 fullWidth
+                defaultValue={null}
                 value={formData.email}
                 onChange={handleChange}
                 error={!!errors.email}
@@ -127,6 +134,7 @@ const BookingForm = () => {
                 variant="outlined"
                 name="password"
                 fullWidth
+                defaultValue={null}
                 value={formData.password}
                 onChange={handleChange}
                 error={!!errors.password}
@@ -140,6 +148,7 @@ const BookingForm = () => {
                 variant="outlined"
                 name="name"
                 fullWidth
+                defaultValue={null}
                 value={formData.name}
                 onChange={handleChange}
                 error={!!errors.name}
@@ -153,6 +162,7 @@ const BookingForm = () => {
                 variant="outlined"
                 name="surname"
                 fullWidth
+                defaultValue={null}
                 value={formData.surname}
                 onChange={handleChange}
                 error={!!errors.surname}
