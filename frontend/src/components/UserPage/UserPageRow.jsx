@@ -5,10 +5,24 @@ import AirlineLogo from "../BookingList/AirlineLogo";
 
 const UserPageRow = (props) => {
   const [expandedPaper, setExpandedPaper] = useState(false);
+  const [priceRow, setPriceRow] = useState(0);
 
   useEffect(() => {
     console.log(props.row);
   }, [])
+
+  useEffect(() => {
+    let price = 0;
+    price += props.row.itDep.price;
+    if (props.row.itRet) {
+      price += props.row.itRet.price
+    }
+    props.row.tickets.forEach((ticket) => {
+      price += ticket.seat_price
+      price += ticket.hold_luggage ? (parseInt(ticket.hold_luggage)*65) : 0
+    })
+    setPriceRow(price);
+  }, [priceRow, props])
 
   UserPageRow.propTypes = {
     row: PropTypes.object.isRequired,
@@ -32,6 +46,11 @@ const UserPageRow = (props) => {
     >
       {props.row.itDep && (
         <Grid container columns={{ xs: 2, md: 4 }} spacing={1}>
+          <Grid item xs={2} md={4}>
+            <Typography fontWeight={"bold"}>
+              Total booking costs: € {priceRow}
+            </Typography>
+          </Grid>
           <Grid item xs={2} md={4}>
             <Typography fontWeight={"bold"}>
               Departure main informations {!props.row.itRet && " (direct flight)"}
@@ -329,12 +348,12 @@ const UserPageRow = (props) => {
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Seat number ticket: {ticket.fk_seat_number}
+                        Seat number ticket: {ticket.fk_seat_number ? ticket.fk_seat_number : "none"}
                       </Typography>
                     </Grid>
                     <Grid item xs={1} md={1}>
                       <Typography>
-                        Seat price: € {ticket.seat_price}
+                        Seat price: € {ticket.seat_price ? ticket.seat_price : "0"}
                       </Typography>
                     </Grid>
                   </Grid>

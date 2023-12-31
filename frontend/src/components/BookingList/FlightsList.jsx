@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Container, Button, Grid, Typography, Box, CircularProgress, Tooltip } from "@mui/material";
+import { Container, Button, Grid, Typography, Box, CircularProgress, Tooltip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
 import DefaultDialog from "../DefaultDialog";
 import ItineraryRow from "./ItineraryRow";
 
 const FlightsList = () => {
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogBack, setOpenDialogBack] = useState(false);
   const [isLogged, setIsLogged] = useState(false);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,7 +71,12 @@ const FlightsList = () => {
   }, [navigateTo, state, userData]);
 
   const handleBack = () => {
-    navigateTo("/");
+    setOpenDialogBack(true);
+  }
+
+  const goBack = () => {
+    const formData = state.formData;
+    navigateTo("/", { state: { formData } })
   }
 
   const handleConfirm = () => {
@@ -149,6 +155,20 @@ const FlightsList = () => {
   return (
     <Container minwidth="lg" sx={{ mt: 3, width: "100%" }}>
       <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
+      <Dialog open={openDialogBack} onClose={() => setOpenDialogBack(!openDialogBack)}>
+        <DialogTitle>Warning</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <Typography>
+              Are you sure? You will go to the homepage and lose every selection done.
+            </Typography>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={goBack}>Yes</Button>
+          <Button onClick={() => setOpenDialogBack(!openDialogBack)}>No</Button>
+        </DialogActions>
+      </Dialog>
       <Typography sx={{ mt: 3, mb: 1 }} variant="h5" fontWeight={"bold"}>
         {state.formData.oneWay
           ? `1. Choose flight for ${state.formData.airportFrom} - ${state.formData.airportTo}` 

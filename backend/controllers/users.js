@@ -3,7 +3,16 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+/**
+ * Registers a new user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {Object} The response object.
+ */
 const registerUser = async (req, res, next) => {
+  //With the result of the validation, if there's an error, it sends an error message
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
@@ -67,16 +76,24 @@ const registerUser = async (req, res, next) => {
   }
 };
 
+/**
+ * Deletes a user.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next function.
+ * @return {Object} The response object.
+ */
 const deleteUser = async (req, res, next) => {
   const { id } = req.body;
 
   try {
+    res.clearCookie("jwt");
     const userToDelete = await Users.findByPk(id);
     await Users.delete({ userToDelete });
     res.status(201).json({
       success: true,
-      message: "User successfully deleted",
-      data: userToDelete,
+      message: "User successfully deleted"
     });
   } catch (error) {
     res.status(400).json({
@@ -104,7 +121,16 @@ const getUsers = async (res, req, next) => {
   }
 };
 
+/**
+ * Updates a user's information.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next function.
+ * @return {Promise} A promise that resolves to the updated user object.
+ */
 const editUser = async (req, res, next) => {
+  //With the result of the validation, if there's an error, it sends an error message
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
@@ -118,23 +144,28 @@ const editUser = async (req, res, next) => {
     const newEmail = req.body.newEmail;
     const { name, surname, password } = req.body;
 
+    //It checks if there's another user with the same email as the new email that you want to change.
     const existingUser = await Users.findByPk(newEmail);
-    if (existingUser) {
+    if (existingUser && !(existingUser.email === newEmail)) {
       return res.status(400).json({
         success: false,
         message: "Email you want to change already exists. Cannot update email",
       });
     }
 
-    const hash = await bcrypt.hash(password, 10);
-
     const userToUpdate = {
       email: newEmail,
       name,
-      surname,
-      password
+      surname
     }
 
+    if (password) {
+      //It hashes the password
+      const hash = await bcrypt.hash(password, 10);
+      userToUpdate.password = hash;
+    }
+
+    //It updates the user's info
     const updatedUser = await Users.update(userToUpdate, {
       where: {
         email: oldEmail,
@@ -147,8 +178,21 @@ const editUser = async (req, res, next) => {
         message: "Errors during update, user not updated",
       });
     }
+
+    const viewData = {
+      name: name,
+      surname: surname,
+      email: newEmail
+    };
+
+    return res.status(200).json({
+      success: true,
+      message: "User successfully updated",
+      data: viewData,
+    });
+
   } catch (error) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: "An error occurred",
       error: error.message,
@@ -175,6 +219,14 @@ const getUser = async (req, res, next) => {
   }
 };
 
+/**
+ * Authenticates a user by comparing the provided email and password with the database records.
+ *
+ * @param {Object} req - The request object containing the user's email and password.
+ * @param {Object} res - The response object used to send the authentication result.
+ * @param {Function} next - The next function in the middleware chain.
+ * @return {Object} The response object containing the authentication result.
+ */
 const login = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -243,6 +295,14 @@ const login = async (req, res, next) => {
   }
 };
 
+/**
+ * Validates a password by comparing it with the stored user password.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {Object} The response object containing a success status and a message.
+ */
 const checkPassword = async (req, res, next) => {
   try {
     const { email, password } = JSON.parse(decodeURIComponent(req.query.state));
@@ -268,8 +328,17 @@ const checkPassword = async (req, res, next) => {
   }
 }
 
+/**
+ * Logs out a user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {object} The JSON response indicating the success or failure of the logout operation.
+ */
 const logout = async (req, res, next) => {
   try {
+    //It clears the cookie
     res.clearCookie("jwt");
     res.status(200).json({
       success: true,

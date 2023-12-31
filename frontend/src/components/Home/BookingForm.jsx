@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   TextField,
   Button,
@@ -26,7 +26,8 @@ const BookingForm = () => {
   const [contentDialog, setContentDialog] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [formData, setFormData] = useState({
+  const { state } = useLocation();
+  const [formData, setFormData] = useState(state.formData || {
     airportFrom: "",
     airportTo: "",
     departingDate: "",

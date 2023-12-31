@@ -1,5 +1,12 @@
 const jwt = require("jsonwebtoken");
 
+/**
+ * Verifies the user token.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
 const verifyUserToken = (req, res, next) => {
   const token = req.cookies.jwt;
   if (!token) {
@@ -20,6 +27,14 @@ const verifyUserToken = (req, res, next) => {
   }
 };
 
+/**
+ * Middleware that verifies if the cookie is still valid.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {Object} The response object.
+ */
 const verifyCookie = (req, res, next) => {
   const token = req.cookies.jwt;
   if (!token) {

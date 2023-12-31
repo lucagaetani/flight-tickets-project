@@ -13,7 +13,12 @@ const Loading = () => {
   const navigateTo = useNavigate();
   const userData = useSelector((state) => state.userData);
 
-  //It's purpose is to remove the "-0", "-1", "-2" etc. on the key names, to make a more cleaned json to send
+  /**
+   * Removes the numbered suffixes from the keys of an object and returns a new object.
+   *
+   * @param {Object} obj - The object from which to remove the numbered suffixes.
+   * @return {Object} - A new object with the numbered suffixes removed from the keys.
+   */
   const removeNumberedSuffixes = (obj) => {
     const result = {};
     for (const key in obj) {
@@ -32,7 +37,7 @@ const Loading = () => {
       try {
         const sendData = {
         };
-        //Assign to every seat his flight
+        //Assign to every seat his respective flight
         const seatsFlightsDeparture = state.flightState.selectedSeatsDeparture.map((selectedSeats, selectedIndex) => {
           return selectedSeats.map((seat, index) => {
             seat.flightNumber = state.flightState.selectedDepartureFlight[selectedIndex].flight_number;
@@ -41,14 +46,13 @@ const Loading = () => {
             return seat;
           })
         });
-
         
         /*
           Prepare data to send, it will send:
             - seatsFlightsDeparture: seats chosen for each flight departure, flights chosen, itinerary id and info of the passenger
             - userEmail: email of the user logged into the app
           Optionally, if the user has chosen returning flights:
-            - seatsFlightsReturning: seats chosen for each flight returning and flights chosen, flights chosen and itinerary id
+            - seatsFlightsReturning: seats chosen for each flight returning, flights chosen, itinerary id and info of the passenger
         */
         sendData.flightState = {
           seatsFlightsDeparture: seatsFlightsDeparture,
@@ -85,10 +89,12 @@ const Loading = () => {
         if (res.success) {
           setValue(100);
           setTitle("Loading complete");
+          //Brings you to the end page without errors
           navigateTo("/end", { state: { res } });
         } else {
           setValue(100);
           setTitle("Loading complete");
+          //Brings you to the end page with errors
           navigateTo("/end", { state: { res } });
         }
       } catch (error) {
@@ -96,6 +102,7 @@ const Loading = () => {
           success: false,
           message: error
         }
+        //Brings you to the end page with errors
         navigateTo("/end", { state: { res } });
       }
     })();

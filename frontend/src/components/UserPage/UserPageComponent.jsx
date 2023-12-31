@@ -12,11 +12,23 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Snackbar,
+  Alert,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  FormHelperText,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import DefaultDialog from "../DefaultDialog";
 import validator from 'validator';
 import UserPageRow from "./UserPageRow";
+import { addUserData, deleteUserData } from "../../redux/actions";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const UserPageComponent = () => {
   const [selectedBookings, setSelectedBookings] = useState(true);
@@ -30,12 +42,16 @@ const UserPageComponent = () => {
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
   const userData = useSelector((state) => state.userData);
   const [oldPasswordChecked, setOldPasswordChecked] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const [formData, setFormData] = useState({
-    name: userData.name,
-    surname: userData.surname,
-    email: userData.email,
+    name: userData.name || "",
+    surname: userData.surname || "",
+    email: userData.email || "",
     password: "",
   });
+  const dispatch = useDispatch();
+  const navigateTo = useNavigate();
 
   useEffect(() => {
     if (selectedBookings) {
@@ -91,15 +107,26 @@ const UserPageComponent = () => {
     setErrors((prevErrors) => ({ ...prevErrors, [name]: undefined }));
   };
   
-
+  /**
+   * If called, it opens the dialog to ask for the current password
+  */
   const handleClickOpen = () => {
     setOpenPasswordDialog(true);
   };
 
+  /**
+   * If called, it closes the dialog to ask for the current password
+  */
   const handleClose = () => {
     setOpenPasswordDialog(false);
   };
 
+  /**
+   * Handles the check password form for the current password.
+   * 
+   * When you have inserted a string onto the "current password" field, it will call the REST API that checks if the password is correct or not.
+   * If correct, it will set the oldPasswordChecked state to true (and then you can edit the user info), but if not, it will set oldPasswordChecked to false.
+  */
   const handleCheckPassword = async (e) => {
     const { value } = e.target;
     const passwordToSend = {
@@ -121,26 +148,40 @@ const UserPageComponent = () => {
       setOldPasswordChecked(true);
       setOldPasswordError({});
     } else {
+      setOldPasswordChecked(false);
       setOldPasswordError({
         currentPassword: "Password doesn't match"
       });
     }
   }
 
-  const handleSubmit = () => {
+  /**
+   * Handles the form submission.
+   * 
+   * If any field is empty, it will show a helperText with the "error" clause.
+   * If you're changing the password, it will trigger a Dialog message that will ask for the current password.
+   * If you aren't changing the password, it will submit the form, calling the REST API that handles the modification of the user's info.
+  */
+  const handleSubmit = async () => {
+    //It creates a new object, newErrors, that serves as an accumulator of "errors" to show in their respective fields.
     const newErrors = {};
+    //If name is empty
     if (!formData.name) {
       newErrors.airportFrom = "Name is required";
     }
+    //If surname is empty
     if (!formData.surname) {
       newErrors.airportTo = "Surname is required";
     }
+    //If email is empty
     if (!formData.email) {
       newErrors.departingDate = "Email is required";
     }
+    //It checks if the inserted string on email field is really an email
     if (!validator.isEmail(formData.email)) {
       newErrors.email = "Insert a valid email";
     }
+    //It checks if the inserted password is strong enough to be changed
     if (formData.password){
       if (
         !validator.isStrongPassword(
@@ -155,16 +196,71 @@ const UserPageComponent = () => {
       }
     }
 
+    //If there's an error, it will show up on their respective fields. Otherwise, it checks if password has to be changed.
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
-      if (formData.password) {
+      //If password has to be changed, it launches the dialog to ask for the current one.
+      //If oldPasswordChecked is set on true, it means that the user inserted the correct password and then it can be changed
+      if (formData.password && !oldPasswordChecked) {
         handleClickOpen();
+      } else {
+        try {
+          //It launches a POST request to the REST API "users/editUser"
+          const userToEdit = {
+            name: formData.name,
+            surname: formData.surname,
+            newEmail: formData.email,
+            oldEmail: userData.email,
+            password: formData.password
+          }
+
+          /**
+           * requestOptions are the options inserted onto the request of the API.
+           * method: "POST" is the method of the request
+           * headers: { "Content-Type": "application/json" } is the header that will be sent onto the request.
+           * credentials: "include" it means that the request is sent with cookies, so only a logged user can send it
+           * body: JSON.stringify(formData) is the body of the request
+           */
+          const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(userToEdit)
+          };
+          const url = `http://localhost:3000/users/editUser`;
+          const response = await fetch(url, requestOptions);
+          const res = await response.json();
+          if (res.success) {
+            dispatch(addUserData(res.data));
+            setShowAlert(true);
+            //If you change email or password, you will be logged out
+            if (formData.email !== userData.email || formData.password) {
+              const response = await fetch("http://localhost:3000/users/logout", requestOptions, {
+                credentials: "same-origin",
+              });
+              const res = await response.json();
+              if (res.success) {
+                dispatch(deleteUserData());
+              }
+              navigateTo("/login");
+            }
+          } else {
+            setTitleDialog("Error");
+            setContentDialog(res.message);
+            setOpenDialog(true);
+          }
+        } catch (error) {
+          setTitleDialog("Error");
+          setContentDialog(`Error fetching data: ${error}`);
+          setOpenDialog(true);
+        }
       }
     }
 
   }
 
+  //If the page hasn't finished with loading data from backend, it will show a loading circle
   if (loading) {
     return (
       <Box
@@ -252,6 +348,9 @@ const UserPageComponent = () => {
             <Typography>
               Here you can change profile name, surname, email or password.
             </Typography>
+            <Typography>
+              If you change email or password, you will be logged out. Bookings will have your new email.
+            </Typography>
           </Grid>
             <Grid container columns={{ xs: 1, md: 2 }} spacing={1}>
               <Grid item xs={2} md={1}>
@@ -291,15 +390,32 @@ const UserPageComponent = () => {
                 />
               </Grid>
               <Grid item xs={2} md={1}>
-                <TextField
-                  label="Password"
-                  type="password"
-                  name="password"
-                  fullWidth
-                  onBlur={handleChange}
-                  error={!!errors.password}
-                  helperText={errors.password}
-                />
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel htmlFor="outlined-adornment-password" error={!!errors.password}>Password</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    onBlur={handleChange}
+                    error={!!errors.password}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword(!showPassword)}
+                          onMouseDown={() => setShowPassword(true)}
+                          edge="end"
+                        >
+                          {showPassword ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                  {!!errors.password && (
+                    <FormHelperText error={!!errors.password}>{errors.password}</FormHelperText>
+                  )}
+                </FormControl>
               </Grid>
               <Grid item xs={2} md={2} sx={{ display: "flex", justifyContent:"center" }}>
                   <Button
@@ -323,22 +439,43 @@ const UserPageComponent = () => {
               You want to change your password. Insert your current one.
             </Typography>
           </DialogContentText>
-          <TextField
-            sx={{ mt: 2 }}
-            label="Current password"
-            type="password"
-            name="currentPassword"
-            fullWidth
-            onBlur={handleCheckPassword}
-            error={!!oldPasswordError.currentPassword}
-            helperText={oldPasswordError.currentPassword}
-          />
+          <FormControl fullWidth variant="outlined">
+            <InputLabel htmlFor="outlined-adornment-password" error={!!oldPasswordError.currentPassword}>Current Password</InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={showPassword ? 'text' : 'password'}
+              name="currentPassword"
+              onBlur={handleCheckPassword}
+              error={!!oldPasswordError.currentPassword}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    onMouseDown={() => setShowPassword(true)}
+                    edge="end"
+                  >
+                    {showPassword ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Current password"
+            />
+            {!!oldPasswordError.currentPassword && (
+              <FormHelperText error={!!oldPasswordError.currentPassword}>{oldPasswordError.currentPassword}</FormHelperText>
+            )}
+          </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSubmit}>Edit User</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar open={showAlert} autoHideDuration={3000} onClose={() => {setShowAlert(false)}} sx={{ width: '95%' }}>
+        <Alert severity="success" sx={{ width: '100%' }}>
+          User successfully edited!
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

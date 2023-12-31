@@ -10,9 +10,17 @@ import {
   Typography,
   Link,
   Box,
-  CircularProgress
+  CircularProgress,
+  InputAdornment,
+  IconButton,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  FormHelperText
 } from "@mui/material";
 import DefaultDialog from "../DefaultDialog";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const LoginForm = () => {
   const navigateTo = useNavigate();
@@ -25,6 +33,7 @@ const LoginForm = () => {
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -47,6 +56,10 @@ const LoginForm = () => {
 
     setErrors((prevErrors) => ({ ...prevErrors, [name]: undefined }));
   };
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData])
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -124,24 +137,38 @@ const LoginForm = () => {
                 variant="outlined"
                 name="email"
                 fullWidth
-                value={formData.email}
                 onChange={handleChange}
                 error={!!errors.email}
                 helperText={errors.email}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                label="Password"
-                type="password"
-                variant="outlined"
-                name="password"
-                fullWidth
-                value={formData.password}
-                onChange={handleChange}
-                error={!!errors.password}
-                helperText={errors.password}
-              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel htmlFor="outlined-adornment-password" error={!!errors.password}>Password</InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  onChange={handleChange}
+                  error={!!errors.password}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        onMouseDown={() => setShowPassword(true)}
+                        edge="end"
+                      >
+                        {showPassword ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+                {!!errors.password && (
+                  <FormHelperText error={!!errors.password}>{errors.password}</FormHelperText>
+                )}
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <Button type="submit" variant="contained" color="primary" fullWidth sx={{height: "50px"}}>
