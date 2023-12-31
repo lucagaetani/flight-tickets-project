@@ -21,7 +21,6 @@ const insertTickets = async (req, res, next) => {
         };
       }
     }
-
     const ticketBookings = await Tickets.bulkCreate(arrayOfTickets);
     if (!ticketBookings) {
       return {

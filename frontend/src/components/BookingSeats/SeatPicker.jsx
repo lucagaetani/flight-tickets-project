@@ -8,7 +8,12 @@ import {
   Typography,
   Paper,
   Tooltip,
-  CircularProgress
+  CircularProgress,
+  DialogActions,
+  DialogContentText,
+  DialogContent,
+  DialogTitle,
+  Dialog
 } from "@mui/material";
 import Cart from "../Cart";
 import DefaultDialog from "../DefaultDialog";
@@ -27,6 +32,7 @@ const SeatPicker = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
+  const [openDialogBack, setOpenDialogBack] = useState(false);
   const navigateTo = useNavigate();
 
   useEffect(() => {
@@ -111,13 +117,17 @@ const SeatPicker = () => {
     ]);
   }, [state, adults, children]);
 
-  const handleClick = () => {
+  const handleBack = () => {
+    setOpenDialogBack(true);
+  }
+
+  const goBack = () => {
     const formData = state.flightState.formData;
     if (state.flightState.selectedSeatsDeparture) {
       delete state.flightState.selectedSeatsDeparture;
     }
     navigateTo("/booking", { state: { formData } });
-  };
+  }
 
   const handleSeatClick = (seatNumber, seatPrice) => {
     if (
@@ -141,6 +151,7 @@ const SeatPicker = () => {
   };
 
   const handleConfirm = () => {
+    console.log(state);
     const flightState = state.flightState;
 
     //First: i check if it's direct flight or not
@@ -212,6 +223,20 @@ const SeatPicker = () => {
   return (
     <Box>
       <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
+      <Dialog open={openDialogBack} onClose={() => setOpenDialogBack(!openDialogBack)}>
+        <DialogTitle>Warning</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <Typography>
+              Are you sure? You will go to the itinerary selections and lose every selected seat for every flight.
+            </Typography>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={goBack}>Yes</Button>
+          <Button onClick={() => setOpenDialogBack(!openDialogBack)}>No</Button>
+        </DialogActions>
+      </Dialog>
       {state.flightState.selectedReturningFlight ? (
         <Cart
           formData={state.flightState.formData}
@@ -330,7 +355,7 @@ const SeatPicker = () => {
             <Typography variant="h5">
               {state.flightState.formData.oneWay
                 ? `You're choosing seats for flight: ${state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture ? state.flightState.selectedSeatsDeparture.length : 0].flight_number}`
-                : `You're choosing seats for flight: ${state.flightState.formData.airportTo} to ${state.flightState.formData.airportFrom}`}
+                : (state.flightState.selectedDepartureFlight.length !== state.flightState.selectedSeatsDeparture?.length) ? "You're choosing seats for flight: " + state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture?.length || 0].flight_number : "You're choosing seats for flight: " + state.flightState.selectedReturningFlight[state.flightState.selectedSeatsReturning?.length || 0].flight_number}
             </Typography>
 
             <Typography>
@@ -492,7 +517,7 @@ const SeatPicker = () => {
         >
           <Grid item xs={2}>
             <Button
-              onClick={handleClick}
+              onClick={handleBack}
               sx={{ mt: 3, mr: 1 }}
               fullWidth
               variant="contained"

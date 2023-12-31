@@ -9,6 +9,11 @@ import {
   Paper,
   CircularProgress,
   TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
 } from "@mui/material";
 import validator from 'validator';
 import Cart from "../Cart";
@@ -19,6 +24,7 @@ const LuggageUserInfo = () => {
   const [arrayPassengerInfos, setArrayPassengerInfos] = useState([]);
   const [currentSeats, setCurrentSeats] = useState([]);
   const [currentPassenger, setCurrentPassenger] = useState(0);
+  const [openDialogBack, setOpenDialogBack] = useState(false);
   const [errors, setErrors] = useState({});
   const navigateTo = useNavigate();
 
@@ -94,9 +100,15 @@ const LuggageUserInfo = () => {
   };
 
   const handleBack = () => {
+    setOpenDialogBack(true);
+  }
+
+  const goBack = () => {
+    delete state.flightState.selectedSeatsDeparture;
+    delete state.flightState.selectedSeatsReturning;
     const flightState = state.flightState;
     navigateTo("/seats", { state: { flightState } });
-  };
+  }
 
   if (loading) {
     return (
@@ -117,6 +129,20 @@ const LuggageUserInfo = () => {
 
   return (
     <Box>
+      <Dialog open={openDialogBack} onClose={() => setOpenDialogBack(!openDialogBack)}>
+          <DialogTitle>Warning</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              <Typography>
+                Are you sure? You will go to the itinerary selections and lose every selected seat for every flight.
+              </Typography>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={goBack}>Yes</Button>
+            <Button onClick={() => setOpenDialogBack(!openDialogBack)}>No</Button>
+          </DialogActions>
+        </Dialog>
       {(state.flightState.selectedSeatsReturning) ? (
         <Cart
           formData={state.flightState.formData}

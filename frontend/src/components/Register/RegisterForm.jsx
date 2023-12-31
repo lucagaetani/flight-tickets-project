@@ -47,10 +47,10 @@ const BookingForm = () => {
 
     const newErrors = {};
     if (!formData.name) {
-      newErrors.airportFrom = "Name is required";
+      newErrors.name = "Name is required";
     }
     if (!formData.surname) {
-      newErrors.airportTo = "Surname is required";
+      newErrors.surname = "Surname is required";
     }
     if (!formData.email) {
       newErrors.email = 'Email is required';
