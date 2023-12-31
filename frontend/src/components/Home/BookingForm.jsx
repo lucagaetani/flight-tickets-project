@@ -27,7 +27,7 @@ const BookingForm = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(true);
   const { state } = useLocation();
-  const [formData, setFormData] = useState(state.formData || {
+  const [formData, setFormData] = useState(state ? state.formData : {
     airportFrom: "",
     airportTo: "",
     departingDate: "",
