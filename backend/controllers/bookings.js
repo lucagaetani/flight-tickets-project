@@ -120,7 +120,7 @@ const insertBookings = async (req, res, next) => {
 
     for (const flight of seatsFlightsDeparture) {
       for (const seat of flight) {
-        const seatCheckResult = await checkSeatForBooking(seat);
+        const seatCheckResult = await checkSeatForBooking(seat, transaction);
         if (!seatCheckResult) {
           await transaction.rollback();
           return res.status(400).json(seatCheckResult);
@@ -128,6 +128,7 @@ const insertBookings = async (req, res, next) => {
 
         seat.seatNumber = seatCheckResult.seat_number;
         seat.seatPrice = seatCheckResult.price;
+        seat.version = seatCheckResult.version;
       }
     }
 
@@ -140,7 +141,7 @@ const insertBookings = async (req, res, next) => {
     if (seatsFlightsReturning) {
       for (const flight of seatsFlightsReturning) {
         for (const seat of flight) {
-          const seatCheckResult = await checkSeatForBooking(seat);
+          const seatCheckResult = await checkSeatForBooking(seat, transaction);
           if (!seatCheckResult) {
             await transaction.rollback();
             return res.status(400).json(seatCheckResult);
@@ -148,6 +149,7 @@ const insertBookings = async (req, res, next) => {
 
           seat.seatNumber = seatCheckResult.seat_number;
           seat.seatPrice = seatCheckResult.price;
+          seat.version = seatCheckResult.version;
         }
       }
 
@@ -168,7 +170,13 @@ const insertBookings = async (req, res, next) => {
       });
     }
 
-    //Insert departure booking with tickets
+    /**
+     * Insert departure booking with tickets
+     * 
+     * I've put a lock to the transaction for every seat i'm going to update, to avoid race conditions and to improve concurrency
+     * I've also used optimistic locking to update the seats with the "version" field on the model.
+     * If version isn't the same as the check on the database, the update will be rolled back
+     */
     for (const flight  of seatsFlightsDeparture) {
       for (const seat of flight) {
         const existingBookedSeat = await Seats.findOne({
@@ -176,7 +184,7 @@ const insertBookings = async (req, res, next) => {
             flight_number: seat.flightNumber,
             seat_number: seat.seatNumber,
             is_booked: true
-          }
+          },
         });
 
         if (existingBookedSeat) {
@@ -187,14 +195,18 @@ const insertBookings = async (req, res, next) => {
           });
         }
 
+        const version = seat.version;
+
         const seatBooking = await Seats.update(
           {
-            is_booked: true
+            is_booked: true,
+            version: instanceSequelize.literal('version + 1')
           },
           {
             where: {
               seat_number: seat.seatNumber,
-              flight_number: seat.flightNumber
+              flight_number: seat.flightNumber,
+              version
             }
           },
           transaction
@@ -248,6 +260,13 @@ const insertBookings = async (req, res, next) => {
       fk_itinerary_returning: seatsFlightsReturning ? seatsFlightsReturning[0][0].itineraryId : null,
     }, transaction);
 
+    /**
+     * Generates an array of tickets based on the provided flights and optional flag for returning flights.
+     *
+     * @param {Array} flights - The array of flights.
+     * @param {boolean} isReturning - Optional flag indicating if the flights are returning.
+     * @return {Array} - The array of generated tickets.
+     */
     const createTickets = async (flights, isReturning = false) => {
       const arrayOfTickets = [];
       for (const flight of flights) {
@@ -269,15 +288,18 @@ const insertBookings = async (req, res, next) => {
       return arrayOfTickets;
     }
     
-    const departureTicketsBooking = await insertTickets(await createTickets(departureTicketsToBook));
-    if (departureTicketsBooking.error) {
+    //Insert tickets
+    const departureTicketsBooking = await insertTickets(await createTickets(departureTicketsToBook), transaction);
+    if (departureTicketsBooking.error && !departureTicketsBooking) {
       await transaction.rollback();
       return res.status(400).json(departureTicketsBooking);
     }
 
+    console.log(departureTicketsBooking);
+
     if (returningTicketsToBook) {
-      const returningTicketsBooking = await insertTickets(await createTickets(returningTicketsToBook));
-      if (returningTicketsBooking.error) {
+      const returningTicketsBooking = await insertTickets(await createTickets(returningTicketsToBook), transaction);
+      if (returningTicketsBooking.error && !returningTicketsBooking) {
         await transaction.rollback();
         return res.status(400).json(returningTicketsBooking);
       }

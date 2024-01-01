@@ -1,4 +1,5 @@
 const Seats = require("../models/seats");
+const LOCK = require("@sequelize/core");
 
 const getSeatsForFlight = async (req, res, next) => {
   try {
@@ -36,14 +37,17 @@ const getSeatsForFlight = async (req, res, next) => {
   }
 };
 
-const checkSeatForBooking = async (req, res, next) => {
+const checkSeatForBooking = async (req, transaction, res, next) => {
   const { seatNumber, flightNumber } = req;
+  
   try {
     const check = await Seats.findOne({
       where: {
         seat_number: seatNumber,
         flight_number: flightNumber
-      }
+      },
+      lock: LOCK.UPDATE,
+      transaction
     });
 
     if (!check) {

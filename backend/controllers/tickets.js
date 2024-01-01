@@ -3,7 +3,7 @@ const { validationResult } = require("express-validator");
 const Tickets = require("../models/tickets");
 const instanceSequelize = require("../database");
 
-const insertTickets = async (req, res, next) => {
+const insertTickets = async (req, transaction, res, next) => {
   const arrayOfTickets = req;
 
   try {
@@ -20,8 +20,12 @@ const insertTickets = async (req, res, next) => {
           message: "Ticket already exists",
         };
       }
+      console.log("ExistingTicket" + JSON.parse(existingTicket));
     }
-    const ticketBookings = await Tickets.bulkCreate(arrayOfTickets);
+    
+    console.log(arrayOfTickets);
+
+    const ticketBookings = await Tickets.bulkCreate(arrayOfTickets, transaction);
     if (!ticketBookings) {
       return {
         success: false,
@@ -30,6 +34,7 @@ const insertTickets = async (req, res, next) => {
     }
     return ticketBookings;
   } catch (error) {
+    console.log(error);
     return {
       success: false,
       message: error

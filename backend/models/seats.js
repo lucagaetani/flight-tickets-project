@@ -27,6 +27,7 @@ const Seats = instanceSequelize.define(
   {
     freezeTableName: true,
     timestamps: false,
+    version: true,
   },
   {
     primaryKey: ["seat_number", "flight_number"],
