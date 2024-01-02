@@ -12,7 +12,6 @@
   "dependencies": {
     "@sequelize/core": "^7.0.0-alpha.29",
     "bcryptjs": "^2.4.3",
-    "cls-hooked": "^4.2.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
