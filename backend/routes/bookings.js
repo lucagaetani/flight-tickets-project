@@ -18,4 +18,6 @@ router.get("/getBookingsForUser", bookingsController.getBookingsForUser);
 
 router.post("/insertBookings", validateBooking, bookingsController.insertBookings);
 
+router.get("/getFlightRemainingSeats", bookingsController.getFlightRemainingSeats);
+
 module.exports = router;

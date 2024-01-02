@@ -4,6 +4,7 @@ const Airports = require("../models/airports");
 const Airlines = require("../models/airlines");
 const { Op } = require("@sequelize/core");
 const Itineraries_Flights = require("../models/itineraries_flights");
+const instanceSequelize = require("../database");
 
 const getItinerariesForBooking = async (req, res, next) => {
   try {
@@ -20,7 +21,7 @@ const getItinerariesForBooking = async (req, res, next) => {
         departure: {
           [Op.gte]: dateToSearch00,
           [Op.lte]: dateToSearch23
-        }
+        },
       },
       include: [
         {

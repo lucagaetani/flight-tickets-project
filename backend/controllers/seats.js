@@ -1,5 +1,5 @@
+const instanceSequelize = require("../database");
 const Seats = require("../models/seats");
-const LOCK = require("@sequelize/core");
 
 const getSeatsForFlight = async (req, res, next) => {
   try {
@@ -46,7 +46,7 @@ const checkSeatForBooking = async (req, transaction, res, next) => {
         seat_number: seatNumber,
         flight_number: flightNumber
       },
-      lock: LOCK.UPDATE,
+      lock: transaction.LOCK.UPDATE,
       transaction
     });
 
@@ -73,7 +73,6 @@ const checkSeatForBooking = async (req, transaction, res, next) => {
     };
   }
 }
-
 
 exports.getSeatsForFlight = getSeatsForFlight;
 exports.checkSeatForBooking = checkSeatForBooking;

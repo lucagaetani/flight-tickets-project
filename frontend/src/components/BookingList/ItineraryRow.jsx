@@ -1,10 +1,49 @@
-import { Button, Collapse, Grid, Paper, Typography } from "@mui/material";
+import { Box, Button, Collapse, Grid, Paper, Skeleton, Typography } from "@mui/material";
 import PropTypes from 'prop-types';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AirlineLogo from "./AirlineLogo";
+import DefaultDialog from "../DefaultDialog";
 
 const ItineraryRow = (props) => {
   const [expandedPaper, setExpandedPaper] = useState(false);
+  const [titleDialog, setTitleDialog] = useState("");
+  const [contentDialog, setContentDialog] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const requestOptions = {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      };
+      try {
+        const url = `http://localhost:3000/bookings/getFlightRemainingSeats?state=${encodeURIComponent(
+          JSON.stringify(props.row["itFlights"])
+        )}`;
+        const response = await fetch(url, requestOptions);
+        const res = await response.json();
+        if (res.success === true) {
+          console.log(res.data);
+          props.row["itFlights"] = res.data;
+        } else {
+          {
+            setTitleDialog("Error");
+            setContentDialog(`Error: ${res.message}`);
+            setOpenDialog(true);
+          }
+        }
+      } catch (error) {
+        {
+          setTitleDialog("Error");
+          setContentDialog(`Error fetching data: ${error}`);
+          setOpenDialog(true);
+        }
+      }
+
+      setLoading(false);
+    })();
+  },[props.row])
 
   ItineraryRow.propTypes = {
     row: PropTypes.object.isRequired,
@@ -21,6 +60,29 @@ const ItineraryRow = (props) => {
     setExpandedPaper(!expandedPaper);
   }
 
+  const handledDisabledPaper = (itFlights) => {
+    for (const flight of itFlights) {
+      if (flight.remainingSeats === 0) {
+        return true;
+      }
+    }
+  }
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          height: "14vh",
+          mt: 1,
+          mb: 1
+        }}
+      >
+        <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }}/>
+      </Box>
+    );
+  }
+
   return (
     <Paper
       sx={{
@@ -30,13 +92,16 @@ const ItineraryRow = (props) => {
         mt: 2,
         transition: "0.5s linear",
         cursor: "pointer",
+        opacity: handledDisabledPaper(props.row.itFlights) ? 0.5 : 1,
         backgroundColor:
           props.selected ? "#E0E0E0" : "white",
+        pointerEvents: handledDisabledPaper(props.row.itFlights) ? "none" : "auto"
       }}
       elevation={props.selected ? 3 : 1}
       onClick={handlePaperClick}
 
     >
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
       <Grid 
         container
         spacing={{ xs: 1, md: 2 }}
@@ -125,6 +190,11 @@ const ItineraryRow = (props) => {
                     <Grid item xs={1} md={1}>
                       <Typography>
                         Price: € {itineraryFlight.flight.price}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={1} md={1}>
+                      <Typography>
+                        Seats remaining: {itineraryFlight.remainingSeats}
                       </Typography>
                     </Grid>
                   </Grid>

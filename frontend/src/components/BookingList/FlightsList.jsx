@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Container, Button, Grid, Typography, Box, CircularProgress, Tooltip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import { Container, Button, Typography, Box, CircularProgress, Tooltip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, BottomNavigation } from "@mui/material";
 import DefaultDialog from "../DefaultDialog";
 import ItineraryRow from "./ItineraryRow";
 
@@ -71,12 +71,17 @@ const FlightsList = () => {
   }, [navigateTo, state, userData]);
 
   const handleBack = () => {
-    setOpenDialogBack(true);
+    if (selectedRow !== -1) {
+      setOpenDialogBack(true);
+    } else {
+      const formData = state.formData;
+      navigateTo("/", { state: { formData } });
+    }
   }
 
   const goBack = () => {
     const formData = state.formData;
-    navigateTo("/", { state: { formData } })
+    navigateTo("/", { state: { formData } });
   }
 
   const handleConfirm = () => {
@@ -153,7 +158,7 @@ const FlightsList = () => {
   }
 
   return (
-    <Container minwidth="lg" sx={{ mt: 3, width: "100%" }}>
+    <Container minwidth="lg" sx={{ mt: 3, width: "100%", }}>
       <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
       <Dialog open={openDialogBack} onClose={() => setOpenDialogBack(!openDialogBack)}>
         <DialogTitle>Warning</DialogTitle>
@@ -176,6 +181,17 @@ const FlightsList = () => {
       </Typography>
 
       <Typography>
+        Choose an itinerary.
+      </Typography>
+
+      <Typography sx={{ mb: 1 }}>
+        Remember that the remaining seats field does not refer to the seats selected, but to the tickets booked for that particular flight.
+      </Typography>
+      <Typography>
+        Not selectable itinerary means that one or many flights of that has 0 seats remained.
+      </Typography>
+
+      <Typography>
         Information inserted:
         <br />
         {state.formData.oneWay ? (
@@ -194,7 +210,7 @@ const FlightsList = () => {
         <Box
         sx={{
           display: "flex",
-          height: "65vh",
+          height: "50vh",
         }}
       >
         <Typography sx={{ margin: "auto" }}>
@@ -210,58 +226,46 @@ const FlightsList = () => {
             selected={selectedRow.id === row.id}
             onPaperClick={() => handlePaperClick(row)}
           />
-          
         ))
       )}
+      <Box sx={{ mt: 8 }}/>
 
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 6, sm: 8, md: 12 }}
-        sx={{ mt: 3, mb: 3 }}
-        display={"flex"}
-        justifyContent={"center"}
-      >
-        <Grid item xs={2}>
+      <Container minwidth="sm" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+        <BottomNavigation sx={{ alignItems: "center", justifyContent: "space-around" }}>
           <Button
             onClick={handleBack}
-            sx={{ mt: 3, mr: 1 }}
-            fullWidth
+            sx={{ mr: 1, width: "150px" }}
             variant="contained"
             color="primary"
           >
             Back
           </Button>
-        </Grid>
           {isLogged ? (
-            <Grid item xs={2}>
               <Button
                 onClick={handleConfirm}
                 disabled={buttonConfirmDisabled}
-                sx={{ mt: 3, mr: 1 }}
-                fullWidth
+                
+                sx={{ ml: 1, width: "150px" }}
                 variant="contained"
                 color="primary"
               >
                 Confirm
               </Button>
-            </Grid>
           ) : (
             <Tooltip title={"You have to be logged to continue"}>
-              <Grid item xs={2}>
                 <Button
                   disabled={true}
-                  sx={{ mt: 3, mr: 1 }}
-                  fullWidth
+                  
+                  sx={{ ml: 1, width: "150px" }}
                   variant="contained"
                   color="primary"
                 >
                   Confirm
                 </Button>
-              </Grid>
             </Tooltip>
           )}
-      </Grid>
+        </BottomNavigation>
+      </Container>
     </Container>
   );
 };

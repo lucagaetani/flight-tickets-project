@@ -1,18 +1,15 @@
-import { Container } from "@mui/material";
+import { BottomNavigation, Box } from "@mui/material";
 import Typography from "@mui/material/Typography";
 
 const Footer = () => {
   return (
-    <Container maxWidth="lg"
-      sx={{
-        padding: "20px",
-        textAlign: "center",
-        borderTop: "#000000",
-        marginTop: "20px"
-      }}
-    >
-      <Typography variant="body2">Made by Luca Gaetani</Typography>
-    </Container>
+    <Box sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+      <BottomNavigation sx={{ alignItems: "center" }}>
+        <Typography>
+          Made by Luca Gaetani
+        </Typography>
+      </BottomNavigation>
+    </Box>
   );
 };
 

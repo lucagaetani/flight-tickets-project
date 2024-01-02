@@ -56,10 +56,10 @@ instanceSequelize
 require("./models/airlines");
 require("./models/airports");
 require("./models/flights");
-require("./models/seats");
-require("./models/tickets");
 require("./models/itineraries");
+require("./models/seats");
 require("./models/itineraries_flights");
+require("./models/tickets");
 
 app.get("/", function (req, res) {
   res.send(req.headers, req.originalUrl, req.method, req.body);

@@ -13,7 +13,8 @@ import {
   DialogContentText,
   DialogContent,
   DialogTitle,
-  Dialog
+  Dialog,
+  BottomNavigation
 } from "@mui/material";
 import Cart from "../Cart";
 import DefaultDialog from "../DefaultDialog";
@@ -198,7 +199,11 @@ const SeatPicker = () => {
       } else {
         flightState.selectedSeatsDeparture = [];
         flightState.selectedSeatsDeparture[0] = selectedSeats;
-        navigateTo("/seats", { state: { flightState } });
+        if ((flightState.selectedSeatsDeparture.length) === state.flightState.selectedDepartureFlight.length) {
+          navigateTo("/info", { state: { flightState } });
+        } else {
+          navigateTo("/seats", { state: { flightState } });
+        }
       }
     }
   };
@@ -507,37 +512,27 @@ const SeatPicker = () => {
               : null}
           </Grid>
         </Grid>
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 6, sm: 8, md: 12 }}
-          sx={{ mt: 3, mb: 3 }}
-          display={"flex"}
-          justifyContent={"center"}
-        >
-          <Grid item xs={2}>
-            <Button
-              onClick={handleBack}
-              sx={{ mt: 3, mr: 1 }}
-              fullWidth
-              variant="contained"
-              color="primary"
-            >
-              Back
-            </Button>
-          </Grid>
-          <Grid item xs={2}>
-            <Button
-              onClick={handleConfirm}
-              sx={{ mt: 3, mr: 1 }}
-              fullWidth
-              variant="contained"
-              color="primary"
-            >
-              Confirm
-            </Button>
-          </Grid>
-        </Grid>
+      </Container>
+      <Box sx={{ mt: 8 }}/>
+      <Container minwidth="sm" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+        <BottomNavigation sx={{ alignItems: "center", justifyContent: "space-around" }}>
+          <Button
+            onClick={handleBack}
+            sx={{ mr: 1, width: "150px" }}
+            variant="contained"
+            color="primary"
+          >
+            Back
+          </Button>
+          <Button
+            onClick={handleConfirm}
+            sx={{ ml: 1, width: "150px" }}
+            variant="contained"
+            color="primary"
+          >
+            Confirm
+          </Button>
+        </BottomNavigation>
       </Container>
     </Box>
   );

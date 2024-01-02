@@ -1,9 +1,9 @@
 const Flights = require("../models/flights");
 const Airports = require("../models/airports");
 const Airlines = require("../models/airlines");
-const sequelize = require("sequelize");
 const { validationResult } = require("express-validator");
 const { Op } = require("@sequelize/core");
+const instanceSequelize = require("../database");
 
 const getFlightsForBooking = async (req, res, next) => {
   try {
@@ -116,6 +116,7 @@ const checkFlightForBooking = async (req, res, next) => {
     }
   return existingFlightNumberDeparture;
 }
+
 
 exports.getFlightsForBooking = getFlightsForBooking;
 exports.checkFlightForBooking = checkFlightForBooking;

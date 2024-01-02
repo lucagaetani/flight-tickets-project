@@ -12,9 +12,9 @@ import {
   Container,
   Grid,
   Box,
-  CircularProgress,
-  Tooltip,
-  FormHelperText
+  FormHelperText,
+  Skeleton,
+  Typography
 } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DefaultDialog from "../DefaultDialog";
@@ -59,9 +59,9 @@ const BookingForm = () => {
         setContentDialog(`Error fetching data: ${error}`);
         setOpenDialog(true);
       }
-    })();
 
-    setLoading(false);
+      setLoading(false);
+    })();
   }, []);
 
   const handleChange = (e) => {
@@ -105,24 +105,16 @@ const BookingForm = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <Box sx={{
-        display: "flex",
-        height: "40vh"
-      }}>
-        <CircularProgress sx={{
-          margin: "auto"
-        }} />
-      </Box>
-    )
-  }
-
   return (
     <Box>
       <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
+      <Container>
+        <Typography variant="h2" sx={{ mt: 4, textAlign: "center" }} fontWeight={"bold"}>
+          Book your flight ticket here!
+        </Typography>
+      </Container>
       <form onSubmit={handleSubmit}>
-        <Container maxWidth="lg" sx={{ mt: 3, mb: 3, border: "1px solid #C4C4C4", borderRadius: "1rem", padding: "20px" }}>
+        <Container maxWidth="lg" sx={{ mt: 3, mb: 8, border: "1px solid #C4C4C4", borderRadius: "1rem", padding: "20px" }}>
           <Grid container spacing={3} columns={{ xs: 1, md: 3 }}>
             <Grid item xs={1} md={1} sx={{ display: "flex" }}>
               <FormControl sx={{width:"80%"}} error={!!errors.airportFrom}>
@@ -145,18 +137,37 @@ const BookingForm = () => {
                     },
                   }}
                 >
-                  {airports.map((airport) => (
+                  {loading ? (
+                    <>
+                      <Box sx={{
+                        display: "flex",
+                        height: "5vh",
+                        mb: 1
+                      }}>
+                        <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }} />
+                      </Box>
+                      <Box sx={{
+                        display: "flex",
+                        height: "5vh"
+                      }}>
+                        <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }} />
+                      </Box>
+                    </>
+                  ) : airports.length > 0 ? (airports.map((airport) => (
                     <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
                       {airport.name} ({airport.country})
                     </MenuItem>
-                  ))}
+                  ))) : (
+                    <MenuItem value="no" sx={{ pointerEvents: "none" }}>No airports retrieved</MenuItem>
+                  )}
+                 
                 </Select>
                 <FormHelperText>{errors.airportFrom}</FormHelperText>
               </FormControl>
               <Box sx={{ mt:2.5, ml:3.5 , cursor: "pointer" }}>
-                <Tooltip title="Switch airports">
+                <Box title="Switch airports" sx={{ ":hover": { opacity: 0.7 } }}>
                   <FontAwesomeIcon icon={faRepeat} onClick={() => setFormData({ ...formData, airportFrom: formData.airportTo, airportTo: formData.airportFrom })}/>
-                </Tooltip>
+                </Box>
               </Box>
             </Grid>
             <Grid item xs={1} md={1}>
@@ -197,11 +208,29 @@ const BookingForm = () => {
                   onChange={handleChange}
                   label="Airport To"
                 >
-                  {airports.map((airport) => (
+                  {loading ? (
+                    <>
+                      <Box sx={{
+                        display: "flex",
+                        height: "5vh",
+                        mb: 1
+                      }}>
+                        <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }} />
+                      </Box>
+                      <Box sx={{
+                        display: "flex",
+                        height: "5vh"
+                      }}>
+                        <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }} />
+                      </Box>
+                    </>
+                  ) : airports.length > 0 ? (airports.map((airport) => (
                     <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
                       {airport.name} ({airport.country})
                     </MenuItem>
-                  ))}
+                  ))) : (
+                    <MenuItem value="no" sx={{ pointerEvents: "none" }}>No airports retrieved</MenuItem>
+                  )}
                 </Select>
                 <FormHelperText>{errors.airportTo}</FormHelperText>
               </FormControl>

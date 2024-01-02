@@ -1,4 +1,4 @@
-import { Button, Collapse, Grid, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Collapse, Grid, Paper, Typography } from "@mui/material";
 import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
 import AirlineLogo from "../BookingList/AirlineLogo";
@@ -6,6 +6,7 @@ import AirlineLogo from "../BookingList/AirlineLogo";
 const UserPageRow = (props) => {
   const [expandedPaper, setExpandedPaper] = useState(false);
   const [priceRow, setPriceRow] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.log(props.row);
@@ -22,7 +23,8 @@ const UserPageRow = (props) => {
       price += ticket.hold_luggage ? (parseInt(ticket.hold_luggage)*65) : 0
     })
     setPriceRow(price);
-  }, [priceRow, props])
+    setLoading(false);
+  }, [priceRow, props, loading])
 
   UserPageRow.propTypes = {
     row: PropTypes.object.isRequired,
@@ -31,6 +33,23 @@ const UserPageRow = (props) => {
 
   const handleExpandedPaper = () => {
     setExpandedPaper(!expandedPaper);
+  }
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          height: "80vh",
+        }}
+      >
+        <CircularProgress
+          sx={{
+            margin: "auto",
+          }}
+        />
+      </Box>
+    );
   }
 
   return (

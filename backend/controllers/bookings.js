@@ -15,6 +15,7 @@ const Flights = require("../models/flights");
 const Itineraries_Flights = require("../models/itineraries_flights");
 const Airports = require("../models/airports");
 const Airlines = require("../models/airlines");
+const { Transaction } = require('sequelize');
 
 const getBookingsForUser = async (req, res, next) => {
   const decodedState = decodeURIComponent(req.query.state);
@@ -99,7 +100,9 @@ const getBookingsForUser = async (req, res, next) => {
 }
 
 const insertBookings = async (req, res, next) => {
-  const transaction = await instanceSequelize.transaction();
+  const transaction = await instanceSequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED
+  });
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -121,6 +124,7 @@ const insertBookings = async (req, res, next) => {
     for (const flight of seatsFlightsDeparture) {
       for (const seat of flight) {
         const seatCheckResult = await checkSeatForBooking(seat, transaction);
+    
         if (!seatCheckResult) {
           await transaction.rollback();
           return res.status(400).json(seatCheckResult);
@@ -290,7 +294,7 @@ const insertBookings = async (req, res, next) => {
     
     //Insert tickets
     const departureTicketsBooking = await insertTickets(await createTickets(departureTicketsToBook), transaction);
-    if (departureTicketsBooking.error && !departureTicketsBooking) {
+    if (departureTicketsBooking.error && !departureTicketsBooking && !departureTicketsBooking.success) {
       await transaction.rollback();
       return res.status(400).json(departureTicketsBooking);
     }
@@ -299,7 +303,7 @@ const insertBookings = async (req, res, next) => {
 
     if (returningTicketsToBook) {
       const returningTicketsBooking = await insertTickets(await createTickets(returningTicketsToBook), transaction);
-      if (returningTicketsBooking.error && !returningTicketsBooking) {
+      if (returningTicketsBooking.error && !returningTicketsBooking && !returningTicketsBooking.success) {
         await transaction.rollback();
         return res.status(400).json(returningTicketsBooking);
       }
@@ -332,5 +336,68 @@ const insertBookings = async (req, res, next) => {
   }
 };
 
+const getFlightRemainingSeats = async (req, res, next) => {
+  const decodedState = decodeURIComponent(req.query.state);
+  const flightData = JSON.parse(decodedState);
+  console.log(flightData);
+
+  try {
+    const totalSeatsResults = await Seats.findAll({
+      attributes: [
+        "flight_number",
+        [
+          instanceSequelize.fn('COUNT', instanceSequelize.col('seat_number')),
+          'totalSeats',
+        ],
+      ],
+      where: { flight_number: flightData.map(data => data.fk_flight_number) },
+      group: ['flight_number'],
+      raw: true,
+    });
+    
+    // Query to get booked seats
+    const bookedSeatsResults = await Tickets.findAll({
+      attributes: [
+        "fk_flight_number",
+        [
+          instanceSequelize.fn('COUNT', instanceSequelize.literal('1')),
+          'bookedSeats',
+        ],
+      ],
+      where: { fk_flight_number: flightData.map(data => data.fk_flight_number) },
+      group: ['fk_flight_number'],
+      raw: true,
+    });
+    
+    const enrichedFlightData = flightData.map(data => {
+      const result = totalSeatsResults.find(result => result.fk_flight_number === data.flightNumber);
+      const totalSeats = result ? result.totalSeats : 0;
+    
+      const bookedSeatsResult = bookedSeatsResults.find(result => result.fk_flight_number === data.flightNumber);
+      const bookedSeats = bookedSeatsResult ? bookedSeatsResult.bookedSeats : 0;
+    
+      return {
+        ...data,
+        remainingSeats: totalSeats - bookedSeats,
+      };
+    });
+
+    console.log(enrichedFlightData);
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully retrieved remaining seats",
+      data: enrichedFlightData,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed retrival of remaining seats",
+      error: error.message,
+    });
+  }
+}
+
 exports.getBookingsForUser = getBookingsForUser;
 exports.insertBookings = insertBookings;
+exports.getFlightRemainingSeats = getFlightRemainingSeats;

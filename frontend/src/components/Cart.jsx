@@ -65,7 +65,7 @@ const Cart = (props) => {
       <Box
         sx={{
           display: "flex",
-          height: "20vh",
+          height: "15vh",
         }}
       >
         <CircularProgress
