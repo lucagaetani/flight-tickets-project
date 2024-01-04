@@ -80,7 +80,7 @@ const SeatPicker = () => {
           (state.flightState?.selectedSeatsDeparture && state.flightState?.selectedSeatsDeparture.length === state.flightState.selectedDepartureFlight.length)
         ) {
           setSelectedSeats([]);
-          seats = state.flightState.selectedReturningFlight[state.flightState.selectedSeatsReturning.length ? state.flightState.selectedSeatsReturning.length : 0];
+          seats = state.flightState.selectedReturningFlight[state.flightState.selectedSeatsReturning ? state.flightState.selectedSeatsReturning.length : 0];
         } else {
           seats = state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture ? state.flightState.selectedSeatsDeparture.length : 0];
         }
@@ -515,7 +515,7 @@ const SeatPicker = () => {
       </Container>
       <Box sx={{ mt: 8 }}/>
       <Container minwidth="sm" sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
-        <BottomNavigation sx={{ alignItems: "center", justifyContent: "space-around" }}>
+        <BottomNavigation sx={{ alignItems: "center", justifyContent: "space-around" }} showLabel>
           <Button
             onClick={handleBack}
             sx={{ mr: 1, width: "150px" }}

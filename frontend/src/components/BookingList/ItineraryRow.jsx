@@ -1,6 +1,6 @@
 import { Box, Button, Collapse, Grid, Paper, Skeleton, Typography } from "@mui/material";
 import PropTypes from 'prop-types';
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AirlineLogo from "./AirlineLogo";
 import DefaultDialog from "../DefaultDialog";
 
@@ -145,12 +145,11 @@ const ItineraryRow = (props) => {
           <Collapse direction="vertical" in={expandedPaper}>
             <>
                 {props.row["itFlights"].map((itineraryFlight,index) => (
-                  <>
+                  <React.Fragment key={"flight"+index}>
                   <Grid 
                   container
                   spacing={{ xs: 1, md: 2 }}
                   columns={{ xs: 2, md: 5 }}
-                  key={"flight"+index}
                   sx={{
                     marginLeft: "0px !important",
                     pr: 2
@@ -223,7 +222,7 @@ const ItineraryRow = (props) => {
                       </Grid>
                     </Grid>
                   )}
-                  </>
+                  </React.Fragment>
                 ))}
               </>
             </Collapse>

@@ -273,12 +273,14 @@ const Cart = (props) => {
                 props.selectedSeatsDeparture.map((selectedFlight, selectedIndex) => (
                   <React.Fragment key={`flightSeats-`+selectedIndex}>
                     <Typography>
-                      • {props.selectedDepartureFlight[selectedIndex].flight_number}{": "}
+                      {props.selectedDepartureFlight[selectedIndex].flight_number && (
+                        "•" + props.selectedDepartureFlight[selectedIndex].flight_number + ": "
+                      )}
                     </Typography>
                     {selectedFlight.map((seat,index) => {
                       return (seat.seatNumber &&
                         <Typography key={`seat-${index}`}>
-                          {"€ " + seat.seatPrice} - Seat {seat.seatNumber}
+                          {"€ " + seat.seatPrice + "- Seat"  + seat.seatNumber}
                         </Typography>
                       )
                     })}
@@ -307,7 +309,11 @@ const Cart = (props) => {
                 props.selectedSeatsReturning.map((selectedFlight, selectedIndex) => (
                   <React.Fragment key={`flightSeats-`+selectedIndex}>
                     <Typography>
-                      • {props.selectedSeatsReturning[selectedIndex].flight_number}{": "}
+                      {props.selectedReturningFlight[selectedIndex].flight_number ? (
+                        "•" + props.selectedReturningFlight[selectedIndex].flight_number + ": "
+                      ) : (
+                        "none"
+                      )}
                     </Typography>
                     {selectedFlight.map((seat,index) => {
                       return (seat.seatNumber &&

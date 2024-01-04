@@ -14,7 +14,7 @@ import {
   Box,
   FormHelperText,
   Skeleton,
-  Typography
+  Typography,
 } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DefaultDialog from "../DefaultDialog";
@@ -27,7 +27,7 @@ const BookingForm = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(true);
   const { state } = useLocation();
-  const [formData, setFormData] = useState(state ? state.formData : {
+  const [formData, setFormData] = useState((state && state.formData) ? state.formData : {
     airportFrom: "",
     airportTo: "",
     departingDate: "",
@@ -62,7 +62,7 @@ const BookingForm = () => {
 
       setLoading(false);
     })();
-  }, []);
+  }, [state]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -93,7 +93,7 @@ const BookingForm = () => {
     if (formData.adults === "0") {
       newErrors.adults = "It has to be at least 1 adult passenger";
     }
-    if (new Date(formData.departingDate).getTime() >= new Date(formData.returningDate).getTime()) {
+    if (!formData.oneWay && new Date(formData.departingDate).getTime() >= new Date(formData.returningDate).getTime()) {
       newErrors.returningDate = "Returning Date must be after departing date";
     }
 
@@ -138,27 +138,31 @@ const BookingForm = () => {
                   }}
                 >
                   {loading ? (
-                    <>
-                      <Box sx={{
-                        display: "flex",
-                        height: "5vh",
-                        mb: 1
-                      }}>
-                        <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }} />
-                      </Box>
-                      <Box sx={{
-                        display: "flex",
-                        height: "5vh"
-                      }}>
-                        <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }} />
-                      </Box>
-                    </>
+                    [
+                      <div key="skeleton-departure">
+                        <Box sx={{
+                          display: "flex",
+                          height: "5vh",
+                          mb: 1
+                        }}>
+                          <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }} />
+                        </Box>
+                        <Box sx={{
+                          display: "flex",
+                          height: "5vh"
+                        }}>
+                          <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }} />
+                        </Box>
+                      </div>
+                    ]
                   ) : airports.length > 0 ? (airports.map((airport) => (
-                    <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
-                      {airport.name} ({airport.country})
-                    </MenuItem>
+                      <MenuItem key={airport.IATA_code + "-departure"} value={airport.IATA_code}>
+                        {airport.name} ({airport.country})
+                      </MenuItem>
                   ))) : (
+                    <div key={"noAirportsDeparture"}>
                     <MenuItem value="no" sx={{ pointerEvents: "none" }}>No airports retrieved</MenuItem>
+                    </div>
                   )}
                  
                 </Select>
@@ -209,7 +213,7 @@ const BookingForm = () => {
                   label="Airport To"
                 >
                   {loading ? (
-                    <>
+                    <div key="skeleton-returning">
                       <Box sx={{
                         display: "flex",
                         height: "5vh",
@@ -223,13 +227,15 @@ const BookingForm = () => {
                       }}>
                         <Skeleton variant="rectangular" width="95%" height="100%" sx={{ margin: "auto" }} />
                       </Box>
-                    </>
+                    </div>
                   ) : airports.length > 0 ? (airports.map((airport) => (
-                    <MenuItem key={airport.IATA_code} value={airport.IATA_code}>
+                    <MenuItem key={airport.IATA_code + "-returning"} value={airport.IATA_code}>
                       {airport.name} ({airport.country})
                     </MenuItem>
                   ))) : (
-                    <MenuItem value="no" sx={{ pointerEvents: "none" }}>No airports retrieved</MenuItem>
+                    <div key={"noAirportsReturning"}>
+                      <MenuItem value="no" sx={{ pointerEvents: "none" }}>No airports retrieved</MenuItem>
+                    </div>
                   )}
                 </Select>
                 <FormHelperText>{errors.airportTo}</FormHelperText>

@@ -8,31 +8,30 @@ const insertTickets = async (req, transaction) => {
 
   try {
     for (const ticket of arrayOfTickets) {
-      const existingTicket = await Tickets.findOne({
-        where: {
-          fk_flight_number: ticket.fk_flight_number,
-          fk_seat_number: ticket.fk_seat_number
+      if (ticket.fk_seat_number){
+        const existingTicket = await Tickets.findOne({
+          where: {
+            fk_flight_number: ticket.fk_flight_number,
+            fk_seat_number: ticket.fk_seat_number
+          }
+        });
+        if (existingTicket) {
+          return {
+            success: false,
+            message: "Ticket already exists",
+          };
         }
-      });
-      if (existingTicket) {
-        return {
-          success: false,
-          message: "Ticket already exists",
-        };
       }
-      console.log("ExistingTicket: " + JSON.parse(existingTicket));
     }
-    
-    console.log(arrayOfTickets);
 
-    const ticketBookings = await Tickets.bulkCreate(arrayOfTickets, transaction);
+    const ticketBookings = await Tickets.bulkCreate(arrayOfTickets, {transaction});
     if (!ticketBookings) {
       return {
         success: false,
         message: "Cannot insert tickets",
       };
     }
-    return ticketBookings;
+    return { success: true, message: "Tickets inserted successfully" }
   } catch (error) {
     console.log(error);
     return {

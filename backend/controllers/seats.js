@@ -44,7 +44,8 @@ const checkSeatForBooking = async (req, transaction, res, next) => {
     const check = await Seats.findOne({
       where: {
         seat_number: seatNumber,
-        flight_number: flightNumber
+        flight_number: flightNumber,
+        is_booked: false
       },
       lock: transaction.LOCK.UPDATE,
       transaction
@@ -54,7 +55,7 @@ const checkSeatForBooking = async (req, transaction, res, next) => {
       return {
         success: false,
         seat_number: seatNumber,
-        message: `Seat ${seatNumber} doesn't exist`,
+        message: `Seat ${seatNumber} is already booked`,
       };
     } else if (check.isBooked) {
       return {

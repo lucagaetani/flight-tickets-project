@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addUserData } from "../../redux/actions";
 import {
   TextField,
@@ -28,6 +28,7 @@ const LoginForm = () => {
     email: "",
     password: "",
   });
+  const userData = useSelector((state) => state.userData);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(true);
   const [titleDialog, setTitleDialog] = useState("");
@@ -37,11 +38,11 @@ const LoginForm = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (localStorage.getItem("reduxState")) {
+    if (userData) {
       navigateTo("/");
     }
     setLoading(false);
-  }, [navigateTo]);
+  }, [navigateTo, userData]);
 
   const handleDispatch = (data) => {
     dispatch(addUserData(data));
@@ -57,10 +58,6 @@ const LoginForm = () => {
     setErrors((prevErrors) => ({ ...prevErrors, [name]: undefined }));
   };
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData])
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -75,6 +72,11 @@ const LoginForm = () => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
     } else {
+      if (userData) {
+        const state = {};
+        state.alreadyLogged = true;
+        navigateTo("/", { state });
+      }
       (async () => {
         try {
           const requestOptions = {
@@ -91,7 +93,6 @@ const LoginForm = () => {
           const res = await response.json()
           if (res.success) {
             handleDispatch(res.data);
-            navigateTo("/");
           } else {
             setTitleDialog("Error");
             setContentDialog(`${res.message}`);
