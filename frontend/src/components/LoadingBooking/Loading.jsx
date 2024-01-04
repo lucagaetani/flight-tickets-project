@@ -76,6 +76,7 @@ const Loading = () => {
 
         //Delete current state
         delete state.flightState;
+        console.log(sendData);
 
         const requestOptions = {
           method: "POST",
