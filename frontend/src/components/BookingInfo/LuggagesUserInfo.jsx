@@ -87,6 +87,18 @@ const LuggageUserInfo = () => {
       if (!validator.isMobilePhone(passenger[`phone-${index}`])) {
         errors[`phone-${index}`] = "validatorError";
       }
+      if (passenger[`name-${index}`].length > 20) {
+        errors[`name-${index}`] = "Name cannot have more than 20 characters";
+      }
+      if (passenger[`surname-${index}`].length > 20) {
+        errors[`surname-${index}`] = "Surname cannot have more than 20 characters";
+      }
+      if (passenger[`email-${index}`].length > 30) {
+        errors[`email-${index}`] = "Email cannot have more than 30 characters";
+      }
+      if (passenger[`mobile-${index}`].length > 15) {
+        errors[`mobile-${index}`] = "Mobile phone cannot have more than 15 characters";
+      }
       return errors;
     }, {});
 
@@ -230,6 +242,7 @@ const LuggageUserInfo = () => {
                                 ? "Name is required"
                                 : null
                             }
+                            inputProps={{ maxLength: 20 }}
                           />
                         </Grid>
                         <Grid item xs={4}>
@@ -246,6 +259,7 @@ const LuggageUserInfo = () => {
                                 ? "Surname is required"
                                 : ""
                             }
+                            inputProps={{ maxLength: 20 }}
                           />
                         </Grid>
                         <Grid item xs={4}>
@@ -260,6 +274,7 @@ const LuggageUserInfo = () => {
                             helperText={
                               errors[`email-${index}`] === "validatorError" ? "Please insert a valid email" : ""
                             }
+                            inputProps={{ maxLength: 30 }}
                           />
                         </Grid>
                         <Grid item xs={4}>
@@ -274,6 +289,7 @@ const LuggageUserInfo = () => {
                             helperText={
                               errors[`phone-${index}`] === "validatorError" ? "Please insert a valid phone number" : ""
                             }
+                            inputProps={{ maxLength: 15 }}
                           />
                         </Grid>
                       </Grid>

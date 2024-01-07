@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import Cart from "../Cart";
 import DefaultDialog from "../DefaultDialog";
+import { useTimer } from 'react-timer-hook';
 
 const SeatPicker = () => {
   const [seats, setSeats] = useState([]);
@@ -34,6 +35,7 @@ const SeatPicker = () => {
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
   const [openDialogBack, setOpenDialogBack] = useState(false);
+  const [remainedTime, setRemainedTime] = useState(new Date());
   const navigateTo = useNavigate();
 
   useEffect(() => {
@@ -67,6 +69,11 @@ const SeatPicker = () => {
     }
   }, [currentSelection]);
 
+  useTimer({
+    remainedTime,
+
+  })
+
   useEffect(() => {
     (async () => {
       try {
@@ -91,6 +98,15 @@ const SeatPicker = () => {
         const res = await response.json();
         if (res.success) {        
           setSeats(res.data);
+        } else {
+          setTitleDialog("Error");
+          setContentDialog(`Error: ${res.message}`);
+        }
+        const urlTime = `http://localhost:3000/bookings/getBookingCookie`;
+        const responseTime = await fetch(urlTime, requestOptions);
+        const resTime = await responseTime.json();
+        if (resTime) {
+          setRemainedTime(new Date(res.remainedTime));
         } else {
           setTitleDialog("Error");
           setContentDialog(`Error: ${res.message}`);
@@ -361,6 +377,10 @@ const SeatPicker = () => {
               {state.flightState.formData.oneWay
                 ? `You're choosing seats for flight: ${state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture ? state.flightState.selectedSeatsDeparture.length : 0].flight_number}`
                 : (state.flightState.selectedDepartureFlight.length !== state.flightState.selectedSeatsDeparture?.length) ? "You're choosing seats for flight: " + state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture?.length || 0].flight_number : "You're choosing seats for flight: " + state.flightState.selectedReturningFlight[state.flightState.selectedSeatsReturning?.length || 0].flight_number}
+            </Typography>
+
+            <Typography>
+              Total remained time to book: {remainedTime}
             </Typography>
 
             <Typography>

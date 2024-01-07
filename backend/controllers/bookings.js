@@ -16,6 +16,7 @@ const Itineraries_Flights = require("../models/itineraries_flights");
 const Airports = require("../models/airports");
 const Airlines = require("../models/airlines");
 const { Transaction } = require('sequelize');
+const jwt = require("jsonwebtoken");
 
 const getBookingsForUser = async (req, res, next) => {
   const decodedState = decodeURIComponent(req.query.state);
@@ -351,6 +352,102 @@ const getFlightRemainingSeats = async (req, res, next) => {
   }
 }
 
+const setBookingCookie = (req, res, next) => {
+  try {
+    //Set a cookie for 15 minutes
+    const maxAge = 15 * 60 * 1000;
+
+    const cookie = jwt.sign(
+      {
+        booking: "cookie-booking"
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: maxAge,
+      }
+    );
+
+    res.cookie("booking", cookie, {
+      httpOnly: true,
+      maxAge: maxAge,
+      path: "/",
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Cookie created correctly"
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+
+const getBookingCookie = (req, res, next) => {
+  const cookie = req.cookies.booking;
+  if (!cookie) {
+    return res.status(401).json({
+      success: false,
+      message: "Cookie expired",
+    });
+  }
+  try {
+    const decoded = jwt.verify(cookie, process.env.JWT_SECRET);
+    console.log(decoded.exp-decoded.iat);
+
+    /**
+     * If i'm beyond 15 minutes (max age of cookie), cookie expires
+     */
+    if (((Math.floor(Date.now() / 1000)-decoded.iat)*1000) > 900000) {
+      res.clearCookie("booking");
+      return res.status(401).json({
+        success: false,
+        message: "Cookie expired",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Cookie parsed correctly",
+      timeRemained: null
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "Invalid token",
+    });
+  }
+};
+
+const deleteBookingCookie = (req, res, next) => {
+  const cookie = req.cookies.booking;
+  if (!cookie) {
+    return res.status(401).json({
+      success: false,
+      message: "Cookie expired",
+    });
+  }
+  try {
+    res.clearCookie("booking");
+
+    return res.status(200).json({
+      success: true,
+      message: "Cookie deleted correctly",
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error,
+    });
+  }
+};
+
 exports.getBookingsForUser = getBookingsForUser;
 exports.insertBookings = insertBookings;
 exports.getFlightRemainingSeats = getFlightRemainingSeats;
+exports.setBookingCookie = setBookingCookie;
+exports.getBookingCookie = getBookingCookie;
+exports.deleteBookingCookie = deleteBookingCookie;

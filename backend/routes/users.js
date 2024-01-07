@@ -47,7 +47,7 @@ router.get("/checkPassword", usersController.checkPassword);
 
 router.post("/registerUser", validateUser, usersController.registerUser);
 
-router.post("/editUser", validateUserToEdit, usersController.editUser);
+router.post("/editUser", validateUserToEdit, auth.verifyUserToken, usersController.editUser);
 
 //It hasn't to be validates, nothing it sent and there aren't operations on the database
 router.post("/logout", auth.verifyUserToken, usersController.logout);

@@ -68,6 +68,12 @@ const LoginForm = () => {
     if (!formData.password) {
       newErrors.password = "Password is required";
     }
+    if (formData.email.length > 30) {
+      newErrors.email = "Email cannot have more than 30 characters";
+    }
+    if (formData.password.length > 20) {
+      newErrors.password = "Password cannot have more than 20 characters";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -141,6 +147,7 @@ const LoginForm = () => {
                 onChange={handleChange}
                 error={!!errors.email}
                 helperText={errors.email}
+                inputProps={{ maxLength: 30 }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -152,6 +159,7 @@ const LoginForm = () => {
                   name="password"
                   onChange={handleChange}
                   error={!!errors.password}
+                  inputProps={{ maxLength: 20 }}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton

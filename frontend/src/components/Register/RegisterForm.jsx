@@ -6,11 +6,19 @@ import {
   Button,
   Container,
   Grid,
-  Typography
+  Typography,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  FormHelperText
 } from '@mui/material';
 import validator from 'validator';
 import DefaultDialog from "../DefaultDialog";
 import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const BookingForm = () => {
   const navigateTo = useNavigate();
@@ -19,6 +27,7 @@ const BookingForm = () => {
   const [contentDialog, setContentDialog] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -72,6 +81,18 @@ const BookingForm = () => {
     {
       newErrors.password = 'Password requires at least 8 characters, 1 lowercase, 1 uppercase, 2 numbers and 2 symbols';
     }
+    if (formData.name.length > 20) {
+      newErrors.name = "Name cannot have more than 20 characters";
+    }
+    if (formData.surname.length > 20) {
+      newErrors.surname = "Surname cannot have more than 20 characters";
+    }
+    if (formData.email.length > 30) {
+      newErrors.email = "Email cannot have more than 30 characters";
+    }
+    if (formData.password.length > 20) {
+      newErrors.password = "Password cannot have more than 20 characters";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -121,25 +142,40 @@ const BookingForm = () => {
                 name="email"
                 fullWidth
                 defaultValue={null}
-                value={formData.email}
-                onChange={handleChange}
+                onBlur={handleChange}
                 error={!!errors.email}
                 helperText={errors.email}
+                inputProps={{ maxLength: 30 }}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                label="Password"
-                type="password"
-                variant="outlined"
-                name="password"
-                fullWidth
-                defaultValue={null}
-                value={formData.password}
-                onChange={handleChange}
-                error={!!errors.password}
-                helperText={errors.password}
-              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel htmlFor="outlined-adornment-password" error={!!errors.password}>Password</InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  onChange={handleChange}
+                  error={!!errors.password}
+                  inputProps={{ maxLength: 20 }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        onMouseDown={() => setShowPassword(true)}
+                        edge="end"
+                      >
+                        {showPassword ? <FontAwesomeIcon icon={faEye} /> : <FontAwesomeIcon icon={faEyeSlash} />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+                {!!errors.password && (
+                  <FormHelperText error={!!errors.password}>{errors.password}</FormHelperText>
+                )}
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -149,10 +185,10 @@ const BookingForm = () => {
                 name="name"
                 fullWidth
                 defaultValue={null}
-                value={formData.name}
-                onChange={handleChange}
+                onBlur={handleChange}
                 error={!!errors.name}
                 helperText={errors.name}
+                inputProps={{ maxLength: 20 }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -163,10 +199,10 @@ const BookingForm = () => {
                 name="surname"
                 fullWidth
                 defaultValue={null}
-                value={formData.surname}
-                onChange={handleChange}
+                onBlur={handleChange}
                 error={!!errors.surname}
                 helperText={errors.surname}
+                inputProps={{ maxLength: 20 }}
               />
             </Grid>
             <Grid item xs={12}>

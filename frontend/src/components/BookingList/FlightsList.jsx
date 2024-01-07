@@ -84,7 +84,25 @@ const FlightsList = () => {
     navigateTo("/", { state: { formData } });
   }
 
-  const handleConfirm = () => {
+  const setBookingCookie = async () => {
+    try {
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      };
+      const url = `http://localhost:3000/bookings/setBookingCookie`;
+      const response = await fetch(url, requestOptions);
+      const res = await response.json();
+      return res;
+    } catch(error) {
+      setTitleDialog("Error");
+      setContentDialog(`Error fetching data: ${error}`);
+      setOpenDialog(true);
+    }
+  }
+
+  const handleConfirm = async () => {
     selectedRow.fk_flight_numbers = selectedRow.itFlights.map((flight) => {return flight.flight});
     if (state.formData.oneWay) {
       const selectedDepartureItinerary = {
@@ -101,7 +119,14 @@ const FlightsList = () => {
         priceDeparture: selectedRow.price
       };
 
-      navigateTo("/seats", { state: { flightState } });
+      const res = await setBookingCookie();
+      if (res.success) {
+        navigateTo("/seats", { state: { flightState } });
+      } else {
+        setTitleDialog("Error");
+        setContentDialog(`Error fetching data: ${res.message}`);
+        setOpenDialog(true);
+      }
     } else if (!state.flightState) {
       const selectedDepartureItinerary = {
         id: selectedRow.id,
