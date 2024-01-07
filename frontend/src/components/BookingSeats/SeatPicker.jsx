@@ -35,7 +35,7 @@ const SeatPicker = () => {
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
   const [openDialogBack, setOpenDialogBack] = useState(false);
-  const [remainedTime, setRemainedTime] = useState(new Date());
+  const [remainedTime, setRemainedTime] = useState(0);
   const navigateTo = useNavigate();
 
   useEffect(() => {
@@ -69,11 +69,6 @@ const SeatPicker = () => {
     }
   }, [currentSelection]);
 
-  useTimer({
-    remainedTime,
-
-  })
-
   useEffect(() => {
     (async () => {
       try {
@@ -106,7 +101,7 @@ const SeatPicker = () => {
         const responseTime = await fetch(urlTime, requestOptions);
         const resTime = await responseTime.json();
         if (resTime) {
-          setRemainedTime(new Date(res.remainedTime));
+          setRemainedTime(0);
         } else {
           setTitleDialog("Error");
           setContentDialog(`Error: ${res.message}`);

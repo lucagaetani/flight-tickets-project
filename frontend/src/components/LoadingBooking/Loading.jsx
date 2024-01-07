@@ -81,7 +81,7 @@ const Loading = () => {
         const requestOptions = {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          withCredentials: true,
+          credentials: "include",
           body: JSON.stringify(sendData)
         };
         const url = `http://localhost:3000/bookings/insertBookings`;

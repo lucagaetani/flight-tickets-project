@@ -96,8 +96,8 @@ const LuggageUserInfo = () => {
       if (passenger[`email-${index}`].length > 30) {
         errors[`email-${index}`] = "Email cannot have more than 30 characters";
       }
-      if (passenger[`mobile-${index}`].length > 15) {
-        errors[`mobile-${index}`] = "Mobile phone cannot have more than 15 characters";
+      if (passenger[`phone-${index}`].length > 15) {
+        errors[`phone-${index}`] = "Mobile phone cannot have more than 15 characters";
       }
       return errors;
     }, {});
