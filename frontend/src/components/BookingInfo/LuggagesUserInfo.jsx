@@ -18,6 +18,8 @@ import {
 } from "@mui/material";
 import validator from 'validator';
 import Cart from "../Cart";
+import DefaultDialog from "../DefaultDialog";
+import Timer from "../Timer";
 
 const LuggageUserInfo = () => {
   const { state } = useLocation();
@@ -27,6 +29,10 @@ const LuggageUserInfo = () => {
   const [currentPassenger, setCurrentPassenger] = useState(0);
   const [openDialogBack, setOpenDialogBack] = useState(false);
   const [errors, setErrors] = useState({});
+  const [openDialog, setOpenDialog] = useState(false);
+  const [titleDialog, setTitleDialog] = useState("");
+  const [contentDialog, setContentDialog] = useState("");
+  const [remainedTime, setRemainedTime] = useState(new Date().getTime());
   const navigateTo = useNavigate();
 
   useEffect(() => {
@@ -49,9 +55,29 @@ const LuggageUserInfo = () => {
     );
     setCurrentSeats(currentSeatsToSet);
     setArrayPassengerInfos(tempArray);
-    setLoading(false);
-    console.log(state);
-  }, [state]);
+    (async () => {
+      try {
+        const requestOptions = {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        };
+        const urlTime = `http://localhost:3000/bookings/getBookingCookie`;
+        const responseTime = await fetch(urlTime, requestOptions);
+        const resTime = await responseTime.json();
+        if (resTime.success) {
+          setRemainedTime(resTime.timeRemained);
+        } else {
+          navigateTo("/");
+        }
+        setLoading(false);
+      } catch (error) {
+        setTitleDialog("Error");
+        setContentDialog(`Error fetching data: ${error}`);
+        setOpenDialog(true);
+      }
+    })();
+  }, [state, navigateTo]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -143,6 +169,7 @@ const LuggageUserInfo = () => {
   return (
     <Box>
       <Dialog open={openDialogBack} onClose={() => setOpenDialogBack(!openDialogBack)}>
+      <DefaultDialog toOpen={openDialog} title={titleDialog} contentText={contentDialog} setOpenDialogFalse={() => setOpenDialog(!openDialog)} />
           <DialogTitle>Warning</DialogTitle>
           <DialogContent>
             <DialogContentText>
@@ -189,6 +216,8 @@ const LuggageUserInfo = () => {
           <Typography sx={{ mt: 3, mb: 1 }} variant="h5" fontWeight={"bold"}>
             {currentSeats.length === 1 ? `1. Write passenger info and baggage` : `3. Write passengers infos and baggages`}
           </Typography>
+
+          <Timer expiredTimestamp={remainedTime} />
 
           <Typography>
             {"These informations will be used for booking the tickets for every flight you've chosen"}

@@ -114,6 +114,16 @@ const insertBookings = async (req, res, next) => {
   }
 
   try {
+    //Checking if there is a cookie for the booking
+    if (res.cookie.booking) {
+      res.clearCookie("booking");
+    } else {
+      return res.status(401).json({
+        success: false,
+        message: "Cookie expired",
+      });
+    }
+
     //Checking the consistency of all fks and data sent
     const flightState = req.body.flightState;
     const seatsFlightsDeparture = flightState.seatsFlightsDeparture;
@@ -396,8 +406,6 @@ const getBookingCookie = (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(cookie, process.env.JWT_SECRET);
-    console.log(decoded.exp-decoded.iat);
-
     /**
      * If i'm beyond 15 minutes (max age of cookie), cookie expires
      */
@@ -409,10 +417,12 @@ const getBookingCookie = (req, res, next) => {
       });
     }
 
+    const timeRemained = new Date((new Date(decoded.iat*1000)).setMinutes(new Date(decoded.iat*1000).getMinutes() + 15)).getTime();
+
     return res.status(200).json({
       success: true,
       message: "Cookie parsed correctly",
-      timeRemained: null
+      timeRemained
     });
   } catch (err) {
     res.status(400).json({
@@ -440,7 +450,7 @@ const deleteBookingCookie = (req, res, next) => {
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: error,
+      error,
     });
   }
 };

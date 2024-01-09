@@ -18,7 +18,9 @@ import {
 } from "@mui/material";
 import Cart from "../Cart";
 import DefaultDialog from "../DefaultDialog";
-import { useTimer } from 'react-timer-hook';
+import Timer from "../Timer";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const SeatPicker = () => {
   const [seats, setSeats] = useState([]);
@@ -35,7 +37,7 @@ const SeatPicker = () => {
   const [titleDialog, setTitleDialog] = useState("");
   const [contentDialog, setContentDialog] = useState("");
   const [openDialogBack, setOpenDialogBack] = useState(false);
-  const [remainedTime, setRemainedTime] = useState(0);
+  const [remainedTime, setRemainedTime] = useState(new Date().getTime());
   const navigateTo = useNavigate();
 
   useEffect(() => {
@@ -96,19 +98,20 @@ const SeatPicker = () => {
         } else {
           setTitleDialog("Error");
           setContentDialog(`Error: ${res.message}`);
+          setOpenDialog(true);
         }
         const urlTime = `http://localhost:3000/bookings/getBookingCookie`;
         const responseTime = await fetch(urlTime, requestOptions);
         const resTime = await responseTime.json();
-        if (resTime) {
-          setRemainedTime(0);
+        if (resTime.success) {
+          setRemainedTime(resTime.timeRemained);
         } else {
-          setTitleDialog("Error");
-          setContentDialog(`Error: ${res.message}`);
+          navigateTo("/");
         }
       } catch (error) {
         setTitleDialog("Error");
         setContentDialog(`Error fetching data: ${error}`);
+        setOpenDialog(true);
       }
       setLoading(false);
     })();
@@ -127,7 +130,7 @@ const SeatPicker = () => {
         seatPrice: "",
       })),
     ]);
-  }, [state, adults, children]);
+  }, [state, adults, children, navigateTo]);
 
   const handleBack = () => {
     setOpenDialogBack(true);
@@ -160,6 +163,18 @@ const SeatPicker = () => {
         seatPrice: seatPrice,
       }));
     }
+  };
+
+  const handleXMark = () => {
+    setSelectedSeats((prevSelectedSeats) =>
+      prevSelectedSeats.filter((seat) => seat.seatName !== currentSelection.seatName)
+    );
+  
+    setCurrentSelection((prevState) => ({
+      ...prevState,
+      seatNumber: "",
+      seatPrice: "",
+    }));
   };
 
   const handleConfirm = () => {
@@ -374,9 +389,7 @@ const SeatPicker = () => {
                 : (state.flightState.selectedDepartureFlight.length !== state.flightState.selectedSeatsDeparture?.length) ? "You're choosing seats for flight: " + state.flightState.selectedDepartureFlight[state.flightState.selectedSeatsDeparture?.length || 0].flight_number : "You're choosing seats for flight: " + state.flightState.selectedReturningFlight[state.flightState.selectedSeatsReturning?.length || 0].flight_number}
             </Typography>
 
-            <Typography>
-              Total remained time to book: {remainedTime}
-            </Typography>
+            <Timer expiredTimestamp={remainedTime} />
 
             <Typography>
               {"It's not mandatory to choose a seat. In case of no choice, your seat will be chosen randomly before the flight."}
@@ -453,7 +466,12 @@ const SeatPicker = () => {
                       });
                     }}
                   >
-                    <Typography variant="h6">Adult {index + 1}</Typography>
+                    <Box sx={{ display: "flex" }}>
+                      <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                        Adult {index + 1}
+                      </Typography>
+                      <FontAwesomeIcon icon={faXmark} style={{ margin: "auto", display: currentSelection.seatNumber === "" && "none" }} onClick={() => {handleXMark(currentSelection.seatNumber, currentSelection.seatPrice)}} />
+                    </Box>
                     <Typography sx={{ mt: 1 }}>
                       Selected Seat:{" "}
                       {selectedSeats.find((obj) => {

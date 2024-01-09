@@ -104,6 +104,8 @@ const Loading = () => {
           message: error
         }
         //Brings you to the end page with errors
+        setValue(100);
+        setTitle("Loading complete");
         navigateTo("/end", { state: { res } });
       }
     })();
