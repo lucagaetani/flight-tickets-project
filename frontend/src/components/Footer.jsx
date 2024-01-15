@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 const Footer = () => {
   return (
     <Box sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
-      <BottomNavigation sx={{ alignItems: "center" }} showLabel>
+      <BottomNavigation showLabel sx={{ alignItems: "center" }}>
         <Typography>
           Made by Luca Gaetani
         </Typography>

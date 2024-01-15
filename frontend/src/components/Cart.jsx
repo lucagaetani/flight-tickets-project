@@ -274,13 +274,13 @@ const Cart = (props) => {
                   <React.Fragment key={`flightSeats-`+selectedIndex}>
                     <Typography>
                       {props.selectedDepartureFlight[selectedIndex].flight_number && (
-                        "•" + props.selectedDepartureFlight[selectedIndex].flight_number + ": "
+                        "• " + props.selectedDepartureFlight[selectedIndex].flight_number + ": "
                       )}
                     </Typography>
                     {selectedFlight.map((seat,index) => {
                       return (seat.seatNumber &&
                         <Typography key={`seat-${index}`}>
-                          {"€ " + seat.seatPrice + "- Seat"  + seat.seatNumber}
+                          {"€ " + seat.seatPrice + " - Seat "  + seat.seatNumber + " - " + seat.seatName.charAt(0).toUpperCase() + seat.seatName.slice(1,5) + " " + seat.seatName.split("-")[1]}
                         </Typography>
                       )
                     })}
@@ -310,7 +310,7 @@ const Cart = (props) => {
                   <React.Fragment key={`flightSeats-`+selectedIndex}>
                     <Typography>
                       {props.selectedReturningFlight[selectedIndex].flight_number ? (
-                        "•" + props.selectedReturningFlight[selectedIndex].flight_number + ": "
+                        "• " + props.selectedReturningFlight[selectedIndex].flight_number + ": "
                       ) : (
                         "none"
                       )}
@@ -318,7 +318,7 @@ const Cart = (props) => {
                     {selectedFlight.map((seat,index) => {
                       return (seat.seatNumber &&
                         <Typography key={`seat-${index}`}>
-                          {(selectedFlight.seatPrice && selectedFlight.seatNumber) ? "€ " + selectedFlight.seatPrice + "- Seat" + selectedFlight.seatNumber : null}
+                          {"€ " + seat.seatPrice + " - Seat "  + seat.seatNumber + " - " + seat.seatName.charAt(0).toUpperCase() + seat.seatName.slice(1,5) + " " + seat.seatName.split("-")[1]}
                         </Typography>
                       )
                     })}

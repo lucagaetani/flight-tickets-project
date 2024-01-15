@@ -141,6 +141,7 @@ async function insertFlights() {
   ]);
 }
 
+//If uncommented, it inserts data into the database
 /*
 (async () => {
     await Flights.sync({ force: true });

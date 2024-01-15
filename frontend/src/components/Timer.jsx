@@ -26,7 +26,7 @@ const Timer = (props) => {
   }});
 
   Timer.propTypes = {
-    expiredTimestamp: PropTypes.object.number,
+    expiredTimestamp: PropTypes.number,
   };
 
   const formatTime = (time) => {

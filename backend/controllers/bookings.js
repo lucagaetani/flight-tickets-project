@@ -18,6 +18,14 @@ const Airlines = require("../models/airlines");
 const { Transaction } = require('sequelize');
 const jwt = require("jsonwebtoken");
 
+/**
+ * Retrieves all bookings for a user.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ * @return {object} The response object with the bookings data.
+ */
 const getBookingsForUser = async (req, res, next) => {
   const decodedState = decodeURIComponent(req.query.state);
   const email = JSON.parse(decodedState);
@@ -100,6 +108,14 @@ const getBookingsForUser = async (req, res, next) => {
   }
 }
 
+/**
+ * Inserts bookings into the system.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next function.
+ * @return {Promise} A promise that resolves to the response object.
+ */
 const insertBookings = async (req, res, next) => {
   const transaction = await instanceSequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED
@@ -107,6 +123,7 @@ const insertBookings = async (req, res, next) => {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    await transaction.rollback();
     return res.status(422).json({
       success: false,
       message: "Validation error: invalid JSON",
@@ -115,9 +132,10 @@ const insertBookings = async (req, res, next) => {
 
   try {
     //Checking if there is a cookie for the booking
-    if (res.cookie.booking) {
+    if (req.cookies.booking) {
       res.clearCookie("booking");
     } else {
+      await transaction.rollback();
       return res.status(401).json({
         success: false,
         message: "Cookie expired",
@@ -131,10 +149,12 @@ const insertBookings = async (req, res, next) => {
     const seatsFlightsReturning = flightState.seatsFlightsReturning;
     const returningTicketsToBook = flightState.seatsFlightsReturning;
 
+    
+    //Checks the availability of seats selected and the flight for booking. It also locks the seat for the current transaction
     const checkSeatsAndFlight = async (seatsFlight) => {
       for (const flight of seatsFlight) {
         for (const seat of flight) {
-          //I can't lock a seat if isn't selected
+          //I can't lock a seat if isn't selected for booking
           if (seat.seatNumber && seat.seatPrice) {
             const seatCheckResult = await checkSeatForBooking(seat, transaction);
       
@@ -163,6 +183,7 @@ const insertBookings = async (req, res, next) => {
       await checkSeatsAndFlight(seatsFlightsReturning);
     }
 
+    //Check user email, if exists, i continue, otherwise i interrupt the transaction
     const email = flightState.userEmail;
     const existingEmail = await getUser(email);
     if (!existingEmail.success) {
@@ -232,13 +253,8 @@ const insertBookings = async (req, res, next) => {
       fk_itinerary_returning: seatsFlightsReturning ? seatsFlightsReturning[0][0].itineraryId : null,
     }, {transaction});
 
-    /**
-     * Generates an array of tickets based on the provided flights and optional flag for returning flights.
-     *
-     * @param {Array} flights - The array of flights.
-     * @param {boolean} isReturning - Optional flag indicating if the flights are returning.
-     * @return {Array} - The array of generated tickets.
-     */
+    
+    //Generates an array of tickets based on the provided flights and optional flag for returning flights.
     const createTickets = (flights) => {
       const arrayOfTickets = [];
       for (const flight of flights) {
@@ -302,7 +318,16 @@ const insertBookings = async (req, res, next) => {
   }
 };
 
+/**
+ * Retrieves the remaining seats for a flight.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {Object} The response object.
+ */
 const getFlightRemainingSeats = async (req, res, next) => {
+  //Takes the flightData from the HTTP request
   const decodedState = decodeURIComponent(req.query.state);
   const flightData = JSON.parse(decodedState);
 
@@ -334,7 +359,8 @@ const getFlightRemainingSeats = async (req, res, next) => {
       group: ['fk_flight_number'],
       raw: true,
     });
-    
+
+    //Insert the remaining seats into the original flightData array
     const enrichedFlightData = flightData.map(data => {
       const result = totalSeatsResults.find(result => result.flight_number === data.fk_flight_number);
       const totalSeats = result ? result.totalSeats : 0;
@@ -362,6 +388,14 @@ const getFlightRemainingSeats = async (req, res, next) => {
   }
 }
 
+/**
+ * Sets a cookie for 15 minutes (to prevent double bookings) with a JSON web token containing booking information.
+ *
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ * @return {object} The response object with a JSON payload indicating the success or failure of the operation.
+ */
 const setBookingCookie = (req, res, next) => {
   try {
     //Set a cookie for 15 minutes
@@ -396,6 +430,14 @@ const setBookingCookie = (req, res, next) => {
   }
 };
 
+/**
+ * Retrieves the booking cookie from the request object.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next function to call.
+ * @return {Object} The booking cookie or an error message.
+ */
 const getBookingCookie = (req, res, next) => {
   const cookie = req.cookies.booking;
   if (!cookie) {
@@ -405,10 +447,10 @@ const getBookingCookie = (req, res, next) => {
     });
   }
   try {
+    //Verifies the cookie with the JWT_SECRET stored in the .env file
     const decoded = jwt.verify(cookie, process.env.JWT_SECRET);
-    /**
-     * If i'm beyond 15 minutes (max age of cookie), cookie expires
-     */
+
+    //If i'm beyond 15 minutes (max age of cookie), cookie expires
     if (((Math.floor(Date.now() / 1000)-decoded.iat)*1000) > 900000) {
       res.clearCookie("booking");
       return res.status(401).json({
@@ -417,6 +459,7 @@ const getBookingCookie = (req, res, next) => {
       });
     }
 
+    //Calculates the remained time for booking
     const timeRemained = new Date((new Date(decoded.iat*1000)).setMinutes(new Date(decoded.iat*1000).getMinutes() + 15)).getTime();
 
     return res.status(200).json({
@@ -432,6 +475,14 @@ const getBookingCookie = (req, res, next) => {
   }
 };
 
+/**
+ * Deletes the booking cookie from the request.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {Object} The JSON response object.
+ */
 const deleteBookingCookie = (req, res, next) => {
   const cookie = req.cookies.booking;
   if (!cookie) {

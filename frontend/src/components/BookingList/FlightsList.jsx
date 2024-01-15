@@ -157,7 +157,14 @@ const FlightsList = () => {
       flightState.selectedReturningFlight = selectedRow.fk_flight_numbers;
       flightState.priceReturning = selectedRow.price;
   
-      navigateTo("/seats", { state: { flightState } });
+      const res = await setBookingCookie();
+      if (res.success) {
+        navigateTo("/seats", { state: { flightState } });
+      } else {
+        setTitleDialog("Error");
+        setContentDialog(`Error fetching data: ${res.message}`);
+        setOpenDialog(true);
+      }
     }
   }
 

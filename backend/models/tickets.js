@@ -63,6 +63,7 @@ Tickets.belongsTo(Seats, {
 	foreignKey: "fk_seat_number"
 });
 
+//If uncommented, it inserts data into the database
 /*
 (async () => {
 	await Tickets.sync({ force: true });

@@ -643,6 +643,7 @@ async function insertSeats() {
   ]);
 }
 
+//If uncommented, it inserts data into the database
 /*
 (async () => {
     await Seats.sync({ force: true });

@@ -39,10 +39,6 @@ const validateUserToEdit = [
 
 router.post("/login", usersController.login);
 
-router.get("/getAll", usersController.getUsers);
-
-router.get("/getOne", usersController.getUser);
-
 router.get("/checkPassword", usersController.checkPassword);
 
 router.post("/registerUser", validateUser, usersController.registerUser);
@@ -51,7 +47,5 @@ router.post("/editUser", validateUserToEdit, auth.verifyUserToken, usersControll
 
 //It hasn't to be validates, nothing it sent and there aren't operations on the database
 router.post("/logout", auth.verifyUserToken, usersController.logout);
-
-router.delete("/deleteUser", usersController.deleteUser);
 
 module.exports = router;

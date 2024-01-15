@@ -16,6 +16,7 @@ const verifyUserToken = (req, res, next) => {
     });
   }
   try {
+    //Verifies the user token with the JWT_SECRET of the .env file
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded.user;
     next();
@@ -44,6 +45,7 @@ const verifyCookie = (req, res, next) => {
     });
   }
   try {
+    //Verifies the user token with the JWT_SECRET of the .env file
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded.user;
 
@@ -51,6 +53,7 @@ const verifyCookie = (req, res, next) => {
      * If i'm beyond 3 hours (max age of token), token expires
      */
     if (((Math.floor(Date.now() / 1000)-decoded.iat)*1000) > 10800000) {
+      //Deletes the cookie
       res.clearCookie("jwt");
       return res.status(401).json({
         success: false,

@@ -6,10 +6,20 @@ const { Op } = require("@sequelize/core");
 const Itineraries_Flights = require("../models/itineraries_flights");
 const instanceSequelize = require("../database");
 
+/**
+ * Retrieves itineraries for a booking based on the provided request query.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {Promise} A promise that resolves with the retrieved itineraries.
+ */
 const getItinerariesForBooking = async (req, res, next) => {
   try {
+    //Takes the data from the HTTP request
     const decodedState = decodeURIComponent(req.query.state);
     const { airportFrom, airportTo, date } = JSON.parse(decodedState);
+    //Set time to 00:00 and 23:59 for searching flights through all the day selected
     const dateToSearch00 = new Date(date);
     const dateToSearch23 = new Date(date);
     dateToSearch23.setHours(23, 59, 0, 0);

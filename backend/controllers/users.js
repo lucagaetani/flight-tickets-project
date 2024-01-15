@@ -32,7 +32,7 @@ const registerUser = async (req, res, next) => {
       });
     }
 
-    //Encrypt password with 10 salt rounds
+    //Encrypt password with 10 salt rounds with bcryptjs library
     const hash = await bcrypt.hash(password, 10);
 
     const user = {
@@ -43,7 +43,10 @@ const registerUser = async (req, res, next) => {
     };
     await Users.create(user);
 
+    //Set the maxAge of the token to 3 hours
     const maxAge = 3 * 60 * 60 * 1000;
+
+    //Sign the token
     const token = jwt.sign(
       {
         email: user.email,
@@ -71,51 +74,6 @@ const registerUser = async (req, res, next) => {
     res.status(401).json({
       success: false,
       message: "User not created. Some errors occurred",
-      error: error.message,
-    });
-  }
-};
-
-/**
- * Deletes a user.
- *
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @param {Function} next - The next function.
- * @return {Object} The response object.
- */
-const deleteUser = async (req, res, next) => {
-  const { id } = req.body;
-
-  try {
-    res.clearCookie("jwt");
-    const userToDelete = await Users.findByPk(id);
-    await Users.delete({ userToDelete });
-    res.status(201).json({
-      success: true,
-      message: "User successfully deleted"
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      message: "An error occurred",
-      error: error.message,
-    });
-  }
-};
-
-const getUsers = async (res, req, next) => {
-  try {
-    const users = await Users.findAll();
-    res.status(200).json({
-      success: true,
-      message: "Successfully retrived all users",
-      data: users,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed retrieval of all users",
       error: error.message,
     });
   }
@@ -160,12 +118,12 @@ const editUser = async (req, res, next) => {
     }
 
     if (password) {
-      //It hashes the password
+      //Hashes the password with 10 salt rounds with bcryptjs library
       const hash = await bcrypt.hash(password, 10);
       userToUpdate.password = hash;
     }
 
-    //It updates the user's info
+    //Updates the user's info
     const updatedUser = await Users.update(userToUpdate, {
       where: {
         email: oldEmail,
@@ -200,25 +158,6 @@ const editUser = async (req, res, next) => {
   }
 }
 
-const getUser = async (req, res, next) => {
-  const email = req;
-
-  try {
-    const user = await Users.findByPk(email);
-    return {
-      success: true,
-      message: "Successfully retrieved user",
-      data: user,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: "Failed retrieval of users",
-      error: error.message,
-    };
-  }
-};
-
 /**
  * Authenticates a user by comparing the provided email and password with the database records.
  *
@@ -246,9 +185,13 @@ const login = async (req, res, next) => {
         message: "Login not successful. User not found",
       });
     } else {
+      //Compare the crypted password with bcryptjs library
       const result = await bcrypt.compare(password, user.password);
+      //If decrypted password is the same of the password stored in the database, continue
       if (result) {
+        //Set the maxAge of the cookie to 3 hours
         const maxAge = 3 * 60 * 60 * 1000;
+        //Sign the token with jwt library
         const token = jwt.sign(
           {
             email: user.email,
@@ -267,6 +210,7 @@ const login = async (req, res, next) => {
           email: user.email
         };
 
+        //Set the cookie to the server
         res.cookie("jwt", token, {
           httpOnly: true,
           maxAge: maxAge,
@@ -338,7 +282,7 @@ const checkPassword = async (req, res, next) => {
  */
 const logout = async (req, res, next) => {
   try {
-    //It clears the cookie
+    //It deletes the cookie
     res.clearCookie("jwt");
     res.status(200).json({
       success: true,
@@ -357,7 +301,4 @@ exports.login = login;
 exports.logout = logout;
 exports.registerUser = registerUser;
 exports.editUser = editUser;
-exports.getUsers = getUsers;
-exports.getUser = getUser;
 exports.checkPassword = checkPassword;
-exports.deleteUser = deleteUser;

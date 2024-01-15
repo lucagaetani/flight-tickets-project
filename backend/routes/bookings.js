@@ -6,13 +6,11 @@ const auth = require("../middleware/auth.js");
 
 const router = express.Router();
 
+//Validate the inputs
 const validateBooking = [
-  //TODO: booking
-  /*
-  body("IATA_code").trim().notEmpty().isLength({ max: 3 }),
-  body("name").trim().notEmpty(),
-  body("country").trim().notEmpty(),
-  */
+  body("flightState.userEmail").trim().notEmpty(),
+  body("flightState.seatsFlightsDeparture").trim().notEmpty(),
+  body("flightState.seatsFlightsReturning").if(body("flightState.seatsFlightsReturning").notEmpty()).trim().notEmpty()
 ];
 
 router.get("/getBookingsForUser", bookingsController.getBookingsForUser);

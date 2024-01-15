@@ -5,8 +5,17 @@ const { validationResult } = require("express-validator");
 const { Op } = require("@sequelize/core");
 const instanceSequelize = require("../database");
 
+/**
+ * Retrieves flights for a booking based on the provided request.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ * @return {Promise} A promise that resolves to the retrieved flights.
+ */
 const getFlightsForBooking = async (req, res, next) => {
   try {
+    //Takes the data from the HTTP request
     const decodedState = decodeURIComponent(req.query.state);
     const { airportFrom, airportTo, departingDate, returningDate } = JSON.parse(decodedState).formData;
     const departure = new Date(departingDate);

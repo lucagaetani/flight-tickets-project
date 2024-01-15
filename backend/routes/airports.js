@@ -5,6 +5,7 @@ const airportsController = require("../controllers/airports");
 
 const router = express.Router();
 
+//Validate the inputs
 const validateAirport = [
   body("IATA_code").trim().notEmpty().isLength({ max: 3 }),
   body("name").trim().notEmpty(),
@@ -12,7 +13,5 @@ const validateAirport = [
 ];
 
 router.get("/getAirports", airportsController.getAirports);
-
-router.post("/insertOne", validateAirport, airportsController.insertAirports);
 
 module.exports = router;

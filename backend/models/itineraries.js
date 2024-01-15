@@ -109,6 +109,7 @@ async function insertItineraries() {
   ]);
 }
 
+//If uncommented, it inserts data into the database
 /*
 (async () => {
     await Itineraries.sync({ force: true });

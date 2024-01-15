@@ -56,6 +56,7 @@ async function insertItineraries_Flights() {
   }]);
 }
 
+//If uncommented, it inserts data into the database
 /*
 (async () => {
     await Itineraries_Flights.sync({ force: true });

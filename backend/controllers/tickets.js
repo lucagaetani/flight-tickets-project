@@ -3,6 +3,13 @@ const { validationResult } = require("express-validator");
 const Tickets = require("../models/tickets");
 const instanceSequelize = require("../database");
 
+/**
+ * Inserts an array of tickets into the database.
+ *
+ * @param {Array} req - The array of tickets to be inserted.
+ * @param {Object} transaction - The transaction object for the database operation.
+ * @return {Object} - An object indicating the success or failure of the operation.
+ */
 const insertTickets = async (req, transaction) => {
   const arrayOfTickets = req;
 
@@ -24,6 +31,7 @@ const insertTickets = async (req, transaction) => {
       }
     }
 
+    //With bulkCreate i can insert a lot of tickets faster, without iterate-and-insert them
     const ticketBookings = await Tickets.bulkCreate(arrayOfTickets, {transaction});
     if (!ticketBookings) {
       return {

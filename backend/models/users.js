@@ -27,5 +27,6 @@ const Users = instanceSequelize.define(
   }
 );
 
+//If uncommented, it synchronizes the database with Sequelize
 //Users.sync({force: true});
 module.exports = Users;

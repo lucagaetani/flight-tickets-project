@@ -49,6 +49,7 @@ Bookings.hasMany(Tickets, {
 	as: "tickets"
 });
 
+//If uncommented, it inserts data into the database
 /*
 (async () => {
     await Bookings.sync({ force: true });

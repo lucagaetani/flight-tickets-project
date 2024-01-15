@@ -38,6 +38,8 @@ async function insertAirlines() {
     name: "Lufthansa",
   });
 }
+
+//If uncommented, it inserts data into the database
 /*
 (async () => {
     await Airlines.sync({ force: true });

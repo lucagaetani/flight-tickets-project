@@ -52,6 +52,10 @@ const SeatPicker = () => {
   }, [state]);
 
   useEffect(() => {
+    console.log(selectedSeats)
+  }, [selectedSeats])
+
+  useEffect(() => {
     if (currentSelection.seatName && currentSelection.seatNumber) {
       setSelectedSeats((prevSelectedSeats) => {
         if (
@@ -165,16 +169,20 @@ const SeatPicker = () => {
     }
   };
 
-  const handleXMark = () => {
-    setSelectedSeats((prevSelectedSeats) =>
-      prevSelectedSeats.filter((seat) => seat.seatName !== currentSelection.seatName)
-    );
+  const handleXMark = (seatName) => {
+    setSelectedSeats((prevSelectedSeats) => {
+      return prevSelectedSeats.map((seat) =>
+        seat.seatName === seatName
+          ? { ...seat, seatNumber: "", seatPrice: "" } // Update seatNumber and seatPrice
+          : seat
+      );
+    });
   
-    setCurrentSelection((prevState) => ({
-      ...prevState,
+    setCurrentSelection({
+      seatName: seatName,
       seatNumber: "",
       seatPrice: "",
-    }));
+    });
   };
 
   const handleConfirm = () => {
@@ -429,14 +437,13 @@ const SeatPicker = () => {
 
             {adults
               ? Array.from({ length: adults }, (_, index) => (
+                <Box key={`adult-${index}`} sx={{ display: "flex", mt: 1 }}>
                   <Paper
-                    key={`adult-${index}`}
                     sx={{
                       p: 2,
-                      ml: 2,
-                      mr: 2,
-                      mt: 2,
+                      mr: 1,
                       transition: "0.5s linear",
+                      flexGrow: 1,
                       cursor: "pointer",
                       backgroundColor:
                         currentSelection.seatName === `adult-${index}`
@@ -466,12 +473,9 @@ const SeatPicker = () => {
                       });
                     }}
                   >
-                    <Box sx={{ display: "flex" }}>
-                      <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                        Adult {index + 1}
-                      </Typography>
-                      <FontAwesomeIcon icon={faXmark} style={{ margin: "auto", display: currentSelection.seatNumber === "" && "none" }} onClick={() => {handleXMark(currentSelection.seatNumber, currentSelection.seatPrice)}} />
-                    </Box>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                      Adult {index + 1}
+                    </Typography>
                     <Typography sx={{ mt: 1 }}>
                       Selected Seat:{" "}
                       {selectedSeats.find((obj) => {
@@ -485,19 +489,24 @@ const SeatPicker = () => {
                       }).seatPrice}
                     </Typography>
                   </Paper>
+                  <Button sx={{ margin: "auto", minWidth: "0px !important" }} onClick={() => {handleXMark(selectedSeats.find((obj) => {
+                            return obj.seatName === `adult-${index}`;
+                      }).seatName)}}>
+                    <FontAwesomeIcon icon={faXmark} />
+                  </Button>
+                </Box>
                 ))
               : null}
 
             {children
               ? Array.from({ length: children }, (_, index) => (
+                <Box key={`children-${index}`} sx={{ display: "flex", mt: 1 }}>
                   <Paper
-                    key={`children-${index}`}
                     sx={{
                       p: 2,
-                      ml: 2,
-                      mr: 2,
-                      mt: 2,
+                      mr: 1,
                       transition: "0.5s linear",
+                      flexGrow: 1,
                       cursor: "pointer",
                       backgroundColor:
                         currentSelection.seatName === `children-${index}`
@@ -541,6 +550,12 @@ const SeatPicker = () => {
                       }).seatPrice}
                     </Typography>
                   </Paper>
+                  <Button sx={{ margin: "auto", minWidth: "0px !important" }} onClick={() => {handleXMark(selectedSeats.find((obj) => {
+                            return obj.seatName === `children-${index}`;
+                      }).seatName)}}>
+                    <FontAwesomeIcon icon={faXmark} />
+                  </Button>
+                </Box>
                 ))
               : null}
           </Grid>
