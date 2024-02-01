@@ -55,7 +55,7 @@ const Loading = () => {
             - seatsFlightsReturning: seats chosen for each flight returning, flights chosen, itinerary id and info of the passenger
         */
         sendData.flightState = {
-          seatsFlightsDeparture: seatsFlightsDeparture,
+          seatsFlightsDeparture: JSON.stringify(seatsFlightsDeparture),
           userEmail: userData.email
         }
         if (state.flightState?.selectedReturningFlight) {
@@ -67,7 +67,7 @@ const Loading = () => {
               return seat;
             })
           });
-          sendData.flightState.seatsFlightsReturning = seatsFlightsReturning;
+          sendData.flightState.seatsFlightsReturning = JSON.stringify(seatsFlightsReturning);
         }
 
         //Update the progress bar

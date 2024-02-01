@@ -144,10 +144,10 @@ const insertBookings = async (req, res, next) => {
 
     //Checking the consistency of all fks and data sent
     const flightState = req.body.flightState;
-    const seatsFlightsDeparture = flightState.seatsFlightsDeparture;
-    const departureTicketsToBook = flightState.seatsFlightsDeparture;
-    const seatsFlightsReturning = flightState.seatsFlightsReturning;
-    const returningTicketsToBook = flightState.seatsFlightsReturning;
+    const seatsFlightsDeparture = JSON.parse(flightState.seatsFlightsDeparture);
+    const departureTicketsToBook = JSON.parse(flightState.seatsFlightsDeparture);
+    const seatsFlightsReturning = JSON.parse(flightState.seatsFlightsReturning);
+    const returningTicketsToBook = JSON.parse(flightState.seatsFlightsReturning);
 
     
     //Checks the availability of seats selected and the flight for booking. It also locks the seat for the current transaction

@@ -297,7 +297,27 @@ const logout = async (req, res, next) => {
   }
 };
 
+const getUser = async (req, res, next) => {
+  const email = req;
+
+  try {
+    const user = await Users.findByPk(email);
+    return {
+      success: true,
+      message: "Successfully retrieved user",
+      data: user,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Failed retrieval of users",
+      error: error.message,
+    };
+  }
+};
+
 exports.login = login;
+exports.getUser = getUser;
 exports.logout = logout;
 exports.registerUser = registerUser;
 exports.editUser = editUser;
